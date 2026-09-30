@@ -95,8 +95,7 @@ export const portal: PortalData = {
   ],
 };
 
-/** A patent-style drawing on the route (public/images/route). Every figure is the same parcel, order #4821, in its
-    state at that stop, so the drawings tell the order's story. `n` is its figure number, `caption` the one line under it. */
+/** A patent-style drawing on the route (public/images/route): `n` is its figure number, `caption` the one line under it. */
 export type Fig = { src: string; n: number; alt: string; caption: string };
 const fig = (name: string, n: number, alt: string, caption: string): Fig => ({ src: `/images/route/${name}.webp`, n, alt, caption });
 
@@ -105,7 +104,7 @@ export const paused = {
   title: "Keep selling when your account closes.",
   blurb: "High-risk brands can lose an account with one email. Checkout doesn’t have to go with it.",
   node: { time: "09:41:02", label: "Routed to US-01" },
-  fig: fig("parcel-paused", 1, "Drawing of the order's parcel, padlocked shut with a chain.", "#4821 held: US-01 closed by its acquirer at 09:41:02"),
+  fig: fig("terminal", 1, "Drawing of a card terminal locked shut with a padlock and chain.", "US-01, closed by its acquirer at 09:41:02"),
   /* the three accounts the router splits across: share before the pause, then after it */
   accounts: [
     { id: "US-01", name: "us01", before: "Live · 40%", after: "Paused · 0%" },
@@ -119,7 +118,7 @@ export const paused = {
 export const how = {
   title: "Set it up once. It routes from there.",
   node: { time: "09:41:03", label: "Rerouted" },
-  fig: fig("parcel-rerouted", 2, "Drawing of the same parcel with a new shipping label stuck over the old one.", "#4821 relabelled for US-03 at 09:41:03"),
+  fig: fig("switch", 2, "Drawing of a railway track switch set to the branch line.", "#4821 switched to US-03 at 09:41:03"),
   steps: ["Connect your providers", "Route across accounts", "Keep selling"],
 };
 
@@ -145,7 +144,7 @@ export const whatYouGet: { title: string; blurb: string; node: { time: string; l
       title: "Route across accounts",
       body: "Split volume by rules you set, for steadier approval rates.",
       node: { time: "09:41:03", label: "Split" },
-      fig: fig("parcel-split", 3, "Drawing of the same parcel with three shipping labels fanned out in front of it.", "Three accounts, one picked by approval rate: US-03 54%, UK-02 46%"),
+      fig: fig("manifold", 3, "Drawing of a pipe manifold splitting one inlet into three valved outlets, one shut.", "Split by approval rate: US-03 54%, UK-02 46%"),
       result: "#4821 sent to US-03",
     },
     {
@@ -153,7 +152,7 @@ export const whatYouGet: { title: string; blurb: string; node: { time: string; l
       title: "Failover in seconds",
       body: "One MID pauses, the rest take the traffic.",
       node: { time: "09:41:03", label: "Held" },
-      fig: fig("parcel-failover", 4, "Drawing of the same parcel with its padlock hanging open.", "Unlocked a second after US-01 went out"),
+      fig: fig("knife", 4, "Drawing of a double-throw knife switch thrown to its second contacts.", "US-01 out, traffic moved across in a second"),
       result: "Checkout stayed up",
     },
     {
@@ -161,7 +160,7 @@ export const whatYouGet: { title: string; blurb: string; node: { time: string; l
       title: "Catch disputes early",
       body: "Refund before it becomes a chargeback.",
       node: { time: "09:41:04", label: "Monitored" },
-      fig: fig("parcel-dispute", 5, "Drawing of the same parcel with a receipt under its string and a magnifying glass on it.", "DSP-0221 caught at 10:07, refunded in time"),
+      fig: fig("magnifier", 5, "Drawing of a magnifying glass resting on a long paper receipt.", "DSP-0221 caught at 10:07, refunded in time"),
       result: "No chargeback",
     },
     {
@@ -169,7 +168,7 @@ export const whatYouGet: { title: string; blurb: string; node: { time: string; l
       title: "Every store, one CRM",
       body: "All your brands and their payouts in one place.",
       node: { time: "09:41:04", label: "Logged" },
-      fig: fig("parcel-stores", 6, "Drawing of the same parcel stacked with two others.", "Three stores, $132,735 paid out in 30 days"),
+      fig: fig("drawer", 6, "Drawing of an open cash register drawer.", "Three stores, $132,735 paid out in 30 days"),
       result: "Total $132,735",
     },
   ],
@@ -188,7 +187,7 @@ export const forBrands = {
   node: { time: "09:52", label: "Underwritten" },
   split: { time: "09:52", label: "US-04 issued" },
   account: { id: "US-04", before: "Pending", after: "Live · 20%" },
-  fig: fig("parcel-key", 7, "Drawing of the same parcel with a new key tied to its bow.", "US-04, underwritten in-house, live at 09:52 (illustrative)"),
+  fig: fig("key", 7, "Drawing of a new key on a ring with a blank paper tag.", "US-04, underwritten in-house, live at 09:52 (illustrative)"),
   alt: "Diagram: a new account, US-04, branches off the route, goes live and joins it again.",
 };
 
@@ -197,7 +196,7 @@ export const settled = {
   title: "The payout lands.",
   blurb: "Four days after US-01 closed, order #4821 is paid out with the rest.",
   payout: { id: "P-0714", date: "Jul 14", amount: "$148,220.00", before: "Pending", after: "Paid", includes: "Includes #4821 · $129.00" },
-  fig: fig("parcel-settled", 8, "Drawing of the same parcel, its string untied, with a sealed envelope leaning on it.", "Payout P-0714, Jul 14, with #4821 inside"),
+  fig: fig("letterbox", 8, "Drawing of a wall-mounted post box with an envelope in its slot.", "Payout P-0714, Jul 14, with #4821 inside"),
   note: "Illustrative data",
 };
 
@@ -205,9 +204,9 @@ export const industries = {
   title: "Made for brands banks call risky.",
   // Industry list is a working assumption: confirm with Vertlo before launch.
   items: [
-    { title: "Supplements", body: "Monthly reorders keep flowing when one account tightens up.", fig: fig("parcel-bottle", 9, "Drawing of the same parcel opened, a supplement bottle inside.", "") },
-    { title: "Subscriptions", body: "A failed renewal is retried on another account.", fig: fig("parcel-subscription", 10, "Drawing of three of the same parcel stacked.", "") },
-    { title: "Digital goods", body: "Payments go through on whichever account is live.", fig: fig("parcel-phone", 11, "Drawing of the same parcel opened, a phone across its top.", "") },
+    { title: "Supplements", body: "Monthly reorders keep flowing when one account tightens up.", fig: fig("bottle", 9, "Drawing of a supplement bottle with its cap off.", "") },
+    { title: "Subscriptions", body: "A failed renewal is retried on another account.", fig: fig("parcels", 10, "Drawing of three parcels tied with string.", "") },
+    { title: "Digital goods", body: "Payments go through on whichever account is live.", fig: fig("phone", 11, "Drawing of a smartphone with its charging cable.", "") },
   ],
 };
 
