@@ -247,7 +247,20 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .vtp-nav--dim { color: #7f8c85; }
 
 /* ── works with: the providers, stated plainly between hairlines ── */
-.pp-works { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px 32px; padding-block: clamp(56px, 6vw, 96px) clamp(8px, 1.5vw, 24px); }
+/* the scale under the laptop: a heading, three totals, then the networks */
+.pp-proof { padding-block: clamp(72px, 8vw, 128px) clamp(8px, 1.5vw, 24px); text-align: center; }
+.pp-proof-t { margin: 0 auto; }
+.pp-figures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: clamp(36px, 4vw, 56px) 0 0; border-top: 1px solid var(--rule); }
+.pp-figures > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; align-items: center; gap: 12px; padding: clamp(28px, 3vw, 44px) 16px; }
+.pp-figures > div + div { border-left: 1px solid var(--rule-soft); }
+/* the figure, ruled off with a total's double line */
+.pp-figures dd {
+  margin: 0; padding-bottom: 10px; border-bottom: 3px double var(--accent-ink);
+  font: 500 clamp(40px, 4.4vw, 64px)/1 var(--font-display); font-variation-settings: "wdth" 125; letter-spacing: -.01em;
+  font-variant-numeric: tabular-nums; color: var(--ink);
+}
+.pp-figures dt { max-width: 26ch; font-size: clamp(14px, 1.1vw, 16px); line-height: 1.45; color: var(--ink-muted); text-wrap: balance; }
+.pp-works { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px 32px; padding-top: clamp(32px, 3.4vw, 48px); border-top: 1px solid var(--rule); }
 .pp-works-k { margin: 0; font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); }
 .pp-works-list { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; margin: 0; padding: 0; list-style: none; }
 .pp-works-list li { display: flex; align-items: center; min-height: 40px; padding: 4px clamp(20px, 2.4vw, 36px); }
@@ -503,6 +516,9 @@ html[data-measure-flow] .pp-sheet { position: relative; top: auto; }
   .lp-laptop-lid { padding: 6px; border-radius: 18px; }
   .lp-laptop-cam, .lp-laptop-base { display: none; }
   .pp-works { flex-direction: column; align-items: center; gap: 14px; }
+  .pp-figures { grid-template-columns: minmax(0, 1fr); }
+  .pp-figures > div + div { border-left: 0; border-top: 1px solid var(--rule-soft); }
+  .pp-figures > div { padding-block: 24px; }
   .pp-works-list { gap: 4px 0; }
   .pp-works-list li { padding: 4px 12px; }
   .pp-works-list img { zoom: .8; }

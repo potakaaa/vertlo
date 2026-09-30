@@ -28,6 +28,18 @@ export const hero = {
     "Every payment provider and merchant account in one CRM, routing orders around the one that stops.",
 };
 
+/* Under the laptop: the scale, set as a statement's totals.
+   PLACEHOLDER: draft figures (the same ones the main page uses). Replace with the client's real numbers before launch. */
+export const proof = {
+  lead: "Trusted by",
+  accent: "400+ high-risk brands",
+  figures: [
+    { value: "$1.2B+", label: "routed through Vertlo last year" },
+    { value: "99.99%", label: "checkout uptime across accounts" },
+    { value: "31", label: "countries with live merchant accounts" },
+  ],
+};
+
 /* Under the laptop: what connects, stated plainly (the same list the FAQ gives). */
 export const worksWith = {
   label: "Works with",

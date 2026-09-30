@@ -11,12 +11,29 @@ import { sheets as SHEETS } from "@/content/landing";
      it sinks back a little under a shadow.
    - on load, the banknote is printed: the medallion inks in, the microprint runs out from it, the
      serial rolls into place like a numbering machine, the headline and the engraved "1" print.
+   - under the laptop, the totals' digits roll into place as they come into view.
    - in the sheets: each letter types on (the termination's verdict is then struck through and
      Vertlo's note typed under it), and the cheque's signature writes itself.
    - a slim rail in the left margin shows which sheet you're on (wide screens only).
    Reduced motion: the stack still stacks (it's layout), nothing else moves. */
 
 type Current = { n: number; title: string } | null;
+
+/** A numbering machine: an element's digits spin, then settle left to right on its own text. */
+function rollDigits(el: HTMLElement, duration: number) {
+  const final = el.textContent ?? "";
+  const digits = final.replace(/\D/g, "").length;
+  const roll = { p: 0 };
+  return gsap.to(roll, {
+    p: 1, duration, ease: "none",
+    onUpdate: () => {
+      const settled = Math.floor(roll.p * (digits + 1));
+      let d = 0;
+      el.textContent = final.replace(/\d/g, (ch) => (d++ < settled ? ch : String(Math.floor(Math.random() * 10))));
+    },
+    onComplete: () => { el.textContent = final; },
+  });
+}
 const pad = (n: number) => String(n).padStart(2, "0");
 
 export function PaperMotion() {
@@ -77,23 +94,16 @@ export function PaperMotion() {
         const cta = document.querySelector(".lp-hero-cta");
         if (cta) intro.fromTo(cta, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.7 }, 0.95);
 
-        /* the serial, rolled into place like a numbering machine: its digits spin, then settle left to right */
+        /* the serial, rolled into place like a numbering machine */
         const serial = note.querySelector<HTMLElement>(".pp-note-serial");
-        if (serial) {
-          const final = serial.textContent ?? "";
-          const digits = final.replace(/\D/g, "").length;
-          const roll = { p: 0 };
-          intro.to(roll, {
-            p: 1, duration: 0.9, ease: "none",
-            onUpdate: () => {
-              const settled = Math.floor(roll.p * (digits + 1));
-              let d = 0;
-              serial.textContent = final.replace(/\d/g, (ch) => (d++ < settled ? ch : String(Math.floor(Math.random() * 10))));
-            },
-            onComplete: () => { serial.textContent = final; },
-          }, 0.6);
-        }
+        if (serial) intro.add(rollDigits(serial, 0.9), 0.6);
       }
+
+      /* ── the totals under the laptop roll into place the same way, once, as they come into view ── */
+      document.querySelectorAll<HTMLElement>("[data-figure]").forEach((fig, i) => {
+        const tween = rollDigits(fig, 1.1).pause();
+        ScrollTrigger.create({ trigger: fig, start: "top 88%", once: true, onEnter: () => { tween.delay(i * 0.12).play(); } });
+      });
 
       /* ── the stack: arrive, settle, sink when covered ── */
       sheets.forEach((sheet, i) => {

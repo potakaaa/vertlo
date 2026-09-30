@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Button, Diamond, FAQ, Footer, IndustryCards } from "@/components/vertlo";
 import * as c from "@/content/landing";
 import { HowFlow } from "@/components/landing/HowFlow";
@@ -79,11 +80,34 @@ export function Hero() {
   );
 }
 
-/* Under the laptop, before the stack: what it connects to, the networks' own marks in grey. */
+/* Under the laptop, before the stack: the scale, set as a statement's totals (each figure ruled off
+   with the double line under a total; its digits roll into place like the note's serial, PaperMotion),
+   then what it connects to, the networks' own marks in grey. */
 export function WorksWith() {
   return (
-    <section className="lp-wrap pp-works" aria-label={c.worksWith.label}>
-      <p className="pp-works-k">{c.worksWith.label}</p>
+    <section className="lp-wrap pp-proof" aria-labelledby="proof-t">
+      <h2 className="lp-h2 pp-proof-t" id="proof-t">
+        {c.proof.lead}{" "}
+        <em className="pp-ink">
+          {/* whole words only: "high-risk" never breaks at its hyphen */}
+          {c.proof.accent.split(" ").map((w, i) => (
+            <Fragment key={w}>
+              {i ? " " : ""}
+              <span className="lp-nowrap">{w}</span>
+            </Fragment>
+          ))}
+        </em>
+      </h2>
+      <dl className="pp-figures">
+        {c.proof.figures.map((f) => (
+          <div key={f.label}>
+            <dt>{f.label}</dt>
+            <dd data-figure="">{f.value}</dd>
+          </div>
+        ))}
+      </dl>
+      <div className="pp-works" aria-label={c.worksWith.label}>
+        <p className="pp-works-k">{c.worksWith.label}</p>
       <ul className="pp-works-list">
         {c.worksWith.logos.map((l) => (
           <li key={l.name}>
@@ -93,6 +117,7 @@ export function WorksWith() {
         ))}
         <li className="pp-works-rest">{c.worksWith.rest}</li>
       </ul>
+      </div>
     </section>
   );
 }
