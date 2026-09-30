@@ -12,7 +12,8 @@ import { SCENE_W, SCENE_H, focusFor, monoFont, paintScene } from "@/components/l
 export type FlowStep = { kicker?: string; title: string; body: string };
 
 
-export function HowFlow({ steps }: { steps: FlowStep[] }) {
+/** `tone="dark"` paints the scene for dark paper (the statement is printed on it). */
+export function HowFlow({ steps, tone = "light" }: { steps: FlowStep[]; tone?: "light" | "dark" }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -45,7 +46,7 @@ export function HowFlow({ steps }: { steps: FlowStep[] }) {
       if (p === lastP && tk === lastTk) return;
       if (p !== lastP) root.style.setProperty("--p", String(p));
       lastP = p; lastTk = tk;
-      paintScene(ctx, { p, f: focusFor(p, still), tk, live: !still, sc, font });
+      paintScene(ctx, { p, f: focusFor(p, still), tk, live: !still, sc, font, tone });
     };
 
     const setStep = (progress: number) => {
@@ -102,7 +103,7 @@ export function HowFlow({ steps }: { steps: FlowStep[] }) {
       io.disconnect();
       mm.revert();
     };
-  }, [steps.length]);
+  }, [steps.length, tone]);
 
   const cur = steps[active];
   const pad = (n: number) => String(n).padStart(2, "0");

@@ -150,15 +150,16 @@ export const how: { title: string; steps: FlowStep[] } = {
   ],
 };
 
-export type LedgerEntry = { time: string; entry: string; detail: string; amount: string; tone?: "warn" | "ok" };
+/** `status` is stamped on the line as it lands, like a clerk marking each entry. */
+export type LedgerEntry = { time: string; entry: string; detail: string; status: string; amount: string; tone?: "warn" | "ok" };
 export const statement: { title: string; label: string; entries: LedgerEntry[] } = {
   title: "Jul 10, line by line",
   label: "Illustrative statement",
   entries: [
-    { time: "09:41", entry: "US-01 paused by processor", detail: "Its orders moved to UK-02 and US-03", amount: "No dip", tone: "warn" },
-    { time: "11:20", entry: "Approval rate holding", detail: "Volume split by your rules across live accounts", amount: "92.6%" },
-    { time: "14:05", entry: "Dispute alert, DSP-0221", detail: "Refunded before it became a chargeback", amount: "$89.00" },
-    { time: "17:30", entry: "Payout scheduled for Jul 14", detail: "Every brand and account, one settlement", amount: "$148,220", tone: "ok" },
+    { time: "09:41", entry: "US-01 paused by processor", detail: "Its orders moved to UK-02 and US-03", status: "Rerouted", amount: "No dip", tone: "warn" },
+    { time: "11:20", entry: "Approval rate holding", detail: "Volume split by your rules across live accounts", status: "Holding", amount: "92.6%" },
+    { time: "14:05", entry: "Dispute alert, DSP-0221", detail: "Refunded before it became a chargeback", status: "Refunded", amount: "$89.00" },
+    { time: "17:30", entry: "Payout scheduled for Jul 14", detail: "Every brand and account, one settlement", status: "Scheduled", amount: "$148,220", tone: "ok" },
   ],
 };
 

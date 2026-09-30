@@ -1,6 +1,7 @@
-import { SmoothScroll } from "@/components/site/SmoothScroll";
+import { PageScroll } from "@/components/site/PageScroll";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { PaperMotion } from "@/components/landing/PaperMotion";
+import { Thread } from "@/components/landing/Paper";
 import {
   Approval,
   FinalCTA,
@@ -16,13 +17,14 @@ import {
 export default function Home() {
   return (
     <>
-      <SmoothScroll />
+      <PageScroll />
       <SiteHeader />
       <main>
         <Hero />
         <WorksWith />
         {/* the stack of documents, one sheet per section (Concept A's structure) */}
         <div className="pp-stack">
+          <Thread />
           <Notice />
           <Statement />
           <Approval />

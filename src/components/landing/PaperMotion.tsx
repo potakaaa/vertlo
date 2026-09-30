@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { gsap, ScrollTrigger, MQ } from "@/lib/motion";
-import { sheets as SHEETS } from "@/content/landing";
 
 /* The paper journey, run over the server-rendered markup (Sections.tsx, Paper.tsx):
    - the stack: each sheet is sticky with its bottom edge at the viewport's (a tall sheet scrolls
@@ -10,24 +9,37 @@ import { sheets as SHEETS } from "@/content/landing";
    - arrival and cover: a sheet comes up with a slight turn and settles; as the next one covers it,
      it sinks back a little under a shadow.
    - on load, the banknote is laid down and printed: the medallion inks in, then the headline.
-   - in the sheets: each letter types on (the termination's verdict is then struck through and
-     Vertlo's note typed under it), and the cheque's signature writes itself.
-   - a slim rail in the left margin shows which sheet you're on (wide screens only).
-   Reduced motion: the stack still stacks (it's layout), nothing else moves. */
-
-type Current = { n: number; title: string } | null;
-const pad = (n: number) => String(n).padStart(2, "0");
+   - in the sheets: the two letter headings ink in word by word; each letter types on (the
+     termination's verdict is then struck through and Vertlo's note typed under it); the statement's
+     line items land one by one and are stamped; the cheque's signature writes itself.
+   - the ledger thread (Paper.tsx) in the left margin fills to the middle of the screen, and each
+     document's diamond lights when it lands (wide screens only).
+   Reduced motion: the stack still stacks and the thread still fills (both are position, not
+   animation); nothing else moves. */
 
 export function PaperMotion() {
-  const [current, setCurrent] = useState<Current>(null);
-
   useEffect(() => {
     const stack = document.querySelector<HTMLElement>(".pp-stack");
     if (!stack) return;
     const sheets = [...stack.querySelectorAll<HTMLElement>(":scope > .pp-sheet")];
 
-    /* sticky offsets: a sheet sticks once its bottom edge meets the viewport's */
-    const measure = () => sheets.forEach((s) => s.style.setProperty("--sheet-h", `${s.offsetHeight}px`));
+    const root = document.documentElement;
+    const thread = stack.querySelector<HTMLElement>(".pp-thread");
+    const fill = thread?.querySelector<HTMLElement>(".pp-thread-fill");
+    const nodes = thread ? [...thread.querySelectorAll<HTMLElement>(".pp-thread-node")] : [];
+    let nodeAt: number[] = [];
+
+    /* sticky offsets: a sheet sticks once its bottom edge meets the viewport's. The thread's nodes sit
+       where each sheet starts in the page, measured with the stack let go. */
+    const measure = () => {
+      sheets.forEach((s) => s.style.setProperty("--sheet-h", `${s.offsetHeight}px`));
+      if (!thread) return;
+      root.setAttribute("data-measure-flow", "");
+      const top = stack.getBoundingClientRect().top;
+      nodeAt = sheets.map((s) => s.getBoundingClientRect().top - top);
+      root.removeAttribute("data-measure-flow");
+      nodes.forEach((n, i) => n.style.setProperty("--y", `${nodeAt[i] ?? 0}px`));
+    };
     measure();
     const ro = new ResizeObserver(measure);
     sheets.forEach((s) => ro.observe(s));
@@ -35,25 +47,24 @@ export function PaperMotion() {
     /* ScrollTrigger measures every trigger from the page's layout. A sheet that is stuck on screen
        would be measured where it sits, not where it belongs, so let the stack go for the length of
        each refresh (html[data-measure-flow], paper.css). Refresh is synchronous: nothing paints between. */
-    const root = document.documentElement;
     const letGo = () => root.setAttribute("data-measure-flow", "");
     const settle = () => root.removeAttribute("data-measure-flow");
     ScrollTrigger.addEventListener("refreshInit", letGo);
     ScrollTrigger.addEventListener("refresh", settle);
 
-    /* the index: the last sheet whose top has passed the middle of the screen */
+    /* the thread: filled down to the middle of the screen; a node lights once the fill reaches it */
     let raf = 0;
     const track = () => {
       raf = 0;
-      const mid = window.innerHeight * 0.5;
-      const sr = stack.getBoundingClientRect();
-      if (sr.top > mid || sr.bottom < mid) return setCurrent(null);
-      let on: HTMLElement | null = null;
-      for (const s of sheets) if (s.getBoundingClientRect().top <= mid) on = s;
-      setCurrent(on ? { n: Number(on.dataset.n), title: on.dataset.title ?? "" } : null);
+      if (!thread || !fill) return;
+      const h = thread.offsetHeight;
+      const tip = Math.min(h, Math.max(0, window.innerHeight * 0.5 - thread.getBoundingClientRect().top));
+      fill.style.transform = `scaleY(${h ? tip / h : 0})`;
+      nodes.forEach((n, i) => n.toggleAttribute("data-on", (nodeAt[i] ?? Infinity) <= tip));
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(track); };
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     track();
 
     const mm = gsap.matchMedia();
@@ -97,6 +108,23 @@ export function PaperMotion() {
         if (shade) cover.fromTo(shade, { autoAlpha: 0 }, { autoAlpha: 1, ease: "none" }, 0);
       });
 
+      /* ── headings that ink in word by word as they come up the page ── */
+      document.querySelectorAll<HTMLElement>(".pp-ink-words").forEach((h) => {
+        gsap.fromTo(
+          h.querySelectorAll(".pp-word"),
+          { color: "rgba(11,20,16,.16)" },
+          { color: "#0b1410", stagger: 0.12, ease: "none", scrollTrigger: { trigger: h, start: "top 88%", end: "top 48%", scrub: 0.5 } },
+        );
+      });
+
+      /* ── the statement's line items land one by one (each stamps itself as it comes into view) ── */
+      const ledger = document.querySelector<HTMLElement>(".pp-ledger");
+      if (ledger) {
+        const rows = ledger.querySelectorAll("tbody tr");
+        const tl = gsap.timeline({ scrollTrigger: { trigger: ledger, start: "top 82%", end: "bottom 70%", scrub: 0.5 } });
+        rows.forEach((row, i) => tl.from(row.children, { autoAlpha: 0, y: 14, duration: 0.5, ease: "power2.out" }, i * 0.45));
+      }
+
       /* ── the letters type on; the termination's verdict is struck, Vertlo's note typed under it ── */
       document.querySelectorAll<HTMLElement>(".pp-letter").forEach((letter) => {
         const strikes = letter.querySelectorAll(".pp-letter-line del");
@@ -136,19 +164,10 @@ export function PaperMotion() {
       ScrollTrigger.removeEventListener("refreshInit", letGo);
       ScrollTrigger.removeEventListener("refresh", settle);
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
     };
   }, []);
 
-  return (
-    <aside className="pp-index" data-on={current ? "" : undefined} aria-hidden="true" title={current?.title}>
-      <span className="pp-index-n">{pad(current?.n ?? 1)}</span>
-      <span className="pp-index-stack">
-        {SHEETS.map((_, k) => (
-          <i key={k} data-on={current && k < current.n ? "" : undefined} />
-        ))}
-      </span>
-      <span className="pp-index-n">{pad(SHEETS.length)}</span>
-    </aside>
-  );
+  return null;
 }
