@@ -7,9 +7,10 @@ import type {
 } from "@/components/vertlo";
 import type { PortalData } from "@/components/landing/portal/types";
 import type { FlowStep } from "@/components/landing/HowFlow";
+import type { BoardData, BoardSeg, KeyRow, PassData } from "@/components/landing/Board";
 
 /**
- * Headings: `*words*` render in the ink colour (see components/landing/Rich.tsx).
+ * Headings: `*words*` render in the accent green (see components/landing/Rich.tsx).
  * All landing-page copy lives here so it can be edited (or moved to a CMS) without touching layout.
  * Rules from the brand: no published prices, "Book a call" is the one CTA, placeholders are labelled.
  */
@@ -22,17 +23,69 @@ export const navLinks: LinkItem[] = [
 ];
 
 export const hero = {
-  /** The banknote line over the headline, and the stamp pressed onto "closes." */
-  series: "Series 2026",
-  serial: "Nº VT 000 001",
-  stamp: "Closed",
   lead: "One account closes.",
-  accent: "The rest keep",
-  /** Flips after "keep"; the first word is the one screen readers and no-JS visitors get. */
-  flip: ["selling", "shipping", "scaling", "earning", "growing"],
+  accent: "The rest keep selling.",
   subhead:
     "Every payment provider and merchant account in one CRM, routing orders around the one that stops.",
 };
+
+/* The hero's split-flap board: the merchant's accounts listed like departures. It plays three frames:
+   every account on time, then US-01 is paused by its processor, then its orders are rerouted and the
+   shares move to UK-02 and US-03. The last frame matches the portal below (routing and the Jul 10 pop).
+   Board words map to Vertlo states: ON TIME live · DELAYED watch · DIVERTED rerouted · BOARDING new. */
+const onTime: BoardSeg[] = [["On time", "ok"]];
+export const board: BoardData = {
+  title: "Departures",
+  caption: "Orders by merchant account",
+  merchant: "Nordvia Group",
+  clock: "09:41",
+  columns: ["Account", "Processor", "Status", "Share", "Approval"],
+  illustrative: "Illustrative data",
+  summary:
+    "Illustrative board for one merchant. US-01 was paused by its processor and its orders were rerouted to UK-02 and US-03. The other three accounts stayed on time.",
+  frames: [
+    {
+      note: "All four accounts taking orders.",
+      rows: [
+        { account: "US-03", processor: "Proc C", status: onTime, share: "28%", approval: "92.9%", lamp: "ok" },
+        { account: "UK-02", processor: "Proc B", status: onTime, share: "22%", approval: "91.8%", lamp: "ok" },
+        { account: "US-04", processor: "Proc A", status: onTime, share: "20%", approval: "93.4%", lamp: "ok" },
+        { account: "US-01", processor: "Proc A", status: onTime, share: "30%", approval: "90.6%", lamp: "ok" },
+      ],
+    },
+    {
+      note: "09:41  US-01 paused by its processor.",
+      rows: [
+        { account: "US-03", processor: "Proc C", status: onTime, share: "28%", approval: "92.9%", lamp: "ok" },
+        { account: "UK-02", processor: "Proc B", status: onTime, share: "22%", approval: "91.8%", lamp: "ok" },
+        { account: "US-04", processor: "Proc A", status: onTime, share: "20%", approval: "93.4%", lamp: "ok" },
+        { account: "US-01", processor: "Proc A", status: [["Paused", "bad"]], share: "30%", approval: " --- ", lamp: "bad", blink: true },
+      ],
+    },
+    {
+      note: "09:41  Orders rerouted to UK-02 and US-03. Checkout never stopped.",
+      rows: [
+        { account: "US-03", processor: "Proc C", status: onTime, share: "42%", approval: "92.9%", lamp: "ok" },
+        { account: "UK-02", processor: "Proc B", status: onTime, share: "38%", approval: "91.8%", lamp: "ok" },
+        { account: "US-04", processor: "Proc A", status: onTime, share: "20%", approval: "93.4%", lamp: "ok" },
+        { account: "US-01", processor: "Proc A", status: [["Rerouted", "bad"], [" → UK-02", "ok"]], share: "0%", approval: " --- ", lamp: "bad" },
+      ],
+    },
+  ],
+};
+
+/** Section signs: wayfinding gates in page order; the closing boarding pass is the last gate. */
+export const gates = {
+  problem: "01",
+  how: "02",
+  whatYouGet: "03",
+  forBrands: "04",
+  providers: "05",
+  industries: "06",
+  testimonials: "07",
+  faq: "08",
+  book: "09",
+} as const;
 
 /* The product shot: the portal's Overview, all illustrative. Numbers reconcile: the 30 daily
    volumes sum to the $1.84M gross, and approvals average 92.6% weighted by volume. The dip on
@@ -251,22 +304,35 @@ export const cta = {
   title: "Put every account *in one CRM.*",
   blurb: "A 30-minute call. We map your providers and accounts, and show you the portal with your numbers.",
   points: ["Multiple live accounts", "Failover in seconds", "Underwriting in-house"],
-  /** The closing call is drawn as a cheque; these fill its printed fields. */
-  cheque: {
-    issuer: "Vertlo Merchant Services",
-    no: "000126",
-    date: "Valid on any weekday",
-    payLabel: "Pay to the order of",
-    payee: "Your checkout, every account in one CRM",
-    amount: "30 min",
-    signLabel: "Authorised signature",
-    micr: "⑆ 0026 0126 ⑆ 30 ⑈ 000126",
-    stamp: "Approved",
-  },
+  /** The closing call is drawn as a boarding pass; these fill its printed fields. */
+  pass: {
+    label: "Boarding pass",
+    no: "VT 0126",
+    passenger: "Your team",
+    from: "Scattered tools",
+    to: "One CRM",
+    flight: "VT 030",
+    date: "Any weekday",
+    boarding: "30 min call",
+    gate: "09",
+    seat: "1A",
+    code: "VT0126-030-09-1A",
+  } satisfies PassData,
 };
 
 export const footer = {
   tagline: "The payment CRM for high-risk ecommerce.",
+  /** A small board over the footer: the board's words and what they mean in Vertlo, with the accounts from the portal. */
+  key: {
+    title: "Status key",
+    caption: "Board words, Vertlo states",
+    rows: [
+      { word: "On time", tone: "ok", state: "Live", example: "US-03 takes 42% of orders" },
+      { word: "Delayed", tone: "warn", state: "Watch", example: "UK-02 approvals dipped on UK debit" },
+      { word: "Diverted", tone: "bad", state: "Rerouted", example: "US-01 paused, its orders moved" },
+      { word: "Boarding", tone: "new", state: "New", example: "US-04 approved, joining routing" },
+    ] satisfies KeyRow[],
+  },
   columns: [
     {
       title: "Product",

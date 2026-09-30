@@ -10,7 +10,7 @@
 @import "../styles/tokens.css";
 @import "../styles/vertlo.css";
 @import "./landing.css";
-@import "./paper.css";
+@import "./board.css";
 
 /* Tokens exposed to Tailwind (bg-ink, text-green-deep, rounded-panel, md:… = phones vs. up) */
 @theme inline {
@@ -32,9 +32,9 @@
 
 /* Fonts come from next/font (see layout.tsx); tokens.css names them by family, so point the tokens at the loaded fonts. */
 :root {
-  --font-display: var(--font-archivo), "Archivo", system-ui, sans-serif;
-  --font-sans: var(--font-archivo), "Archivo", system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: var(--font-barlow-semi), "Barlow Semi Condensed", system-ui, sans-serif;
+  --font-sans: var(--font-barlow), "Barlow", system-ui, sans-serif;
+  --font-mono: var(--font-jb-mono), "JetBrains Mono", ui-monospace, monospace;
 }
 
 html { scroll-behavior: auto; }

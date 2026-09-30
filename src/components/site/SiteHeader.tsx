@@ -5,8 +5,8 @@ import { Button, Logo, Nav } from "@/components/vertlo";
 import { navLinks } from "@/content/landing";
 
 /**
- * Sticky liquid-glass header: the design-system Nav on desktop, a compact pill with a working menu on phones.
- * The glass switches to its dark tone while it floats over a black `vt-bleed` band.
+ * Sticky header: the design-system Nav on desktop, a compact bar with a working menu on phones.
+ * It switches to its dark tone while it floats over a black `vt-bleed` band.
  */
 /** Below this scroll depth the header never hides. */
 const HIDE_AFTER = 160;

@@ -171,17 +171,6 @@ section[id], div[id] { scroll-margin-top: 96px; }
 .lp-hero > :nth-child(5) { animation-delay: .4s; }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(12px); } }
 
-/* flip words: the slot eases between measured widths; the old word rolls up and out, the new one rolls in */
-.lp-nowrap { white-space: nowrap; }
-.lp-flip { position: relative; display: inline-block; white-space: nowrap; transition: width .55s cubic-bezier(.2,0,0,1); }
-.lp-flip span span, .lp-flip-measure > span > span { display: inline-block; }
-.lp-flip-out { position: absolute; left: 0; top: 0; pointer-events: none; animation: lp-flip-out .4s cubic-bezier(.2,0,0,1) both; }
-.lp-flip-in[data-animate] > span { animation: lp-flip-in .55s cubic-bezier(.2,0,0,1) both; }
-.lp-flip-measure { position: absolute; left: 0; top: 0; visibility: hidden; pointer-events: none; }
-.lp-flip-measure > span { position: absolute; left: 0; top: 0; white-space: nowrap; }
-@keyframes lp-flip-out { to { opacity: 0; transform: translateY(-.4em); } }
-@keyframes lp-flip-in { from { opacity: 0; transform: translateY(.4em); } }
-
 .lp-hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding-block: clamp(48px, 5vw, 72px) clamp(40px, 6.1vw, 88px); }
 .lp-h1 { margin: clamp(20px, 1.94vw, 28px) 0 0; text-wrap: balance; font-family: var(--font-display); font-weight: 900; font-size: var(--lp-h1); line-height: .95; letter-spacing: -.045em; text-transform: uppercase; color: var(--ink); }
 .lp-accent { color: var(--green-deep); }
@@ -347,15 +336,7 @@ section[id], div[id] { scroll-margin-top: 96px; }
 .vt-footer-mark { font-size: min(220px, 100cqw / 3.65); margin: .11em 0 -.27em; }
 .lp-band { background: var(--surface); }
 
-/* ── merchants: dot-grid band, result-led quote cards ── */
-.lp-band--dots { position: relative; isolation: isolate; }
-.lp-band--dots::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background-image: radial-gradient(circle, rgba(11,20,16,.16) 1px, transparent 1.5px);
-  background-size: 22px 22px; background-position: center;
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 70%, transparent);
-  mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 70%, transparent);
-}
+/* ── merchants: result-led quote cards ── */
 .lp-ms {
   --ms-ease: cubic-bezier(.2,0,0,1);
   border-radius: var(--radius-panel); background: var(--bg);

@@ -823,7 +823,7 @@ function ProviderFlow(p) {
     outP.map(function (d, i) { return h(Beam, { key: "bo" + i, d: d, dur: 2.6, delay: .9 + i * .45, w: 2.6, color: "#0b1410" }); }),
     pills.map(function (q, i) {
       var dashed = q[4].charAt(0) === "+";
-      return h("g", { key: "p" + i }, /* site: square-cut, hairline, no drop shadow (the paper look) */ h("rect", { x: q[0], y: q[1], width: q[2], height: q[3], rx: 4, fill: "#f7f9f6", stroke: "rgba(31,59,43,.28)", strokeDasharray: dashed ? "4 4" : "none" }),
+      return h("g", { key: "p" + i }, /* site: square-cut, hairline, no drop shadow (the board look) */ h("rect", { x: q[0], y: q[1], width: q[2], height: q[3], rx: 4, fill: "#f7f9f6", stroke: "rgba(31,59,43,.28)", strokeDasharray: dashed ? "4 4" : "none" }),
         h("text", { x: q[0] + q[2] / 2, y: q[1] + q[3] / 2 + 4.5, textAnchor: "middle", fill: dashed ? "#4a5750" : "#0b1410", fontSize: v ? 11 : 12.5, fontWeight: 600, letterSpacing: ".08em" }, q[4].toUpperCase()));
     }),
     h(Ripple, { cx: cx0, cy: cy0, r: S * .9, n: 2, dur: 4, color: "rgba(11,20,16,.25)" }),

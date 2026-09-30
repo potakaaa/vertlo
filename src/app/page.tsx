@@ -11,6 +11,7 @@ import {
   Providers,
   SiteFooter,
   Testimonials,
+  Tour,
   Trust,
   WhatYouGet,
 } from "@/components/landing/Sections";
@@ -22,6 +23,7 @@ export default function Home() {
       <SiteHeader />
       <main>
         <Hero />
+        <Tour />
         <Trust />
         <Problem />
         <How />
