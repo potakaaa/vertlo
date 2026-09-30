@@ -37,19 +37,22 @@ export function BookCall({ size = "md", className }: { size?: "sm" | "md" | "lg"
   );
 }
 
-type Folio = { id: string; no: string; section: string; line: string };
+type Folio = { id: string; no: string; section: string };
 
-/** The front page's masthead: the edition line and dateline over the nameplate, closed by a double rule. */
+/** The front page's masthead: the nameplate with its ears (edition and motto left, dateline right) on one
+    line, closed by a double rule. */
 export function FrontMast({ nameplate, edition, motto }: { nameplate: string; edition: string; motto: string }) {
   return (
     <header className="pr-mast">
-      <div className="pr-mast-ears">
-        <span>
-          {edition} <span className="pr-mast-dot">·</span> {motto}
-        </span>
-        <Dateline />
-      </div>
+      <p className="pr-ear">
+        {edition}
+        <br />
+        {motto}
+      </p>
       <p className="pr-nameplate">{nameplate}</p>
+      <p className="pr-ear pr-ear--r">
+        <Dateline />
+      </p>
     </header>
   );
 }
@@ -118,25 +121,6 @@ export function RunningHead({ nameplate, pages }: { nameplate: string; pages: Fo
   );
 }
 
-/** The front page's index: what's inside, by page number. */
-export function Inside({ pages }: { pages: Folio[] }) {
-  return (
-    <nav className="pr-inside" aria-label="Inside this edition">
-      <p className="pr-label">Inside</p>
-      <ol>
-        {pages.map((p) => (
-          <li key={p.id}>
-            <a href={`#${p.id}`}>
-              <b>{p.no}</b>
-              <span>{p.section}</span>
-            </a>
-          </li>
-        ))}
-      </ol>
-    </nav>
-  );
-}
-
 /* ── section furniture ────────────────────────────── */
 
 /** A story's headline block: kicker, headline, deck. `as` sets the heading level. */
@@ -199,17 +183,15 @@ type NoticeProps = {
   label: string;
   caption: string;
   sender: string;
-  address: string;
   date: string;
   subject: string;
   body: string[];
-  signoff: string;
   reroute: { from: string; time: string; message: string };
 };
 
 /** Exhibit A: the termination email laid on the page and struck through in red as it scrolls in, with the
     portal's reroute notification landing on top of it once the strike has crossed the letter. */
-export function Notice({ label, caption, sender, address, date, subject, body, signoff, reroute }: NoticeProps) {
+export function Notice({ label, caption, sender, date, subject, body, reroute }: NoticeProps) {
   return (
     <figure className="pr-notice">
       <div className="pr-exhibit">
@@ -218,17 +200,14 @@ export function Notice({ label, caption, sender, address, date, subject, body, s
             <span className="pr-mail-av" aria-hidden="true">
               {sender.charAt(0)}
             </span>
-            <span className="pr-mail-from">
-              <b>{sender}</b>
-              <span>{address}</span>
-            </span>
+            <b className="pr-mail-from">{sender}</b>
             <time>{date}</time>
           </header>
           <p className="pr-mail-subject">
             <span className="pr-strike">{subject}</span>
           </p>
           <div className="pr-mail-body">
-            {[...body, signoff].map((p, i) => (
+            {body.map((p, i) => (
               <p key={i}>
                 <span
                   className="pr-strike pr-strike--thin"

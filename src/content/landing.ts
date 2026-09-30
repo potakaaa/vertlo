@@ -13,18 +13,18 @@ import type { FlowStep } from "@/components/landing/HowFlow";
 
 /** The edition: the site is a paper you turn page by page. The front section (A) and back section (B)
     turn sideways; the centre spread in between scrolls down. `id` is each page's anchor. */
-export const edition: { pages: { id: string; no: string; section: string; line: string }[]; turn: string; centre: string } = {
+export const edition: { pages: { id: string; no: string; section: string }[]; turn: string; centre: string } = {
   pages: [
-    { id: "front", no: "A1", section: "Front page", line: "One account closes. The rest keep selling." },
-    { id: "risk", no: "A2", section: "Risk", line: "Three ways a high-risk checkout stops" },
-    { id: "routing", no: "A3", section: "Routing", line: "One account pauses. The rest take the traffic." },
-    { id: "underwriting", no: "A4", section: "Underwriting", line: "We’ll issue the accounts you need" },
-    { id: "centre", no: "C", section: "Centre spread", line: "The portal, opened up" },
-    { id: "markets", no: "B1", section: "Markets", line: "Made for brands banks call risky" },
-    { id: "numbers", no: "B2", section: "The numbers", line: "The month, in numbers" },
-    { id: "letters", no: "B3", section: "Letters", line: "Merchants who kept selling" },
-    { id: "questions", no: "B4", section: "Q&A", line: "What merchants ask before the call" },
-    { id: "classifieds", no: "B5", section: "Classifieds", line: "Book a call" },
+    { id: "front", no: "A1", section: "Front page" },
+    { id: "risk", no: "A2", section: "Risk" },
+    { id: "routing", no: "A3", section: "Routing" },
+    { id: "underwriting", no: "A4", section: "Underwriting" },
+    { id: "centre", no: "C", section: "Centre spread" },
+    { id: "markets", no: "B1", section: "Markets" },
+    { id: "numbers", no: "B2", section: "The numbers" },
+    { id: "letters", no: "B3", section: "Letters" },
+    { id: "questions", no: "B4", section: "Q&A" },
+    { id: "classifieds", no: "B5", section: "Classifieds" },
   ],
   turn: "Scroll to turn the page",
   centre: "The paper opens: the product, at full size.",
@@ -39,26 +39,21 @@ export const masthead = {
   motto: "For merchants banks call risky",
 };
 
-/** A1's lead story: headline, one line, the call (beside Exhibit A). */
+/** A1's lead story: the headline, one line, the call (beside Exhibit A). */
 export const hero = {
-  kicker: "High-risk payments",
   headline: "One account closes. The rest keep selling.",
-  deck: "Every merchant account you run, in one CRM. Orders route around the one that gets paused.",
+  deck: "Every merchant account in one CRM, routed around the one that gets paused.",
 };
 
-/** Exhibit A: the notice merchants dread, struck through, and the reroute that followed. A composite, not a real processor's letter. */
+/** Exhibit A: the notice merchants dread, struck through, and the reroute that followed. A composite, not a real processor's letter.
+    Kept to a subject and one line so the strike and the notification read at a glance. */
 export const notice = {
   label: "Exhibit A",
-  caption: "The notice, and the portal three minutes later. Composite example; names and times are illustrative.",
+  caption: "Composite example.",
   sender: "Merchant Risk",
-  address: "risk@acquirer.example",
   date: "Fri 10 Jul, 09:38",
   subject: "Your merchant account has been terminated",
-  body: [
-    "Following a review of MID ending 4471, we have ended our processing relationship, effective immediately.",
-    "Remaining funds will be held in reserve for 180 days.",
-  ],
-  signoff: "Risk Operations",
+  body: ["We have ended our processing relationship, effective immediately."],
   reroute: {
     from: "Vertlo",
     time: "09:41",

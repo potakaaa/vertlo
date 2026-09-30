@@ -11,7 +11,6 @@ import {
   Fig,
   FrontMast,
   Headline,
-  Inside,
   Notice,
   QA,
   RunningHead,
@@ -44,7 +43,6 @@ export function FrontSection() {
         <FrontMast nameplate={c.masthead.nameplate} edition={c.masthead.edition} motto={c.masthead.motto} />
         <div className="pr-front">
           <div className="pr-front-story">
-            <p className="pr-kicker">{c.hero.kicker}</p>
             <h1 className="pr-h1">
               {c.hero.headline.split(/(?<=\.)\s+/).map((line) => (
                 <span key={line} className="pr-h1-line">
@@ -57,7 +55,6 @@ export function FrontSection() {
           </div>
           <Notice {...c.notice} />
         </div>
-        <Inside pages={c.edition.pages.slice(1)} />
       </Page>
 
       <Page {...folio("risk")} scene="briefs" turn={c.edition.turn}>

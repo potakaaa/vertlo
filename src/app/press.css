@@ -59,7 +59,7 @@ main { display: block; padding-top: var(--head); }
 .pr-btn:focus-visible { outline: 2px solid var(--forest); outline-offset: 3px; }
 .pr-btn--sm { padding: 9px 14px; font-size: 13.5px; }
 .pr-btn--lg { padding: 17px 28px; font-size: 16px; }
-:where(.pr-run, .pr-inside, .pr-foot) a:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
+:where(.pr-run, .pr-foot) a:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
 
 /* ── running head: the paper's name, the open page, every page by number, the call ── */
 .pr-run { position: fixed; left: 0; right: 0; top: 0; z-index: 60; background: var(--mist); border-bottom: 1px solid var(--forest); }
@@ -126,44 +126,33 @@ main { display: block; padding-top: var(--head); }
 }
 
 /* ── A1: the front page ───────────────────────────── */
-.pr-mast { flex: none; padding-top: 14px; }
-.pr-mast-ears {
-  display: flex; justify-content: space-between; align-items: center; gap: 24px; padding-bottom: 10px; border-bottom: 1px solid var(--forest);
-  font: 600 11.5px/1.3 var(--font-sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink);
+.pr-mast {
+  flex: none; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 24px;
+  padding: clamp(14px, 2.4vh, 24px) 0 clamp(10px, 1.8vh, 18px); border-bottom: 4px double var(--forest);
 }
-.pr-mast-dot { color: var(--forest); }
-.pr-nameplate {
-  margin: 0; padding: clamp(6px, 1.2vh, 14px) 0 clamp(8px, 1.4vh, 16px); border-bottom: 4px double var(--forest); text-align: center;
-  font: 700 clamp(56px, min(9vw, 13.5vh), 132px)/.86 var(--font-serif); letter-spacing: -.04em; color: var(--ink);
-}
-.pr-page--front .pr-page-body { padding-block: clamp(14px, 2.6vh, 32px); }
-.pr-front { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: clamp(40px, 5.5vw, 96px); align-items: center; padding-top: clamp(4px, 1vh, 12px); }
-.pr-front .pr-h1 { font-size: clamp(40px, min(5.6vw, 8.8vh), 96px); }
-.pr-front .pr-deck { max-width: 32ch; margin: clamp(12px, 2vh, 24px) 0 clamp(18px, 3.2vh, 32px); font-size: clamp(19px, min(1.7vw, 2.9vh), 26px); line-height: 1.3; color: var(--ink); }
-/* the front page's index of what's inside, closing the page */
-.pr-inside { flex: none; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 20px; padding: 10px 0 12px; border-top: 1px solid var(--forest); }
-.pr-inside .pr-label { margin: 0; }
-.pr-inside ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); }
-.pr-inside a { display: block; padding: 6px 10px; border-left: 1px solid var(--rule-soft); color: var(--ink); text-decoration: none; font: 500 13px/1.25 var(--font-sans); }
-.pr-inside a:hover span { text-decoration: underline; text-underline-offset: 3px; }
-.pr-inside b { display: block; margin-bottom: 3px; font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--forest); }
-
+.pr-ear { margin: 0; font: 600 11px/1.55 var(--font-sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+.pr-ear--r { text-align: right; }
+.pr-nameplate { margin: 0; font: 700 clamp(56px, min(8vw, 12.5vh), 124px)/.86 var(--font-serif); letter-spacing: -.04em; color: var(--ink); }
+/* the masthead sits at the top of the page; the story centres in the space under it */
+.pr-page--front .pr-page-body { justify-content: flex-start; padding-block: 0 clamp(12px, 2.4vh, 28px); }
+.pr-page--front .pr-front { flex: 1; min-height: 0; padding-top: clamp(20px, 4vh, 48px); }
+.pr-front { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: clamp(48px, 7vw, 120px); align-items: center; }
+.pr-front .pr-h1 { font-size: clamp(40px, min(5.8vw, 9.2vh), 100px); }
+.pr-front .pr-notice { justify-self: end; width: min(100%, 500px); }
+.pr-front .pr-deck { max-width: 28ch; margin: clamp(12px, 2vh, 24px) 0 clamp(18px, 3.2vh, 32px); font-size: clamp(19px, min(1.7vw, 2.9vh), 26px); line-height: 1.3; color: var(--ink); }
 /* Exhibit A: an email laid on the page, struck through; the portal's notification lands on it */
 .pr-notice { margin: 0; }
-.pr-exhibit { position: relative; padding-bottom: clamp(44px, 6vh, 64px); }
+.pr-exhibit { position: relative; padding-bottom: clamp(64px, 9.5vh, 92px); } /* the notification overlaps only the email's foot */
 .pr-mail {
   position: relative; padding: clamp(16px, 2.6vh, 28px) clamp(20px, 2.2vw, 32px) clamp(12px, 1.8vh, 20px); rotate: -1deg;
   background: #fbfcfa; border-radius: 3px; font-family: var(--font-sans); color: var(--ink); box-shadow: var(--shadow-sheet);
 }
 .pr-mail-top { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; column-gap: 12px; padding-bottom: clamp(10px, 1.6vh, 16px); border-bottom: 1px solid oklch(0 0 0 / .08); }
 .pr-mail-av { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: #dfe5e0; font: 700 15px/1 var(--font-sans); color: var(--ink-2); }
-.pr-mail-from { min-width: 0; font-size: 13px; line-height: 1.35; color: var(--ink-3); }
-.pr-mail-from b { display: block; font-size: 14.5px; color: var(--ink); }
-.pr-mail-from > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pr-mail-from { min-width: 0; font-size: 14.5px; font-weight: 700; color: var(--ink); }
 .pr-mail-top time { align-self: start; padding-top: 2px; font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pr-mail-subject { margin: clamp(12px, 2vh, 20px) 0 clamp(8px, 1.4vh, 14px); font: 700 clamp(18px, min(1.7vw, 3vh), 26px)/1.2 var(--font-sans); letter-spacing: -.018em; text-wrap: balance; }
 .pr-mail-body p { margin: 0 0 .6em; font-size: clamp(14px, 2.1vh, 15.5px); line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
-.pr-mail-body p:last-child { margin: 1em 0 0; color: var(--ink-3); }
 /* the strike: a red rule inked across each line in turn (one background, sliced across the line boxes) */
 .pr-strike {
   --sw: 2.5px;
@@ -394,13 +383,12 @@ main { display: block; padding-top: var(--head); }
   .pr-run-list a { display: flex; gap: 12px; align-items: baseline; padding: 13px 0; border-bottom: 1px solid var(--rule-soft); font: 600 15px/1 var(--font-sans); color: var(--ink); text-decoration: none; }
   .pr-run-list b { min-width: 24px; font-size: 12px; font-weight: 800; color: var(--forest); }
   .pr-run-list a[aria-current] span { text-decoration: underline; text-underline-offset: 4px; }
-  .pr-inside ol { grid-template-columns: repeat(5, minmax(0, 1fr)); row-gap: 6px; }
 }
 @media (max-width: 960px) {
   .pr-front, .pr-split, .pr-numbers-row { grid-template-columns: minmax(0, 1fr); row-gap: 36px; }
   .pr-numbers > .pr-hl { flex-direction: column; align-items: flex-start; gap: 0; }
   .pr-numbers > .pr-hl .pr-deck { margin-top: 12px; text-align: left; }
-  .pr-front .pr-notice { max-width: 600px; }
+  .pr-front .pr-notice { max-width: 560px; }
   .pr-front .pr-h1 { font-size: clamp(40px, 8.6vw, 72px); }
   .pr-h2 { font-size: clamp(30px, 5vw, 44px); }
   .pr-deck { font-size: clamp(18px, 2.4vw, 21px); }
@@ -423,12 +411,10 @@ main { display: block; padding-top: var(--head); }
   :root { --head: 56px; }
   .pr-run-folio { display: none; }
   .pr-run-list[data-open] { grid-template-columns: minmax(0, 1fr); }
-  .pr-mast-ears { flex-direction: column; gap: 3px; text-align: center; font-size: 10.5px; letter-spacing: .1em; }
-  .pr-nameplate { font-size: clamp(60px, 21vw, 96px); }
+  .pr-mast { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 10px; }
+  .pr-nameplate { grid-column: 1 / -1; order: -1; text-align: center; font-size: clamp(60px, 21vw, 96px); }
+  .pr-ear { font-size: 10px; letter-spacing: .08em; }
   .pr-front .pr-btn { width: 100%; }
-  .pr-inside { grid-template-columns: minmax(0, 1fr); gap: 8px; }
-  .pr-inside ol { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .pr-inside a { padding: 6px 8px; font-size: 12.5px; }
   .pr-slip { right: 8px; width: 90%; }
   .pr-mail { rotate: -.6deg; }
   .pr-folio-r { display: none; }
