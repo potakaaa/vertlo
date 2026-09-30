@@ -1,91 +1,92 @@
 /*
- * Mist: the site's current look, layered over the design system (vertlo.css) and the page layout
- * (landing.css) so those stay regenerable. A misty off-white ground, forest-green actions, headings
- * that pair the sans with an italic serif, small badges over every section, and generated photos
- * (public/images/bg) under a dot screen. The stealth side stays: two black bands, the dark portal,
- * the dot-matrix art. The bright green is kept as a signal colour (live dots, packets, dark bands).
+ * Mist: the site's look, layered over the design system (vertlo.css) and the page layout (landing.css)
+ * so those stay regenerable. A misty off-white ground, forest-green actions, one sans for every heading
+ * with accent words in moss, flat surfaces with hairlines. No photos, no glass, no labels over headings:
+ * the texture is the routing grid (hero, closing call), the dot-matrix and pixel art, and mono running
+ * labels inside the scenes. The stealth side stays: two black bands, the dark portal. The bright green
+ * is a signal colour only (live dots, packets, the black bands).
  */
 :root {
   --mist: #eef1ee;
   --mist-2: #e3e8e4;
   --forest: #1f3b2b;
   --forest-hover: #2a4c38;
-  --font-serif: var(--font-instrument-serif), "Instrument Serif", Georgia, serif;
+  --accent-ink: #2f6b4a;   /* heading accents and link hovers on the mist: 5.5:1, clearly not ink */
+  --ink-faint: #63706a;    /* was #8a968f (2.7:1 on mist); now 4.5:1 on mist, 5.2:1 on white */
+  --red-ink: #c2383d;      /* red as small text on white (5.3:1); --red stays for dots, lines and fills */
   --lp-h1: clamp(40px, 5.3vw, 78px);
   --lp-h2: clamp(32px, 3.5vw, 52px);
-  /* the dot screen over photos: the stealth texture */
-  --dots-dark: radial-gradient(circle, rgba(11,20,16,.2) 1px, transparent 1.4px);
-  --dots-light: radial-gradient(circle, rgba(255,255,255,.34) 1px, transparent 1.4px);
 }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 body { margin: 0; background: var(--mist); color: var(--ink); }
 
-/* ── type: sans + italic serif ─────────────────────── */
-.lp-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; font-size: 1.08em; line-height: 1; }
-/* the rotating word keeps its roll, set in the serif; room for the italic overhang */
-.lp-serif .vt-rot { color: inherit; height: 1.14em; line-height: 1.14em; vertical-align: baseline; padding-right: .08em; margin-right: -.08em; }
-.lp-serif .vt-rot > span { display: block; line-height: inherit; white-space: nowrap; }
-.lp-serif .vt-rot > span[data-s="out"] { transform: translateY(-140%); }
-.lp-serif .vt-rot > span[data-s="next"] { transform: translateY(140%); }
+/* ── browser surfaces ──────────────────────────────── */
+::selection { background: #cfe3d6; color: var(--ink); }
+.vt-bleed ::selection, .vtp ::selection { background: rgba(124,240,168,.3); color: #fff; }
+html { scrollbar-color: #a3aea7 var(--mist); }
+
+/* ── type: one sans, accents in colour ─────────────── */
 .lp-h1, .lp-h2, .vt-h2, .vt-title-xl, .vt-hero-t, .lp-flow-step h3 { font-weight: 500; text-transform: none; }
 .lp-h1 { font-size: var(--lp-h1); line-height: 1.04; letter-spacing: -.04em; }
 .lp-h2, .vt-h2 { font-size: var(--lp-h2); line-height: 1.06; letter-spacing: -.035em; text-wrap: balance; }
-.vt-feature .vt-title-xl { font-size: var(--lp-h2); line-height: 1.06; letter-spacing: -.035em; }
+.vt-feature .vt-title-xl { font-size: var(--lp-h2); line-height: 1.06; letter-spacing: -.035em; text-wrap: balance; }
 .lp-flow-step h3 { letter-spacing: -.025em; }
-/* card titles: medium, like the headings */
 .vt-fg-title, .vt-ic-title, .vt-pc-title { font-weight: 500; letter-spacing: -.025em; }
-.lp-accent { color: var(--forest); }
-.vt-bleed .lp-serif { color: #a8e6bf; }
-.lp-hero-sub { color: var(--ink-muted); }
+.lp-em { font-style: normal; color: var(--accent-ink); }
+.lp-accent { color: var(--accent-ink); }
+.vt-bleed .lp-em { color: #a8e6bf; }
+/* the rotating word keeps the design system's roll; it takes the accent colour, not the roll's own green */
+.lp-rot .vt-rot { color: inherit; }
+.vt-fg-title, .vt-ic-title, .vt-faq-q > span { text-wrap: balance; }
+.lp-blurb, .lp-lede, .lp-note, .lp-hero-sub, .lp-ms-metric, .vt-fg-body, .vt-ic-body, .vt-fp-lede, .vt-fp-meta, .vt-faq-a p, .vt-note-msg { text-wrap: pretty; }
+.lp-blurb, .lp-lede, .lp-hero-sub { color: var(--ink-muted); }
+.vt-bleed .lp-blurb, .vt-bleed .lp-lede { color: var(--on-stealth-muted); }
+/* placeholder notes and small captions: said in plain sentence case, not tracked caps */
+.lp-note { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-faint); }
+.vt-fg-ill { font-size: 12px; letter-spacing: 0; text-transform: none; }
 
-/* ── badge: the small label over every heading ─────── */
-.lp-badge, .vt-feature .vt-pill {
-  display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px 0 10px; box-sizing: border-box;
-  border-radius: 8px; border: 1px solid rgba(11,20,16,.1); background: rgba(255,255,255,.72);
-  box-shadow: 0 1px 2px rgba(11,20,16,.04); font: 500 13px/1 var(--font-sans); letter-spacing: 0; text-transform: none;
-  color: var(--ink); white-space: nowrap; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+/* ── buttons: flat forest, no glow, no cursor light, no magnetic pull ── */
+/* Hover is a colour change only: the label roll and the arrow swap replayed on every hover, which is
+   motion on a high-frequency interaction. Press keeps the 0.96 scale (landing buttons are touch targets). */
+.vt-btn {
+  --tx: 0px !important; --ty: 0px !important; border-radius: 10px; text-transform: none; letter-spacing: -.005em; font-size: 15px;
+  transition: transform .15s ease-out, background-color .15s ease-out, box-shadow .15s ease-out, color .15s ease-out;
 }
-/* a dotted diamond: outline with a centre dot */
-.lp-badge { width: max-content; }
-.lp-badge i { position: relative; flex: none; width: 7px; height: 7px; border: 1.25px solid var(--forest); border-radius: 1.5px; transform: rotate(45deg); }
-.lp-badge i::after { content: ""; position: absolute; inset: 1.5px; border-radius: 50%; background: var(--green); }
-.vt-bleed .lp-badge, .vt-bleed .vt-feature .vt-pill { border-color: rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: var(--on-stealth); box-shadow: none; }
-.vt-bleed .lp-badge i { border-color: var(--green); }
-
-/* ── buttons: forest rectangles; the bright green stays on the black bands ── */
-.vt-btn { border-radius: 10px; text-transform: none; letter-spacing: -.005em; font-size: 15px; }
+.vt-btn:active { transform: scale(.96); }
+.vt-btn:hover .vt-roll, .vt-btn:hover .vt-btn-ico-a { transform: none; }
+.vt-btn .vt-btn-ico-b { display: none; }
 .vt-btn--sm { font-size: 14px; }
 .vt-nav-links a, .lp-mmenu a { text-transform: none; letter-spacing: 0; font-size: 15px; }
-.vt-btn--primary { color: #fff; background: var(--forest); border-color: transparent; box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 1px 2px rgba(11,20,16,.2); }
+.vt-btn--primary { color: #fff; background: var(--forest); border-color: transparent; box-shadow: 0 1px 2px rgba(11,20,16,.12); }
 /* buttons are links: keep the label colour past the global a:hover (globals.css) */
-.vt-btn--primary:hover { color: #fff; background: var(--forest-hover); box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 10px 28px -8px rgba(31,59,43,.55); }
-.vt-btn--primary .vt-btn-fill { background: radial-gradient(120px circle at var(--mx) var(--my), rgba(255,255,255,.16), transparent 70%); }
-.vt-btn--primary .vt-btn-chip { border-radius: 7px; background: rgba(255,255,255,.12); color: #fff; }
-.vt-btn--ghost { background: rgba(255,255,255,.66); border-color: rgba(11,20,16,.08); }
-.vt-btn--ghost .vt-btn-fill { background: var(--forest); }
-.vt-btn--ghost:hover { color: #fff; border-color: var(--forest); box-shadow: 0 8px 24px -8px rgba(31,59,43,.45); }
-.vt-btn--ghost:hover .vt-btn-ico { color: var(--mint); }
-.vt-bleed .vt-btn--primary { color: var(--ink); background: var(--green); }
-.vt-bleed .vt-btn--primary:hover { color: var(--ink); background: var(--green-hover); box-shadow: 0 10px 32px -8px rgba(22,196,90,.55); }
-.vt-bleed .vt-btn--primary .vt-btn-chip { background: rgba(11,20,16,.12); color: var(--ink); }
+.vt-btn--primary:hover { color: #fff; background: var(--forest-hover); }
+.vt-btn .vt-btn-fill { display: none; }
+/* optical centring: the arrow side is 2px tighter than the label side */
+.vt-btn--chip { padding: 0 22px 0 24px; gap: 10px; }
+.vt-btn--lg.vt-btn--chip { padding: 0 26px 0 28px; }
+.vt-btn--sm:has(.vt-btn-ico) { padding: 0 16px 0 18px; }
+.vt-btn .vt-btn-chip, .vt-btn--lg .vt-btn-chip { width: 16px; height: 16px; border-radius: 0; background: none; color: inherit; }
+.vt-btn--chip:hover .vt-btn-chip { transform: none; }
+/* ghost: its edge is depth, not structure, so it's a shadow ring rather than a border */
+.vt-btn--ghost { color: var(--ink); background: rgba(255,255,255,.7); border-color: transparent; box-shadow: 0 0 0 1px rgba(11,20,16,.1), 0 1px 2px rgba(11,20,16,.08); }
+.vt-btn--ghost:hover { color: var(--ink); background: #fff; border-color: transparent; box-shadow: 0 0 0 1px rgba(11,20,16,.18), 0 1px 3px rgba(11,20,16,.1); }
+.vt-btn--ghost:hover .vt-btn-ico { color: inherit; }
+/* text buttons ("Login", "All industries"): the visible label stays small, the hit area reaches 40px */
+.vt-btn--text::before { content: ""; position: absolute; inset: -5px -8px; }
+.vt-bleed .vt-btn--primary, .vt-bleed .vt-btn--primary:hover { color: var(--ink); background: var(--green); }
+.vt-bleed .vt-btn--primary:hover { background: var(--green-hover); }
 
-/* ── hero: misty hills, dot grid, the laptop ───────── */
-.lp-hero-band { --grid-line: rgba(11,20,16,.045); }
-.lp-hero-bg { position: absolute; inset: calc(var(--hdr) * -1) 0 0; z-index: -1; pointer-events: none; background: url("/images/bg/hero-mist.jpg") center bottom / cover no-repeat, var(--mist); }
-/* fog over the top so the copy reads; a dot screen over the hills */
-.lp-hero-bg::before { content: ""; position: absolute; inset: 0; background: linear-gradient(var(--mist) 0%, rgba(238,241,238,.7) 28%, rgba(238,241,238,0) 55%); }
-.lp-hero-bg::after {
-  content: ""; position: absolute; inset: 0; background: var(--dots-light) 0 0 / 6px 6px;
-  -webkit-mask-image: linear-gradient(transparent 45%, #000 85%); mask-image: linear-gradient(transparent 45%, #000 85%);
-}
+/* ── hero: the routing grid, the laptop ────────────── */
+.lp-hero-band { --grid-line: rgba(11,20,16,.05); }
 /* the routing grid, dotted: a dot on every intersection over faint lines */
 .lp-grid-bg {
-  background-image: radial-gradient(circle, rgba(11,20,16,.22) 1.1px, transparent 1.5px), linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(11,20,16,.2) 1.1px, transparent 1.5px), linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
   background-size: var(--cell) var(--cell);
   background-position: calc(50% + var(--cell) / 2 + .5px) .5px, calc(50% + var(--cell) / 2) 0, calc(50% + var(--cell) / 2) 0;
   -webkit-mask-image: radial-gradient(ellipse 72% 60% at 50% 30%, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 72% 60% at 50% 30%, #000 40%, transparent 100%);
 }
-.lp-node { background: rgba(255,255,255,.8); }
+.lp-node { background: #fff; }
 .lp-hero { padding-block: clamp(40px, 4.4vw, 64px) 0; }
 .lp-hero-sub { max-width: 580px; }
 .lp-stage { position: relative; z-index: 1; margin-top: clamp(36px, 4vw, 56px); }
@@ -94,51 +95,68 @@ body { margin: 0; background: var(--mist); color: var(--ink); }
 .lp-tour { position: relative; max-width: 1160px; margin-inline: auto; width: 100%; }
 .lp-tour .vt-stage { background: transparent; overflow: visible; border-radius: 0; padding: 0 7.5% clamp(40px, 5vw, 72px); }
 .lp-tour[data-tour] .vt-stage-tilt { transform: perspective(2600px) rotateX(var(--tour-rx, 14deg)) !important; transform-origin: 50% 100%; }
-.lp-laptop-lid { position: relative; padding: 1.3% 1.3% 1.6%; border-radius: clamp(14px, 1.8vw, 24px) clamp(14px, 1.8vw, 24px) 6px 6px; background: #0b0d0c; box-shadow: 0 0 0 1.5px #4a504c, 0 0 0 3px #1a1d1b, 0 60px 90px -40px rgba(20,40,28,.55); }
+.lp-laptop-lid { position: relative; padding: 1.3% 1.3% 1.6%; border-radius: clamp(14px, 1.8vw, 24px) clamp(14px, 1.8vw, 24px) 6px 6px; background: #0b0d0c; box-shadow: 0 0 0 1.5px #4a504c, 0 0 0 3px #1a1d1b, 0 60px 90px -40px rgba(20,40,28,.5); }
 .lp-laptop-lid .vt-stage-screen { border-radius: clamp(6px, .8vw, 10px); box-shadow: none; }
 .lp-laptop-cam { position: absolute; z-index: 2; left: 50%; top: 0; width: 9%; height: clamp(8px, 1.3%, 16px); min-height: 10px; transform: translateX(-50%); border-radius: 0 0 8px 8px; background: #0b0d0c; }
 .lp-laptop-cam::after { content: ""; position: absolute; left: 50%; top: 35%; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: #1c2a22; box-shadow: inset 0 0 0 1px #2e3a33; }
-.lp-laptop-base { position: relative; z-index: 1; margin: 0 -7%; height: clamp(10px, 1.35vw, 19px); border-radius: 2px 2px 50% 50% / 2px 2px 100% 100%; background: linear-gradient(#f2f4f3 0%, #c9cdcb 38%, #9aa09d 100%); box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 28px 36px -16px rgba(11,20,16,.45); }
+.lp-laptop-base { position: relative; z-index: 1; margin: 0 -7%; height: clamp(10px, 1.35vw, 19px); border-radius: 2px 2px 50% 50% / 2px 2px 100% 100%; background: linear-gradient(#f2f4f3 0%, #c9cdcb 38%, #9aa09d 100%); box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 28px 36px -16px rgba(11,20,16,.4); }
 .lp-laptop-base i { display: block; width: 15%; height: 45%; margin: 0 auto; border-radius: 0 0 10px 10px; background: linear-gradient(#a3a8a5, #c4c8c6); }
 /* desktop: the tour caption sits in the portal's top bar; phones keep it under the device (landing.css) */
 @media (min-width: 721px) { .lp-tour[data-tour] .vt-stage-caps { top: 4%; } }
-/* notifications float over the lower right of the screen, like cards laid on the hero */
-.lp-tour .vt-stage-pops { left: auto; right: 1%; bottom: 16%; width: min(400px, 36%); transform: none; }
+/* notifications sit on the lower right of the screen, inside the lid */
+.lp-tour .vt-stage-pops { left: auto; right: 10%; bottom: 16%; width: min(400px, 34%); transform: none; }
 .lp-tour .vt-stage-label { display: none; }
+/* notifications arrive and leave on opacity and a short slide; no blur */
+@keyframes vt-pop { 0% { opacity: 0; transform: translateY(16px); } 5%, 29% { opacity: 1; transform: none; } 35%, 100% { opacity: 0; transform: translateY(-8px); } }
 
-/* ── trusted-by row ────────────────────────────────── */
-.lp-trust { padding-block: clamp(64px, 7vw, 104px) clamp(24px, 3vw, 40px); display: flex; flex-direction: column; align-items: center; gap: clamp(24px, 2.5vw, 36px); }
-.lp-trust-t { margin: 0; font: 500 clamp(24px, 2.2vw, 32px)/1.1 var(--font-display); letter-spacing: -.025em; text-align: center; }
+/* ── trusted-by row: placeholder slots until real logos ── */
+.lp-trust { padding-block: clamp(64px, 7vw, 104px) clamp(24px, 3vw, 40px); display: flex; flex-direction: column; align-items: center; gap: clamp(20px, 2.2vw, 32px); }
+.lp-trust-t { margin: 0; font: 500 clamp(24px, 2.2vw, 32px)/1.1 var(--font-display); letter-spacing: -.025em; text-align: center; text-wrap: balance; }
 .lp-logos { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
-.lp-logo { display: flex; align-items: center; justify-content: center; gap: 10px; height: 72px; border-radius: 12px; background: rgba(255,255,255,.62); border: 1px solid rgba(11,20,16,.06); font: 600 16px/1 var(--font-display); letter-spacing: -.01em; color: var(--ink-muted); }
-.lp-logo .vt-diamond, .lp-logo > span { color: var(--forest); }
+.lp-logo { display: flex; align-items: center; justify-content: center; height: 72px; border-radius: 12px; border: 1px dashed rgba(11,20,16,.2); font: 500 14px/1 var(--font-sans); color: var(--ink-faint); }
 
 /* ── sections on mist ──────────────────────────────── */
-.lp-head { gap: 18px; }
-.lp-blurb, .lp-lede { color: var(--ink-muted); }
+.lp-head--split > .lp-h2 { max-width: 860px; }
 .lp-flow { border-top-color: rgba(11,20,16,.14); }
 .lp-flow-num::before { background: #fff; }
+.vt-faq-q { transition: color .15s ease-out; }
+.vt-faq-q:hover { color: var(--accent-ink); }
+/* icons beside semibold text carry a 2px stroke, like the button arrows */
+.vt-faq-q svg, .vt-fp-icon svg { stroke-width: 2; }
+/* these cards aren't links: no hover lift that promises a click */
+.vt-fg-cell:hover .vt-fg-card:not(.vt-fg-back), .vt-fp-tile:hover { transform: none; }
+/* feature-grid cards: the edge is elevation, so it lives in the shadow as a ring, not a border */
+.vt-fg-card { border-color: transparent; box-shadow: 0 0 0 1px rgba(11,20,16,.06), var(--shadow-card); }
+.vt-fg-back { box-shadow: 0 0 0 1px rgba(11,20,16,.05), 0 1px 2px rgba(11,20,16,.04), 0 8px 20px rgba(11,20,16,.06); }
 
-/* ── For brands: the black band laid over dark velvet ── */
-.lp-velvet { position: relative; isolation: isolate; background: linear-gradient(180deg, rgba(11,13,12,.94) 0%, rgba(11,13,12,.72) 45%, rgba(11,13,12,.9) 100%), url("/images/bg/velvet-ridges.jpg") center 70% / cover no-repeat, var(--stealth); }
-.lp-velvet::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(circle, rgba(255,255,255,.07) 1px, transparent 1.4px) 0 0 / 6px 6px; }
-.lp-velvet .vt-feature { background: transparent; }
+/* ── For brands: the black band with a faint dot screen ── */
+.lp-brands { position: relative; isolation: isolate; }
+.lp-brands::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(circle, rgba(255,255,255,.06) 1px, transparent 1.4px) 0 0 / 6px 6px; -webkit-mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent); mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent); }
+.lp-brands .vt-feature { background: transparent; }
+/* the two product cards stack with a gap instead of overlapping, so neither hides the other's last row */
+.lp-brands .vt-fp-visual { display: flex; flex-direction: column; justify-content: center; gap: 16px; min-height: 0; overflow: visible; }
+.lp-brands .vt-fp-visual .vt-fp-slice { position: relative; left: auto; right: auto; top: auto; min-width: 0; margin: 0 12% 0 0; }
+.lp-brands .vt-fp-visual .vt-fp-slice--2 { margin: 0 0 0 12%; }
+/* red as small text on the white feature-grid cards */
+.vt-fg-red { color: var(--red-ink); }
 
-/* ── closing call: white card, hills under a dot screen ── */
-.lp-cta { position: relative; isolation: isolate; overflow: hidden; margin: 0 var(--lp-x) var(--lp-y); max-width: calc(1440px - 2 * var(--lp-x)); border-radius: clamp(20px, 2vw, 28px); background: linear-gradient(#fff 0%, #f6f8f6 55%, #eef2ee 100%); box-shadow: 0 0 0 1px rgba(11,20,16,.05); }
+/* ── closing call: a white card, the routing grid along its bottom ── */
+.lp-cta { --cell: 56px; --grid-line: rgba(11,20,16,.055); position: relative; isolation: isolate; overflow: hidden; margin: 0 var(--lp-x) var(--lp-y); max-width: calc(1440px - 2 * var(--lp-x)); border-radius: clamp(20px, 2vw, 28px); background: #fff; box-shadow: 0 0 0 1px rgba(11,20,16,.06), 0 1px 2px rgba(11,20,16,.04); }
 @media (min-width: 1441px) { .lp-cta { margin-inline: auto; } }
 .lp-cta-in { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding-block: clamp(72px, 8vw, 120px) clamp(200px, 24vw, 340px); }
 .lp-cta-in .lp-blurb { max-width: 520px; margin-bottom: 8px; }
 .lp-cta-points { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 28px; font-size: 14px; color: var(--ink-muted); }
 .lp-cta-points li { display: inline-flex; align-items: center; gap: 10px; }
-.lp-cta-hills { position: absolute; left: 0; right: 0; bottom: 0; height: clamp(240px, 30vw, 440px); background: url("/images/bg/hills-panorama.jpg") center bottom / cover no-repeat; -webkit-mask-image: linear-gradient(transparent, #000 40%); mask-image: linear-gradient(transparent, #000 40%); }
-.lp-cta-hills::after { content: ""; position: absolute; inset: 0; background: var(--dots-light) 0 0 / 6px 6px; -webkit-mask-image: linear-gradient(transparent 20%, #000 80%); mask-image: linear-gradient(transparent 20%, #000 80%); }
+.lp-cta-points .vt-diamond, .lp-cta-points svg { color: var(--accent-ink); }
+.lp-grid-bg--cta {
+  inset: auto 0 0; height: clamp(240px, 28vw, 400px); animation: none;
+  -webkit-mask-image: radial-gradient(ellipse 72% 100% at 50% 100%, #000 30%, transparent 100%);
+  mask-image: radial-gradient(ellipse 72% 100% at 50% 100%, #000 30%, transparent 100%);
+}
 
 /* ── phones ────────────────────────────────────────── */
 @media (max-width: 720px) {
   .lp-h1 { font-size: clamp(38px, 10.4vw, 46px); }
-  /* the photo at a width it holds up at, sat on the bottom edge; the fog colour fills above it */
-  .lp-hero-bg { background-size: 240% auto; }
   .lp-tour .vt-stage { padding: 0 0 56px; }
   /* the caption sits on the mist under the device here, so ink instead of the on-screen white */
   .lp-tour[data-tour] .vt-stage-cap { color: var(--ink); }
@@ -146,7 +164,9 @@ body { margin: 0; background: var(--mist); color: var(--ink); }
   .lp-laptop-lid { padding: 6px; border-radius: 18px; }
   .lp-laptop-cam, .lp-laptop-base { display: none; }
   .lp-logos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  .lp-logo { height: 56px; font-size: 13px; gap: 6px; }
-  .lp-cta { margin-inline: 12px; }
+  .lp-logo { height: 56px; font-size: 13px; }
+  .lp-trust .lp-note { padding-inline: var(--lp-x); text-align: center; }
+  .lp-cta { --cell: 40px; margin-inline: 12px; }
   .lp-cta-in { padding-inline: 20px; }
+  .vt-footer li a { padding-block: 11px; }
 }

@@ -41,7 +41,7 @@ src/
       HowFlow.tsx           How it works: steps + sticky scene scrubbed by scroll
       how-flow/scene.ts     the pixel scene as pure data + canvas painter
       FeatureGridMotion.tsx What you get: per-card scroll-in stories on the FeatureGrid
-      FlipWords.tsx, MerchantStories.tsx   hero word flip, reviews
+      MerchantStories.tsx   reviews: one quote at a time beside a scrub-able chart
     site/                  SiteHeader (sticky nav + phone menu), SmoothScroll (Lenis + GSAP ticker)
   lib/motion.ts            GSAP/ScrollTrigger setup, breakpoints (MQ), reduced-motion helper
     vertlo/                the design-system component library (client components)
@@ -57,7 +57,7 @@ src/
 
 `src/components/vertlo/lib.tsx` is generated from the design system's component bundle, so the site matches the approved canvas exactly. That covers the portal, the ruled feature grid, the dot-matrix and pixel art, the provider flow and the rest. `vertlo.css` and `tokens.css` are copied from it too.
 The internals use `h()` (= `React.createElement`) and carry `// @ts-nocheck`; the **public API is fully typed** (`types.ts`, applied in `index.ts`).
-When the design system changes, regenerate these three files rather than hand-editing them. The site-only additions are real hrefs on Nav, FAQ, CTABand, FeaturePanel and Footer, `clipHMobile` on PortalStage, and **status as content, not badges**: CrmSlice and FeatureGrid cards say their status in a subtitle ("3 of 4 live · US-01 paused") or a plain count instead of dot-pill tags, and FeaturePanel takes `chip={false}`. They are marked `site:` or live in `types.ts`; carry them into the bundle when it is regenerated.
+When the design system changes, regenerate these three files rather than hand-editing them. The site-only additions are real hrefs on Nav, FAQ, CTABand, FeaturePanel and Footer, `clipHMobile` on PortalStage, and **status as content, not badges**: CrmSlice and FeatureGrid cards say their status in a subtitle ("3 of 4 live · US-01 paused") or a plain count instead of dot-pill tags, and FeaturePanel takes `chip={false}`. Footer column titles are `h3` (not `h4`) so headings don't skip a level. They are marked `site:` or live in `types.ts`; carry them into the bundle when it is regenerated.
 
 ### Site layer on top of the bundle
 
@@ -92,7 +92,9 @@ Page structure, top to bottom:
 Rules to keep:
 - Use `vt-*` classes and the components for anything in the design system. Tailwind runs **without preflight** on purpose, because the component CSS was designed against browser defaults. Use utilities for new page-level layout. Tokens are exposed as `bg-ink`, `text-green-deep`, `rounded-panel`, `md:` (= 721px+), etc.
 - The system is flat: no gradients, glows or blur. Only white cards get a (soft) shadow. A black section is the backdrop itself (`vt-bleed`), so never nest a black card inside it to hold more cards.
-- No badge pills or eyebrow pills with status dots: say status in the content (a subtitle, a plain muted count, or the row value itself).
+- No badge pills or eyebrow pills with status dots: say status in the content (a subtitle, a plain muted count, or the row value itself). No labels over section headings either; the heading carries the section.
+- One sans for every heading. `*words*` in content take the accent colour (`--accent-ink`), not a second font. No photos, glass or blur-in text: the page's texture is the routing grid (hero and closing call), the dot-matrix and pixel art, and mono running labels inside the scenes. The look lives in `app/mist.css`.
+- Placeholders (logo slots, merchant quotes) say so on the page until real ones replace them.
 - Use one green. Red marks paused, declined or over-limit states; amber marks "watch". Don't publish prices; the framing is reliability and approval rates.
 
 ## Responsive behaviour

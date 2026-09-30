@@ -8,30 +8,30 @@ import {
   ProviderFlow,
   RotatingWord,
 } from "@/components/vertlo";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import * as c from "@/content/landing";
-import { FlipWords } from "@/components/landing/FlipWords";
 import { HowFlow } from "@/components/landing/HowFlow";
 import { MerchantStories } from "@/components/landing/MerchantStories";
 import { FeatureGridMotion } from "@/components/landing/FeatureGridMotion";
 import { PortalTour } from "@/components/landing/PortalTour";
 import { rich } from "@/components/landing/Rich";
 
-/* One responsive page on a misty off-white ground. Headings pair the sans with an italic serif
-   (`*words*` in content, see Rich.tsx); every section opens with a small badge. Two full-bleed black
-   bands stay for the stealth side (`vt-bleed`: the section itself is the backdrop). Backgrounds are
-   generated photos (public/images/bg) under a dot screen.
+/* One responsive page on a misty off-white ground. Headings are one sans; `*words*` in content take the
+   accent colour (Rich.tsx). No labels over headings, no photos: the page's own texture is the routing grid
+   (hero and closing call), the dot-matrix and pixel art, and the mono running labels inside the scenes.
+   Two full-bleed black bands stay for the stealth side (`vt-bleed`: the section itself is the backdrop).
    Every section is a server component; the interactive bits live inside the design-system
-   components (client). Layout classes are in app/landing.css (lp-*). */
+   components (client). Layout classes are in app/landing.css (lp-*), the look in app/mist.css. */
 
-/* Hero backdrop: a hairline routing grid. Diamonds are merchant accounts sitting on grid intersections;
-   green packets run the lines into them and each one lights up on arrival. One account is paused (red)
-   and gets no traffic. Coordinates are grid cells from the centre line (col) and the top of the grid (row),
-   which starts behind the sticky header so the glass nav frosts it. Pure CSS, decorative. */
+/* Routing grid: a hairline grid where diamonds are merchant accounts sitting on intersections; green
+   packets run the lines into them and each one lights up on arrival. A paused account (red) gets no
+   traffic. Coordinates are grid cells from the centre line (col) and the top of the grid (row).
+   `on` picks the layout: "d" desktop, "m" phones. Pure CSS, decorative. */
 type GridNode = { col: number; row: number; state?: "paused" | "idle"; on?: "d" | "m" };
 type GridRoute = { axis: "x" | "y"; at: number; from: number; to: number; dur: number; delay: number; on?: "d" | "m" };
 
-const GRID_NODES: GridNode[] = [
+/* Hero: the grid starts behind the sticky header; one account is paused and the rest keep taking traffic. */
+const HERO_NODES: GridNode[] = [
   { col: -10, row: 4, on: "d" },
   { col: 9, row: 3, on: "d" },
   { col: -8, row: 10, on: "d" },
@@ -41,7 +41,7 @@ const GRID_NODES: GridNode[] = [
   { col: -6, row: 1, state: "idle", on: "d" },
 ];
 // A route that ends on a node feeds it; the node's flash shares the route's timing.
-const GRID_ROUTES: GridRoute[] = [
+const HERO_ROUTES: GridRoute[] = [
   { axis: "y", at: -10, from: 0, to: 4, dur: 7, delay: 0.6, on: "d" },
   { axis: "x", at: 3, from: 15, to: 9, dur: 8, delay: 2.2, on: "d" },
   { axis: "x", at: 10, from: -15, to: -8, dur: 7.5, delay: 4, on: "d" },
@@ -51,14 +51,33 @@ const GRID_ROUTES: GridRoute[] = [
   { axis: "x", at: 2, from: 7, to: -7, dur: 7, delay: 4.1, on: "m" },
 ];
 
+/* Closing call: the same grid along the bottom of the card, every account live. */
+const CTA_NODES: GridNode[] = [
+  { col: -9, row: 3, on: "d" },
+  { col: -4, row: 5, on: "d" },
+  { col: 5, row: 4, on: "d" },
+  { col: 10, row: 2, on: "d" },
+  { col: 1, row: 6, state: "idle", on: "d" },
+  { col: -3, row: 3, on: "m" },
+  { col: 3, row: 5, on: "m" },
+];
+const CTA_ROUTES: GridRoute[] = [
+  { axis: "y", at: -9, from: 0, to: 3, dur: 7, delay: 0.4, on: "d" },
+  { axis: "x", at: 5, from: -14, to: -4, dur: 8, delay: 2.6, on: "d" },
+  { axis: "x", at: 4, from: 14, to: 5, dur: 7.5, delay: 1.2, on: "d" },
+  { axis: "y", at: 10, from: 8, to: 2, dur: 6.5, delay: 3.8, on: "d" },
+  { axis: "x", at: 3, from: 7, to: -3, dur: 7, delay: 0.6, on: "m" },
+  { axis: "y", at: 3, from: 0, to: 5, dur: 6, delay: 3.2, on: "m" },
+];
+
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
-function HeroGrid() {
+function RoutingGrid({ nodes, routes, className }: { nodes: GridNode[]; routes: GridRoute[]; className?: string }) {
   const timing = (n: GridNode) =>
-    GRID_ROUTES.find((r) => r.on === n.on && r.to === (r.axis === "x" ? n.col : n.row) && r.at === (r.axis === "x" ? n.row : n.col));
+    routes.find((r) => r.on === n.on && r.to === (r.axis === "x" ? n.col : n.row) && r.at === (r.axis === "x" ? n.row : n.col));
   return (
-    <div className="lp-grid-bg" aria-hidden="true">
-      {GRID_ROUTES.map((r, i) => {
+    <div className={className ? `lp-grid-bg ${className}` : "lp-grid-bg"} aria-hidden="true">
+      {routes.map((r, i) => {
         const [lo, hi] = [Math.min(r.from, r.to), Math.max(r.from, r.to)];
         const style: Vars = {
           "--a": lo,
@@ -78,7 +97,7 @@ function HeroGrid() {
           />
         );
       })}
-      {GRID_NODES.map((n, i) => {
+      {nodes.map((n, i) => {
         const t = timing(n);
         const style: Vars = { "--c": n.col, "--r": n.row };
         if (t) Object.assign(style, { "--dur": `${t.dur}s`, "--delay": `${t.delay}s` });
@@ -88,34 +107,16 @@ function HeroGrid() {
   );
 }
 
-/** The small section badge: a dotted diamond and a label. */
-export function Badge({ children, className }: { children: ReactNode; className?: string }) {
-  return (
-    <span className={className ? `lp-badge ${className}` : "lp-badge"}>
-      <i aria-hidden="true" />
-      {children}
-    </span>
-  );
-}
-
-/* Hero and product in one pinned section: misty hills behind, the portal on a laptop. Scrolling
+/* Hero and product in one pinned section: the routing grid behind, the portal on a laptop. Scrolling
    zooms into the laptop until its screen fills the view, then runs the portal tour (PortalTour). */
 export function Hero() {
   return (
     <section className="lp-hero-band" id="top">
-      <div className="lp-hero-bg" aria-hidden="true" />
-      <HeroGrid />
+      <RoutingGrid nodes={HERO_NODES} routes={HERO_ROUTES} />
       <div className="lp-wrap lp-hero">
         <h1 className="lp-h1">
-          {c.hero.lead}
-          <br className="lp-br" />{" "}
-          {c.hero.accent}{" "}
-          <span className="lp-nowrap">
-            <em className="lp-serif lp-accent">
-              <FlipWords words={c.hero.flip} />
-            </em>
-            .
-          </span>
+          <span className="lp-h1-line">{c.hero.lead}</span>{" "}
+          <span className="lp-h1-line lp-accent">{c.hero.accent}</span>
         </h1>
         <p className="lp-hero-sub">{c.hero.subhead}</p>
         <div className="lp-hero-cta">
@@ -144,11 +145,11 @@ export function Trust() {
       <ul className="lp-logos">
         {c.logos.map((l) => (
           <li key={l} className="lp-logo">
-            <Diamond size={9} outline />
             {l}
           </li>
         ))}
       </ul>
+      <p className="lp-note">{c.trust.note}</p>
     </section>
   );
 }
@@ -159,15 +160,14 @@ export function Problem() {
       <div className="lp-wrap lp-sec lp-sec--flush">
         <div className="lp-head lp-head--split">
           <div className="lp-head-main">
-            <Badge>{c.problem.eyebrow}</Badge>
             <h2 className="lp-h2">
               Keep selling when your account{" "}
-              <em className="lp-serif">
+              <em className="lp-em lp-rot">
                 <RotatingWord words={c.problem.rotating} />
               </em>
             </h2>
           </div>
-          <p className="lp-lede lp-on-dark-muted">{c.problem.blurb}</p>
+          <p className="lp-lede">{c.problem.blurb}</p>
         </div>
         <IndustryCards tone="dark" items={c.problem.items} />
       </div>
@@ -179,7 +179,6 @@ export function How() {
   return (
     <section className="lp-wrap lp-sec" id="how">
       <div className="lp-head lp-head--center">
-        <Badge>{c.how.eyebrow}</Badge>
         <h2 className="lp-h2">{rich(c.how.title)}</h2>
       </div>
       <HowFlow steps={c.how.steps} />
@@ -191,7 +190,6 @@ export function WhatYouGet() {
   return (
     <section className="lp-wrap lp-sec lp-wyg">
       <div className="lp-head lp-head--center">
-        <Badge>{c.whatYouGet.eyebrow}</Badge>
         <h2 className="lp-h2">{rich(c.whatYouGet.title)}</h2>
         <p className="lp-blurb">{c.whatYouGet.blurb}</p>
       </div>
@@ -202,7 +200,7 @@ export function WhatYouGet() {
 
 export function ForBrands() {
   return (
-    <section className="vt-bleed lp-bleed lp-velvet">
+    <section className="vt-bleed lp-bleed lp-brands">
       <div className="lp-wrap">
         <FeaturePanel {...c.forBrands} title={rich(c.forBrands.title)} />
       </div>
@@ -214,7 +212,6 @@ export function Providers() {
   return (
     <section className="lp-wrap lp-sec">
       <div className="lp-head lp-head--center">
-        <Badge>{c.providers.eyebrow}</Badge>
         <h2 className="lp-h2">{rich(c.providers.title)}</h2>
       </div>
       <div className="lp-pf-d">
@@ -231,10 +228,7 @@ export function Industries() {
   return (
     <section className="lp-wrap lp-sec lp-industries" id="industries">
       <div className="lp-head lp-head--split lp-head--end">
-        <div className="lp-head-main">
-          <Badge>{c.industries.eyebrow}</Badge>
-          <h2 className="lp-h2">{rich(c.industries.title)}</h2>
-        </div>
+        <h2 className="lp-h2">{rich(c.industries.title)}</h2>
         <div className="lp-hide-m">
           <Button variant="text" href="#book">
             All industries
@@ -251,8 +245,8 @@ export function Testimonials() {
     <section className="lp-band lp-band--dots" id="reviews">
       <div className="lp-wrap lp-sec">
         <div className="lp-head">
-          <Badge>{c.testimonials.eyebrow}</Badge>
           <h2 className="lp-h2">{rich(c.testimonials.title)}</h2>
+          <p className="lp-note">{c.testimonials.note}</p>
         </div>
         <MerchantStories items={c.testimonials.items} />
       </div>
@@ -268,12 +262,11 @@ export function FAQSection() {
   );
 }
 
-/* The closing call: centred on white, rolling hills under a dot screen along the bottom. */
+/* The closing call: a white card on the mist, the routing grid along its bottom with every account live. */
 export function FinalCTA() {
   return (
     <section className="lp-cta" id="book">
       <div className="lp-wrap lp-cta-in">
-        <Badge>{c.cta.eyebrow}</Badge>
         <h2 className="lp-h2">{rich(c.cta.title)}</h2>
         <p className="lp-blurb">{c.cta.blurb}</p>
         <Button size="lg" href="#book">
@@ -288,7 +281,7 @@ export function FinalCTA() {
           ))}
         </ul>
       </div>
-      <div className="lp-cta-hills" aria-hidden="true" />
+      <RoutingGrid nodes={CTA_NODES} routes={CTA_ROUTES} className="lp-grid-bg--cta" />
     </section>
   );
 }
@@ -296,7 +289,7 @@ export function FinalCTA() {
 export function SiteFooter() {
   return (
     <div className="lp-wrap lp-footer" id="company">
-      <Footer tagline={c.footer.tagline} columns={c.footer.columns} />
+      <Footer tagline={c.footer.tagline} columns={c.footer.columns} wordmark={false} />
     </div>
   );
 }

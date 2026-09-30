@@ -5,8 +5,8 @@ import { Button, Logo, Nav } from "@/components/vertlo";
 import { navLinks } from "@/content/landing";
 
 /**
- * Sticky liquid-glass header: the design-system Nav on desktop, a compact pill with a working menu on phones.
- * The glass switches to its dark tone while it floats over a black `vt-bleed` band.
+ * Sticky header: the design-system Nav on desktop, a compact pill with a working menu on phones. A flat
+ * pane with a hairline; it switches to its dark tone while it floats over a black `vt-bleed` band.
  */
 /** Below this scroll depth the header never hides. */
 const HIDE_AFTER = 160;
@@ -76,42 +76,6 @@ export function SiteHeader() {
     };
   }, []);
 
-  // Desktop links: a glass lens that glides to the hovered or focused link.
-  useEffect(() => {
-    const list = headerRef.current?.querySelector<HTMLElement>(".vt-nav-links");
-    if (!list) return;
-
-    const moveTo = (e: Event) => {
-      const li = (e.target as Element).closest?.("li");
-      if (!li || !list.contains(li)) return;
-      // Appearing from hidden: jump into place and only fade in, instead of sliding from the last spot.
-      const snap = list.dataset.lens !== "on";
-      if (snap) list.dataset.lensSnap = "";
-      list.style.setProperty("--lens-x", `${li.offsetLeft - 16}px`);
-      list.style.setProperty("--lens-w", `${li.offsetWidth + 32}px`);
-      if (snap) {
-        void list.offsetWidth;
-        delete list.dataset.lensSnap;
-      }
-      list.dataset.lens = "on";
-    };
-    const hide = () => delete list.dataset.lens;
-    const onFocusOut = (e: FocusEvent) => {
-      if (!list.contains(e.relatedTarget as Node | null)) hide();
-    };
-
-    list.addEventListener("pointerover", moveTo);
-    list.addEventListener("focusin", moveTo);
-    list.addEventListener("pointerleave", hide);
-    list.addEventListener("focusout", onFocusOut);
-    return () => {
-      list.removeEventListener("pointerover", moveTo);
-      list.removeEventListener("focusin", moveTo);
-      list.removeEventListener("pointerleave", hide);
-      list.removeEventListener("focusout", onFocusOut);
-    };
-  }, []);
-
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
@@ -154,7 +118,7 @@ export function SiteHeader() {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.6"
+                  strokeWidth="2"
                   strokeLinecap="round"
                   aria-hidden="true"
                 >
@@ -167,7 +131,7 @@ export function SiteHeader() {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.6"
+                  strokeWidth="2"
                   strokeLinecap="round"
                   aria-hidden="true"
                 >

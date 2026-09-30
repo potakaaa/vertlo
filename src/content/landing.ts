@@ -9,7 +9,7 @@ import type { PortalData } from "@/components/landing/portal/types";
 import type { FlowStep } from "@/components/landing/HowFlow";
 
 /**
- * Headings: `*words*` render in the italic serif (see components/landing/Rich.tsx).
+ * Headings: `*words*` take the accent colour, same font (see components/landing/Rich.tsx).
  * All landing-page copy lives here so it can be edited (or moved to a CMS) without touching layout.
  * Rules from the brand: no published prices, "Book a call" is the one CTA, placeholders are labelled.
  */
@@ -23,9 +23,7 @@ export const navLinks: LinkItem[] = [
 
 export const hero = {
   lead: "One account closes.",
-  accent: "The rest keep",
-  /** Flips after "keep"; the first word is the one screen readers and no-JS visitors get. */
-  flip: ["selling", "shipping", "scaling", "earning", "growing"],
+  accent: "The rest keep selling.",
   subhead:
     "Every payment provider and merchant account in one CRM, routing orders around the one that stops.",
 };
@@ -82,16 +80,18 @@ export const portal: PortalData = {
   ],
 };
 
-export const trust = { heading: "Trusted by *high-risk brands*" };
-export const logos = ["LOGO 01", "LOGO 02", "LOGO 03", "LOGO 04", "LOGO 05", "LOGO 06"];
+// Placeholder: the slots render as empty outlines with `note` under them until real logos (with permission) arrive.
+export const trust = {
+  heading: "Trusted by *high-risk brands*",
+  note: "Placeholder: customer logos go here before launch.",
+};
+export const logos = ["Logo 1", "Logo 2", "Logo 3", "Logo 4", "Logo 5", "Logo 6"];
 
 export const problem: {
-  eyebrow: string;
   rotating: string[];
   blurb: string;
   items: IndustryCardsProps["items"];
 } = {
-  eyebrow: "The problem",
   rotating: ["closes.", "freezes.", "gets flagged."],
   blurb:
     "High-risk brands can lose an account with one email. Most also run payments across separate tools and chat groups.",
@@ -115,8 +115,7 @@ export const problem: {
   ],
 };
 
-export const how: { eyebrow: string; title: string; steps: FlowStep[] } = {
-  eyebrow: "How it works",
+export const how: { title: string; steps: FlowStep[] } = {
   title: "Connect. Route. *Keep selling.*",
   // Rendered by HowFlow: one scroll-driven scene (connect → route → keep), steps alongside.
   steps: [
@@ -138,14 +137,13 @@ export const how: { eyebrow: string; title: string; steps: FlowStep[] } = {
   ],
 };
 
-export const whatYouGet: { eyebrow: string; title: string; blurb: string; items: FeatureGridProps["items"] } = {
-  eyebrow: "What you get",
+export const whatYouGet: { title: string; blurb: string; items: FeatureGridProps["items"] } = {
   title: "One bad email won’t *stop your checkout.*",
   blurb: "Routing, failover, dispute alerts and every store in one CRM.",
   // Ruled 2×2 grid with white shadow cards. Numbers are demo data, labelled "Illustrative data".
   items: [
     { title: "Route across accounts", body: "Split volume by rules you set, for steadier approval rates.", art: "routing" },
-    { title: "Failover in seconds", body: "One MID pauses, the rest take the traffic.", art: "failover" },
+    { title: "Failover in seconds", body: "One merchant account (MID) pauses, the rest take the traffic.", art: "failover" },
     { title: "Catch disputes early", body: "Refund before it becomes a chargeback.", art: "disputes" },
     { title: "Every store, one CRM", body: "All your brands and their payouts in one place.", art: "stores" },
   ],
@@ -165,12 +163,10 @@ export const forBrands: Omit<FeaturePanelProps, "title"> & { title: string } = {
 };
 
 export const providers = {
-  eyebrow: "Providers",
   title: "Connect the providers *you already use.*",
 };
 
-export const industries: { eyebrow: string; title: string; items: IndustryCardsProps["items"] } = {
-  eyebrow: "Industries",
+export const industries: { title: string; items: IndustryCardsProps["items"] } = {
   title: "Made for brands *banks call risky.*",
   // Industry list is a working assumption: confirm with Vertlo before launch.
   items: [
@@ -187,9 +183,9 @@ export type MerchantStory = "closed" | "hours" | "newMid";
 export type MerchantQuote = { story: MerchantStory; value: string; label: string; quote: string; name: string; business: string };
 
 // Placeholders: replace with real, approved quotes and numbers before launch. Never ship invented ones.
-export const testimonials: { eyebrow: string; title: string; items: MerchantQuote[] } = {
-  eyebrow: "Merchants",
+export const testimonials: { title: string; note: string; items: MerchantQuote[] } = {
   title: "Merchants who *kept selling.*",
+  note: "Placeholder quotes and numbers. Real merchant stories, with permission, go here before launch.",
   items: [
     {
       story: "closed",
@@ -242,7 +238,6 @@ export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string } = {
 };
 
 export const cta = {
-  eyebrow: "Get started",
   title: "Put every account *in one CRM.*",
   blurb: "A 30-minute call. We map your providers and accounts, and show you the portal with your numbers.",
   points: ["Multiple live accounts", "Failover in seconds", "Underwriting in-house"],

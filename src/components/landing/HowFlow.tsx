@@ -134,8 +134,8 @@ export function HowFlow({ steps }: { steps: FlowStep[] }) {
             aria-current={i === active ? "step" : undefined}
           >
             <span className="lp-flow-num" aria-hidden="true">{i + 1}</span>
+            {/* the step's number and kicker are on the diamond and the scene's running label already */}
             <div className="lp-flow-copy">
-              {s.kicker ? <span className="lp-flow-kicker">{pad(i + 1)} · {s.kicker}</span> : null}
               <h3>{s.title}</h3>
               <p>{s.body}</p>
             </div>

@@ -1300,7 +1300,8 @@ function Footer(p) {
   return h("footer", { className: "vt-footer" },
     h("div", { className: "vt-footer-top" },
       h("div", null, h(Logo, null), h("p", null, p.tagline)),
-      cols.map(function (c, i) { return h("div", { key: i }, h("h4", null, c.title), h("ul", null, c.links.map(function (l) { var it = typeof l === "string" ? { label: l, href: "#" } : l; return h("li", { key: it.label }, h("a", { href: it.href }, it.label)); }))); })),
+      /* site: column titles are h3 (the page's last section heading is an h2, so h4 skipped a level) */
+      cols.map(function (c, i) { return h("div", { key: i }, h("h3", { className: "vt-footer-h" }, c.title), h("ul", null, c.links.map(function (l) { var it = typeof l === "string" ? { label: l, href: "#" } : l; return h("li", { key: it.label }, h("a", { href: it.href }, it.label)); }))); })),
     p.wordmark === false ? null : h("div", { className: "vt-footer-mark", "aria-hidden": true }, "VERTLO"),
     h("div", { className: "vt-footer-legal" }, h("span", null, "© " + (p.year || new Date().getFullYear()) + " Vertlo"), h("span", null, (p.legal || ["Privacy", "Terms"]).map(function (l) { return h("a", { key: l, href: "#" }, l); }))));
 }

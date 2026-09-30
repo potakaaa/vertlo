@@ -109,8 +109,8 @@ export function PortalTour({ data, clipH = 640, clipHMobile = PORTAL_H }: Props)
           const sw = screen.clientWidth, sh = screen.clientHeight;
           /* desktop: the screen fades out towards the bottom, so frame the stop a little high */
           const focusY = phone ? 0.5 : 0.42;
-          /* at least a noticeable push-in, even for the full-width rows */
-          const scale = clamp(Math.min(sw / (r.w * 1.1), sh / (r.h * 1.3)), phone ? 1.5 : 1.18, phone ? 2.6 : 1.8);
+          /* a noticeable push-in, even for the full-width rows, capped so neighbouring panels aren't sliced mid-word */
+          const scale = clamp(Math.min(sw / (r.w * 1.1), sh / (r.h * 1.3)), phone ? 1.35 : 1.1, phone ? 2.1 : 1.45);
           const cw = PORTAL_W * s, ch = PORTAL_H * s;
           return {
             scale,
@@ -123,8 +123,8 @@ export function PortalTour({ data, clipH = 640, clipHMobile = PORTAL_H }: Props)
         const tl = gsap.timeline({
           defaults: { ease: "sine.inOut" },
           scrollTrigger: phone
-            ? { trigger: root, start: "center center+=24", end: "+=1900", pin: root.parentElement, scrub: 1, invalidateOnRefresh: true }
-            : { trigger: section, start: "top top", end: "+=4600", pin: true, scrub: 1, invalidateOnRefresh: true },
+            ? { trigger: root, start: "center center+=24", end: "+=1000", pin: root.parentElement, scrub: 1, invalidateOnRefresh: true }
+            : { trigger: section, start: "top top", end: "+=2400", pin: true, scrub: 1, invalidateOnRefresh: true },
         });
         if (pops) tl.to(pops, { autoAlpha: 0, duration: 0.3 }, 0.1);
         /* the zoom-in takes the first 1.6 of the timeline on desktop; the camera tour follows */
