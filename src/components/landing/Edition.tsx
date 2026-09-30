@@ -256,9 +256,7 @@ export function RerouteBoard({
         <div className="pr-board-rows">
           {rows.map((r) => (
             <div key={r.id} className="pr-board-row" data-before={r.before} data-after={r.after} data-paused={r.after === 0 || undefined}>
-              <b className="pr-board-id">
-                <span className="pr-strike pr-strike--thin">{r.id}</span>
-              </b>
+              <b className="pr-board-id">{r.after === 0 ? <span className="pr-strike pr-strike--thin">{r.id}</span> : r.id}</b>
               <span className="pr-board-prov">{r.provider}</span>
               <span className="pr-board-bar">
                 <i style={{ transform: `scaleX(${r.after / 50})` }} />
