@@ -160,59 +160,18 @@ section[id], div[id] { scroll-margin-top: 96px; }
 }
 
 /* ── hero ───────────────────────────────────────────── */
-/* backdrop band: the grid starts behind the sticky header (--hdr) so the glass nav has something to frost */
-.lp-hero-band { --cell: 56px; --hdr: 88px; --grid-line: rgba(11,20,16,.075); position: relative; isolation: isolate; overflow-x: clip; }
+.lp-hero-band { --hdr: 88px; position: relative; isolation: isolate; overflow-x: clip; }
 .lp-hero-band > .lp-hero { position: relative; z-index: 1; }
-.lp-grid-bg {
-  position: absolute; inset: calc(var(--hdr) * -1) 0 0; z-index: 0; pointer-events: none;
-  background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-  background-size: var(--cell) var(--cell);
-  background-position: calc(50% + var(--cell) / 2) 0; /* a vertical line runs exactly down the centre */
-  -webkit-mask-image: radial-gradient(ellipse 72% 80% at 50% 42%, #000 45%, transparent 100%);
-  mask-image: radial-gradient(ellipse 72% 80% at 50% 42%, #000 45%, transparent 100%);
-  animation: lp-fade 1.2s ease-out both;
-}
-/* routes: a clipped track on a grid line; the packet rides a full-length carrier with the head at its end */
-.lp-route { position: absolute; overflow: hidden; }
-.lp-route[data-axis="x"] { left: calc(50% + var(--a) * var(--cell)); top: calc(var(--at) * var(--cell)); width: calc(var(--len) * var(--cell)); height: 1px; }
-.lp-route[data-axis="y"] { left: calc(50% + var(--at) * var(--cell)); top: calc(var(--a) * var(--cell)); width: 1px; height: calc(var(--len) * var(--cell)); }
-.lp-route[data-rev][data-axis="x"] { scale: -1 1; }
-.lp-route[data-rev][data-axis="y"] { scale: 1 -1; }
-.lp-route::before { content: ""; position: absolute; inset: 0; opacity: 0; animation: var(--dur) linear var(--delay) infinite both; }
-.lp-route[data-axis="x"]::before { background: linear-gradient(to right, transparent calc(100% - 44px), var(--green) 100%); animation-name: lp-pk-x; }
-.lp-route[data-axis="y"]::before { background: linear-gradient(to bottom, transparent calc(100% - 44px), var(--green) 100%); animation-name: lp-pk-y; }
-@keyframes lp-pk-x { 0% { transform: translateX(-100%); opacity: 0; } 4% { opacity: 1; } 38% { transform: translateX(0); opacity: 1; } 44%, 100% { transform: translateX(0); opacity: 0; } }
-@keyframes lp-pk-y { 0% { transform: translateY(-100%); opacity: 0; } 4% { opacity: 1; } 38% { transform: translateY(0); opacity: 1; } 44%, 100% { transform: translateY(0); opacity: 0; } }
 
-/* nodes: merchant accounts as the logo's diamond, centred on an intersection */
-.lp-node {
-  position: absolute; left: calc(50% + var(--c) * var(--cell) + .5px); top: calc(var(--r) * var(--cell) + .5px);
-  width: 9px; height: 9px; box-sizing: border-box; translate: -50% -50%; rotate: 45deg;
-  background: var(--bg); border: 1px solid rgba(11,20,16,.2); border-radius: 1.5px;
-}
-.lp-node::after { content: ""; position: absolute; inset: -1px; border: 1px solid var(--green); border-radius: 2px; opacity: 0; }
-.lp-node[data-state="live"] { animation: lp-hit var(--dur) linear var(--delay) infinite both; }
-.lp-node[data-state="live"]::after { animation: lp-ring var(--dur) linear var(--delay) infinite both; }
-.lp-node[data-state="paused"] { border-color: var(--red); }
-.lp-node[data-state="paused"]::after { inset: 2px; border: 0; border-radius: 0; background: var(--red); opacity: 1; }
-@keyframes lp-hit {
-  0%, 37% { background: var(--bg); border-color: rgba(11,20,16,.2); }
-  39%, 70% { background: var(--green); border-color: var(--green); }
-  84%, 100% { background: var(--bg); border-color: rgba(11,20,16,.2); }
-}
-@keyframes lp-ring { 0%, 38% { opacity: 0; scale: 1; } 39% { opacity: .9; scale: 1; } 58%, 100% { opacity: 0; scale: 3.2; } }
-@keyframes lp-fade { from { opacity: 0; } }
-.lp-route[data-on="m"], .lp-node[data-on="m"] { display: none; }
-
-/* content: one staged entrance on load; the headline leads, with the room the old eyebrow pill used to give it */
-.lp-hero > .lp-h1:first-child { margin-top: clamp(28px, 3.3vw, 48px); }
+/* content: one staged entrance on load */
 .lp-hero > * { animation: lp-rise .8s cubic-bezier(.2,0,0,1) both; }
 .lp-hero > :nth-child(2) { animation-delay: .1s; }
 .lp-hero > :nth-child(3) { animation-delay: .2s; }
 .lp-hero > :nth-child(4) { animation-delay: .3s; }
+.lp-hero > :nth-child(5) { animation-delay: .4s; }
 @keyframes lp-rise { from { opacity: 0; transform: translateY(12px); } }
 
-/* flip words: the slot eases between measured widths; out-word blurs up, in-word resolves letter by letter */
+/* flip words: the slot eases between measured widths; the old word rolls up and out, the new one rolls in */
 .lp-nowrap { white-space: nowrap; }
 .lp-flip { position: relative; display: inline-block; white-space: nowrap; transition: width .55s cubic-bezier(.2,0,0,1); }
 .lp-flip span span, .lp-flip-measure > span > span { display: inline-block; }
@@ -220,8 +179,8 @@ section[id], div[id] { scroll-margin-top: 96px; }
 .lp-flip-in[data-animate] > span { animation: lp-flip-in .55s cubic-bezier(.2,0,0,1) both; }
 .lp-flip-measure { position: absolute; left: 0; top: 0; visibility: hidden; pointer-events: none; }
 .lp-flip-measure > span { position: absolute; left: 0; top: 0; white-space: nowrap; }
-@keyframes lp-flip-out { to { opacity: 0; transform: translateY(-.28em) scale(1.04); filter: blur(8px); } }
-@keyframes lp-flip-in { from { opacity: 0; transform: translateY(.3em); filter: blur(8px); } }
+@keyframes lp-flip-out { to { opacity: 0; transform: translateY(-.4em); } }
+@keyframes lp-flip-in { from { opacity: 0; transform: translateY(.4em); } }
 
 .lp-hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding-block: clamp(48px, 5vw, 72px) clamp(40px, 6.1vw, 88px); }
 .lp-h1 { margin: clamp(20px, 1.94vw, 28px) 0 0; text-wrap: balance; font-family: var(--font-display); font-weight: 900; font-size: var(--lp-h1); line-height: .95; letter-spacing: -.045em; text-transform: uppercase; color: var(--ink); }
@@ -410,11 +369,10 @@ section[id], div[id] { scroll-margin-top: 96px; }
 .lp-ms-metric { margin: 0; font: 500 12px/1.4 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--ink-faint); animation: lp-ms-fade .5s var(--ms-ease) both; }
 .lp-ms-value { display: inline-block; margin-right: 6px; padding: 4px 8px; border-radius: 6px; background: var(--green-soft); color: var(--green-deep); }
 .lp-ms-quote blockquote { margin: 0; font: 400 clamp(20px, 1.9vw, 27px)/1.4 var(--font-sans); letter-spacing: -.012em; color: var(--ink); text-wrap: pretty; }
-.lp-ms-quote blockquote > span { display: inline; animation: lp-ms-word .6s var(--ms-ease) both; }
+.lp-ms-quote blockquote { animation: lp-ms-fade .5s var(--ms-ease) .1s both; }
 .lp-ms-quote figcaption { display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 1.35; color: var(--ink-muted); animation: lp-ms-fade .5s var(--ms-ease) .25s both; }
 .lp-ms-quote figcaption b { display: block; color: var(--ink); font-weight: 600; }
 .lp-ms-avatar { width: 36px; height: 36px; flex: none; border-radius: 50%; display: grid; place-items: center; font: 500 12px/1 var(--font-sans); color: var(--ink-muted); box-shadow: inset 0 0 0 1px var(--border); }
-@keyframes lp-ms-word { from { opacity: 0; filter: blur(6px); } }
 @keyframes lp-ms-fade { from { opacity: 0; transform: translateY(6px); } }
 
 /* chart, presented as a product window sitting on a tinted panel */
@@ -503,7 +461,7 @@ section[id], div[id] { scroll-margin-top: 96px; }
 
 @media (prefers-reduced-motion: reduce) {
   .lp-ms-line { stroke-dashoffset: 0; }
-  .lp-ms-line, .lp-ms-event, .lp-ms-dot, .lp-ms-after, .lp-ms-area, .lp-ms-legend, .lp-ms-win-dot, .lp-ms-metric, .lp-ms-quote blockquote > span, .lp-ms-quote figcaption { animation: none; }
+  .lp-ms-line, .lp-ms-event, .lp-ms-dot, .lp-ms-after, .lp-ms-area, .lp-ms-legend, .lp-ms-win-dot, .lp-ms-metric, .lp-ms-quote blockquote, .lp-ms-quote figcaption { animation: none; }
 }
 @media (max-width: 1040px) {
   /* the full desktop nav needs ~1040px; below that use the compact pill + menu */
@@ -521,7 +479,7 @@ section[id], div[id] { scroll-margin-top: 96px; }
 /* ── phones ─────────────────────────────────────────── */
 @media (max-width: 720px) {
   .lp-header { --lift: 4px; --compact: .97; }
-  .lp-hero-band { --cell: 40px; --hdr: 72px; }
+  .lp-hero-band { --hdr: 72px; }
   .lp-ms-chart { padding: 12px; }
   /* the SVG scales down to ~80% here; bump its labels so they stay ~9px on screen */
   .lp-ms-tick text, .lp-ms-phase, .lp-ms-event text { font-size: 11px; }
@@ -529,9 +487,6 @@ section[id], div[id] { scroll-margin-top: 96px; }
   .lp-ms-tab { padding: 18px 16px 16px; min-height: 56px; }
   .lp-ms-track { left: 16px; right: 16px; }
   .lp-ms-tab-t { display: none; }
-  .lp-grid-bg { -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 35%, #000 30%, transparent 100%); mask-image: radial-gradient(ellipse 90% 70% at 50% 35%, #000 30%, transparent 100%); }
-  .lp-route[data-on="d"], .lp-node[data-on="d"] { display: none; }
-  .lp-route[data-on="m"], .lp-node[data-on="m"] { display: block; }
   .lp-header-in { padding-top: 12px; padding-inline: 12px; }
   .lp-br, .lp-hide-m { display: none; }
   .lp-hero-cta { width: 100%; flex-direction: column; align-items: stretch; }
@@ -574,8 +529,7 @@ section[id], div[id] { scroll-margin-top: 96px; }
 
 @media (prefers-reduced-motion: reduce) {
   .lp-header-in, .lp-mmenu { transform: none !important; }
-  .lp-route { display: none !important; }
-  .lp-node, .lp-node::after, .lp-grid-bg, .lp-hero > * { animation: none !important; }
+  .lp-hero > * { animation: none !important; }
   .lp-header .vt-nav-links::before { transition-property: opacity, background-color; }
   .lp-flow-copy, .lp-flow-num::before { transition: none; }
   .lp-fg-motion .vt-fg-artwrap svg circle { animation: none !important; }

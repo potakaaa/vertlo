@@ -3,18 +3,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { prefersReducedMotion } from "@/lib/motion";
 
-/* Flip words (no container): the current word blurs up and out while the next one resolves letter by
-   letter. The slot eases to each word's measured width, so a centred headline glides instead of jumping.
+/* Flip words (no container): the current word rolls up and out while the next one rolls in from below.
+   The slot eases to each word's measured width, so a centred headline glides instead of jumping.
    Screen readers get the first word as plain text. Paused offscreen and in background tabs; reduced
    motion keeps the first word. */
 
 // Visible and measured words are split the same way, so the measured widths match what renders.
-const letters = (w: string, stagger = false) =>
-  Array.from(w).map((ch, k) => (
-    <span key={k} style={stagger ? { animationDelay: `${k * 28}ms` } : undefined}>
-      {ch}
-    </span>
-  ));
+const letters = (w: string) => Array.from(w).map((ch, k) => <span key={k}>{ch}</span>);
 
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
@@ -70,9 +65,9 @@ export function FlipWords({ words, interval = 2600 }: { words: string[]; interva
             {words[prev]}
           </span>
         )}
-        {/* Letters only animate after the first flip, so the page-load entrance stays in charge. */}
+        {/* The word only animates after the first flip, so the page-load entrance stays in charge. */}
         <span key={`in-${i}`} className="lp-flip-in" data-animate={prev !== null || undefined}>
-          {letters(word, true)}
+          {letters(word)}
         </span>
       </span>
       <span ref={measureRef} className="lp-flip-measure" aria-hidden="true">

@@ -9,7 +9,7 @@ import type { PortalData } from "@/components/landing/portal/types";
 import type { FlowStep } from "@/components/landing/HowFlow";
 
 /**
- * Headings: `*words*` render in the italic serif (see components/landing/Rich.tsx).
+ * Headings: `*words*` render in the ink colour (see components/landing/Rich.tsx).
  * All landing-page copy lives here so it can be edited (or moved to a CMS) without touching layout.
  * Rules from the brand: no published prices, "Book a call" is the one CTA, placeholders are labelled.
  */
@@ -22,6 +22,10 @@ export const navLinks: LinkItem[] = [
 ];
 
 export const hero = {
+  /** The banknote line over the headline, and the stamp pressed onto "closes." */
+  series: "Series 2026",
+  serial: "Nº VT 000 001",
+  stamp: "Closed",
   lead: "One account closes.",
   accent: "The rest keep",
   /** Flips after "keep"; the first word is the one screen readers and no-JS visitors get. */
@@ -117,7 +121,7 @@ export const problem: {
 
 export const how: { eyebrow: string; title: string; steps: FlowStep[] } = {
   eyebrow: "How it works",
-  title: "Connect. Route. *Keep selling.*",
+  title: "Set it up once. *It routes from there.*",
   // Rendered by HowFlow: one scroll-driven scene (connect → route → keep), steps alongside.
   steps: [
     {
@@ -151,7 +155,8 @@ export const whatYouGet: { eyebrow: string; title: string; blurb: string; items:
   ],
 };
 
-export const forBrands: Omit<FeaturePanelProps, "title"> & { title: string } = {
+export const forBrands: Omit<FeaturePanelProps, "title"> & { title: string; eyebrow: string } = {
+  eyebrow: "Underwriting",
   title: "We’ll issue the *accounts you need.*",
   description: "We underwrite in-house, so getting a new account doesn’t stall your checkout.",
   items: [
@@ -218,8 +223,9 @@ export const testimonials: { eyebrow: string; title: string; items: MerchantQuot
   ],
 };
 
-export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string } = {
-  title: "Questions, *answered.*",
+export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string; eyebrow: string } = {
+  eyebrow: "Questions",
+  title: "What merchants ask *before the call.*",
   blurb: "Ask us anything else on a call.",
   items: [
     {
@@ -242,10 +248,21 @@ export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string } = {
 };
 
 export const cta = {
-  eyebrow: "Get started",
   title: "Put every account *in one CRM.*",
   blurb: "A 30-minute call. We map your providers and accounts, and show you the portal with your numbers.",
   points: ["Multiple live accounts", "Failover in seconds", "Underwriting in-house"],
+  /** The closing call is drawn as a cheque; these fill its printed fields. */
+  cheque: {
+    issuer: "Vertlo Merchant Services",
+    no: "000126",
+    date: "Valid on any weekday",
+    payLabel: "Pay to the order of",
+    payee: "Your checkout, every account in one CRM",
+    amount: "30 min",
+    signLabel: "Authorised signature",
+    micr: "⑆ 0026 0126 ⑆ 30 ⑈ 000126",
+    stamp: "Approved",
+  },
 };
 
 export const footer = {
