@@ -16,10 +16,11 @@ import { Letter, Microprint, Sheet } from "@/components/landing/Paper";
    Layout classes are in app/landing.css (lp-*), the paper look in app/paper.css (pp-*). */
 
 /* Hero and product in one pinned section: the headline printed on a banknote, the portal on a laptop
-   below it. The note is an object: a medallion for a portrait, a windowed foil security thread, an
-   engraved "1" denomination (one account), a serial; it tilts a little under the cursor and catches
-   the light (PaperMotion). Scrolling zooms into the laptop until its screen fills the view, then runs
-   the portal tour (PortalTour, which fades `.lp-hero` out and back). */
+   below it. The note is an object, kept to a few parts so the headline leads: a small medallion for a
+   portrait in the top corner with the issuer microprinted beside it, an engraved "1" denomination (one
+   account) in the opposite corner, a serial; it tilts a little under the cursor and catches the light
+   (PaperMotion). Scrolling zooms into the laptop until its screen fills the view, then runs the portal
+   tour (PortalTour, which fades `.lp-hero` out and back). */
 export function Hero() {
   return (
     <section className="lp-hero-band" id="top">
@@ -29,18 +30,16 @@ export function Hero() {
           <span className="pp-note-serial" aria-hidden="true">
             {c.hero.serial}
           </span>
-          {/* the note's portrait: a guilloché medallion around the Vertlo diamond */}
-          <span className="pp-note-medallion" aria-hidden="true">
-            <Diamond size={30} />
-          </span>
-          {/* the security thread: windowed foil with the issuer microprinted along it */}
-          <span className="pp-note-thread" aria-hidden="true">
-            <span>{"VERTLO ".repeat(24)}</span>
-          </span>
           <div className="pp-note-copy">
-            <p className="pp-note-micro" aria-hidden="true">
-              <Microprint text={c.hero.micro} />
-            </p>
+            <div className="pp-note-top" aria-hidden="true">
+              {/* the note's portrait: a guilloché medallion around the Vertlo diamond */}
+              <span className="pp-note-medallion">
+                <Diamond size={22} />
+              </span>
+              <p className="pp-note-micro">
+                <Microprint text={c.hero.micro} />
+              </p>
+            </div>
             <h1 className="lp-h1">
               {c.hero.lead}
               <br className="lp-br" /> {c.hero.accent}{" "}

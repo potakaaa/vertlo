@@ -10,9 +10,8 @@ import { sheets as SHEETS } from "@/content/landing";
    - arrival and cover: a sheet comes up with a slight turn and settles; as the next one covers it,
      it sinks back a little under a shadow.
    - on load, the banknote is laid down and printed: the medallion inks in, the serial rolls into
-     place like a numbering machine, the headline and the engraved "1" print, the foil thread flashes.
-     Under a mouse, the note tilts a degree or two and catches the light (glare, and a sheen that
-     runs along the thread).
+     place like a numbering machine, the headline and the engraved "1" print.
+     Under a mouse, the note tilts a degree or two and catches the light.
    - in the sheets: each letter types on (the termination's verdict is then struck through and
      Vertlo's note typed under it), and the cheque's signature writes itself.
    - a slim rail in the left margin shows which sheet you're on (wide screens only).
@@ -75,8 +74,7 @@ export function PaperMotion() {
           .from(q(".pp-note-serial"), { autoAlpha: 0, duration: 0.6 }, 0.6)
           .from(q(".pp-note-micro"), { clipPath: "inset(0 50% 0 50%)", duration: 0.9, ease: "power2.inOut" }, 0.6)
           .from(q(".lp-h1, .lp-hero-sub"), { autoAlpha: 0, y: 18, stagger: 0.12, duration: 0.8 }, 0.55)
-          .from(q(".pp-note-numeral"), { autoAlpha: 0, y: 12, duration: 1, ease: "expo.out" }, 0.8)
-          .fromTo(note, { "--sheen": "-30%" }, { "--sheen": "130%", duration: 1.4, ease: "power2.inOut" }, 0.9);
+          .from(q(".pp-note-numeral"), { autoAlpha: 0, y: 12, duration: 1, ease: "expo.out" }, 0.8);
         const cta = document.querySelector(".lp-hero-cta");
         if (cta) intro.fromTo(cta, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.7 }, 0.95);
 
@@ -98,7 +96,7 @@ export function PaperMotion() {
         }
       }
 
-      /* ── the note under a mouse: a slight tilt toward the cursor, a glare, the thread's sheen ── */
+      /* ── the note under a mouse: a slight tilt toward the cursor, and a glare ── */
       const hero = note?.parentElement;
       let tiltRaf = 0;
       const onMove = (e: PointerEvent) => {
@@ -112,7 +110,6 @@ export function PaperMotion() {
           note.style.setProperty("--tilt", `${-y.toFixed(3)} ${x.toFixed(3)} 0 ${(Math.hypot(x, y) * 3.2).toFixed(2)}deg`);
           note.style.setProperty("--gx", `${((x + 0.5) * 100).toFixed(1)}%`);
           note.style.setProperty("--gy", `${((y + 0.5) * 100).toFixed(1)}%`);
-          note.style.setProperty("--sheen", `${((y + 0.5) * 100).toFixed(1)}%`);
           note.setAttribute("data-lit", "");
         });
       };

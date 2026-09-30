@@ -23,7 +23,9 @@
   --radius-card: 6px;
   --radius-inner: 4px;
   --shadow-card: none;
-  --lp-h1: clamp(32px, 4.2vw, 60px);
+  /* the hero headline, sized to the note's copy column (a container): the longer line, "The rest keep
+     selling.", is ~16.3em wide in the wide cut, so 5.9cqi keeps it on one line at any width */
+  --lp-h1: min(62px, 5.9cqi);
   --lp-h2: clamp(28px, 3vw, 42px);
 }
 html { scrollbar-color: rgba(31,59,43,.35) var(--mist); }
@@ -142,18 +144,17 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 }
 /* the note's measures, shared with the CTA row so the buttons start where the headline does */
 .lp-hero {
-  --note-px: clamp(36px, 4.4vw, 72px); --note-py: clamp(56px, 5.6vw, 88px); --note-gap: clamp(24px, 3vw, 48px);
-  --med-w: clamp(140px, 15vw, 210px); --thread-w: 10px;
+  --note-px: clamp(36px, 4.4vw, 72px); --note-py: clamp(44px, 4.4vw, 68px);
+  --med-w: clamp(76px, 7vw, 100px);
   padding-block: clamp(24px, 2.6vw, 40px) 0;
   perspective: 1800px;
 }
 .lp-stage { position: relative; z-index: 1; margin-top: clamp(36px, 4vw, 56px); }
 
-/* the note: a medallion for a portrait, the headline beside it, inside a guilloché frame */
+/* the note: the headline across its width, a small medallion for a portrait in the top corner, the
+   denomination in the opposite one, inside a guilloché frame */
 .pp-note {
   position: relative; isolation: isolate; box-sizing: border-box; width: 100%; max-width: 1200px;
-  --sheen: -30%;
-  display: grid; grid-template-columns: var(--med-w) var(--thread-w) minmax(0, 1fr); align-items: center; column-gap: var(--note-gap);
   padding: var(--note-py) var(--note-px);
   /* a slight tilt toward the cursor (PaperMotion sets --tilt as axis-angle); on its own property, so GSAP's transform is untouched */
   rotate: var(--tilt, 0 0 1 0deg); transition: rotate .6s cubic-bezier(.2,0,0,1);
@@ -182,7 +183,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 /* the portrait: a rosette with the Vertlo diamond on a clean cartouche, inked in from the left on load */
 .pp-note-medallion {
   --ink: 115%;
-  position: relative; display: grid; place-items: center; width: var(--med-w); aspect-ratio: 1;
+  position: relative; display: grid; flex: none; place-items: center; width: var(--med-w); aspect-ratio: 1;
   color: var(--green);
   -webkit-mask-image: linear-gradient(100deg, #000 var(--ink), transparent calc(var(--ink) + 18%));
   mask-image: linear-gradient(100deg, #000 var(--ink), transparent calc(var(--ink) + 18%));
@@ -193,25 +194,10 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 @keyframes pp-turn { to { rotate: 360deg; } }
 .pp-note-medallion::before { z-index: 1; inset: 31%; background: var(--paper); box-shadow: 0 0 0 1px var(--rule-soft), 0 0 0 5px var(--paper), 0 0 0 6px var(--rule-soft); }
 .pp-note-medallion svg { position: relative; z-index: 2; }
-.pp-note-copy { position: relative; z-index: 1; min-width: 0; justify-self: stretch; }
+.pp-note-copy { position: relative; z-index: 1; min-width: 0; container-type: inline-size; }
+/* the note's top line: the portrait, then the issuer microprinted along a ruled band */
+.pp-note-top { display: flex; align-items: center; gap: clamp(16px, 1.8vw, 26px); margin-bottom: clamp(20px, 2.2vw, 32px); }
 
-/* the security thread: windowed foil running the height of the note, the issuer microprinted along it,
-   with a sheen that follows the cursor (--sheen, set by PaperMotion; it also flashes once on load) */
-.pp-note-thread {
-  position: relative; align-self: stretch; width: var(--thread-w); margin-block: calc(40px - var(--note-py)); overflow: hidden;
-  background: linear-gradient(90deg, #8fb8a2 0%, #d6e9dd 30%, #f4faf6 50%, #c9e0d2 70%, #8db59f 100%);
-  box-shadow: inset 0 0 0 1px rgba(31,59,43,.18);
-  -webkit-mask: repeating-linear-gradient(to bottom, #000 0 56px, transparent 56px 70px);
-  mask: repeating-linear-gradient(to bottom, #000 0 56px, transparent 56px 70px);
-}
-.pp-note-thread::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, transparent calc(var(--sheen) - 16%), rgba(255,255,255,.95) var(--sheen), transparent calc(var(--sheen) + 16%));
-}
-.pp-note-thread > span {
-  position: absolute; left: 50%; top: 0; translate: -50% 0; writing-mode: vertical-rl;
-  font: 600 6.5px/1 var(--font-mono); letter-spacing: .32em; color: rgba(31,90,60,.75); white-space: nowrap;
-}
 /* the denomination: an engraved "1" in the corner (one account), outlined and filled with the wave field */
 .pp-note-numeral {
   position: absolute; z-index: 0; right: calc(var(--note-px) - 8px); bottom: calc(var(--note-py) * .45);
@@ -231,17 +217,16 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
   .pp-note-numeral { font-size: 76px; }
   .pp-note-copy .lp-hero-sub { padding-right: 72px; }
 }
-/* sized so the two lines ("One account closes." / "The rest keep selling.") each fit on one line */
-.pp-note-copy .lp-h1 { margin: 0; font-size: clamp(30px, 3.35vw, 50px); }
-@media (min-width: 1100px) { .pp-note-copy .lp-h1 { text-wrap: nowrap; } }
+/* the two lines ("One account closes." / "The rest keep selling.") each on one line, the loudest type on the page */
+.pp-note-copy .lp-h1 { margin: 0; text-wrap: nowrap; }
 .pp-note-copy .lp-hero-sub { margin: clamp(16px, 1.4vw, 22px) 0 0; max-width: 52ch; font-size: clamp(16px, 1.2vw, 18px); text-wrap: pretty; }
-/* the microprint over the headline: the issuer's name, set large enough to read as words */
-.pp-note-micro { margin: 0 0 clamp(16px, 1.6vw, 24px); max-width: 520px; }
+/* the microprint beside the portrait: the issuer's name, set large enough to read as words */
+.pp-note-micro { flex: 1; min-width: 0; margin: 0; -webkit-mask-image: linear-gradient(90deg, #000 80%, transparent); mask-image: linear-gradient(90deg, #000 80%, transparent); }
 .pp-note-micro .pp-micro { padding-block: 5px; border-block: 1px solid var(--rule-soft); font-size: 9px; letter-spacing: .22em; color: var(--accent-ink); opacity: .75; }
 .lp-hero-cta { margin-top: clamp(24px, 2.4vw, 34px); }
 /* the buttons start on the headline's line, not centred under the whole note */
 @media (min-width: 721px) {
-  .lp-hero-cta { box-sizing: border-box; width: 100%; max-width: 1200px; justify-content: flex-start; padding-left: calc(var(--note-px) + var(--med-w) + var(--thread-w) + 2 * var(--note-gap)); }
+  .lp-hero-cta { box-sizing: border-box; width: 100%; max-width: 1200px; justify-content: flex-start; padding-left: var(--note-px); }
 }
 /* the note is laid down by PaperMotion once scripts run (the `js` class, layout.tsx); a short fallback
    shows it anyway, and without scripts it is never hidden */
@@ -477,16 +462,16 @@ html[data-measure-flow] .pp-sheet { position: relative; top: auto; }
   .lp-header { --lift: 0px; --compact: 1; }
   .lp-mnav .vt-btn--sm { height: 44px; padding-inline: 14px; }
   .lp-mnav .vt-logo { font-size: 16px; gap: 8px; }
-  .pp-note { grid-template-columns: minmax(0, 1fr); padding: 44px 22px 36px; gap: 20px; justify-items: start; }
-  .pp-note-thread { display: none; }
-  /* the numeral moves up beside the medallion, where the phone layout has room */
-  .pp-note-numeral { top: 52px; right: 26px; bottom: auto; font-size: 88px; }
+  .pp-note { padding: 44px 22px 36px; }
+  /* the numeral moves up to the top line, opposite the medallion, where the phone layout has room */
+  .pp-note-numeral { top: 44px; right: 24px; bottom: auto; font-size: 64px; }
+  .pp-note-top { padding-right: 56px; margin-bottom: 20px; }
   .pp-note::before { inset: 10px; background-size: 52px 15px, 52px 15px, 15px 52px, 15px 52px; }
   .pp-note::after { inset: 26px; }
-  .pp-note-medallion { width: 112px; }
+  .pp-note-medallion { width: 64px; flex: none; }
   .pp-note-serial { left: 22px; font-size: 10px; padding: 3px 6px; }
   /* keep the two sentences on their own lines, each balanced */
-  .pp-note-copy .lp-h1 { font-size: clamp(24px, 7vw, 30px); }
+  .pp-note-copy .lp-h1 { font-size: min(34px, 10cqi); text-wrap: balance; }
   .pp-note-copy .lp-br { display: inline; }
   .pp-sheet + .pp-sheet { margin-top: 40px; }
   .pp-sheet { padding-inline: 10px; }
