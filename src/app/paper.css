@@ -402,15 +402,24 @@ html[data-measure-flow] .pp-sheet { position: relative; top: auto; }
 .pp-cheque-amount { padding: 10px 16px; border: 1px solid var(--forest); border-radius: 3px; background: var(--paper); font: 600 18px/1 var(--font-mono); color: var(--forest); white-space: nowrap; box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px var(--rule-soft); }
 .pp-cheque-foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap; }
 .pp-cheque-memo { margin: 0; display: flex; align-items: baseline; gap: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--rule); font-size: 14px; color: var(--ink-muted); }
-.pp-cheque-sign { position: relative; display: grid; gap: 10px; justify-items: stretch; min-width: 260px; padding-bottom: 6px; border-bottom: 1px solid var(--forest); }
-/* the signature, written in as the cheque lands (PaperMotion draws the stroke) */
-.pp-signature { position: absolute; right: 6px; bottom: calc(100% - 14px); width: 240px; height: auto; overflow: visible; pointer-events: none; }
+.pp-cheque-sign { display: grid; gap: 10px; justify-items: stretch; min-width: 260px; }
+/* the signature line: the signature is written in on it as the cheque lands (PaperMotion draws the stroke) */
+.pp-cheque-sigline { position: relative; display: block; height: 54px; border-bottom: 1px solid var(--forest); }
+.pp-signature { position: absolute; left: 50%; bottom: 3px; width: 230px; height: auto; translate: -50% 0; overflow: visible; pointer-events: none; }
 .pp-signature path { fill: none; stroke: #21304d; stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
 .pp-cheque-sign .pp-cheque-k { text-align: center; }
 .pp-cheque-micr { margin: 0; font: 400 15px/1 var(--font-mono); letter-spacing: .28em; color: var(--ink); opacity: .7; white-space: nowrap; overflow: hidden; }
-.pp-cheque-stamp { position: absolute; right: calc(clamp(22px, 4vw, 60px) + 310px); bottom: clamp(64px, 7vw, 92px); font-size: clamp(18px, 2vw, 26px); }
+/* the approval, stamped in the row between the memo and the signature */
+.pp-cheque-foot { position: relative; }
+.pp-cheque-stamp { position: absolute; right: 300px; bottom: 24px; font-size: clamp(18px, 2vw, 26px); }
 .pp-cheque-foot { margin-top: 36px; }
 .pp-cheque-stamp[data-state="in"] { animation-delay: .2s; }
+/* below this the memo and signature can't share a row: stack them, and stamp the gap above the memo */
+@media (max-width: 1000px) {
+  .pp-cheque-foot { flex-direction: column; align-items: stretch; gap: 28px; }
+  .pp-cheque-sign { width: 100%; min-width: 0; }
+  .pp-cheque-stamp { right: 0; bottom: calc(100% + 6px); font-size: clamp(16px, 2.4vw, 22px); }
+}
 
 /* ── footer: the wordmark engraved, filled with the wave field ── */
 .vt-footer { border-top-color: var(--rule); }
@@ -477,8 +486,6 @@ html[data-measure-flow] .pp-sheet { position: relative; top: auto; }
   .pp-cheque-pay { grid-template-columns: minmax(0, 1fr) auto; }
   .pp-cheque-pay > .pp-cheque-k { grid-column: 1 / -1; }
   .pp-cheque-memo { flex-direction: column; gap: 8px; }
-  .pp-cheque-sign { width: 100%; min-width: 0; }
-  .pp-cheque-stamp { right: 14px; bottom: 262px; font-size: 16px; }
   .pp-cheque-line { white-space: normal; }
   .pp-cheque::after { width: 420px; right: -200px; }
   .pp-cheque-micr { font-size: 12px; letter-spacing: .18em; }

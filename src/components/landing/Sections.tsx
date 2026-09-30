@@ -278,19 +278,22 @@ export function FinalCTA() {
             {c.cta.points.join(" · ")}
           </p>
           <div className="pp-cheque-sign">
-            <svg className="pp-signature" viewBox="0 0 260 64" aria-hidden="true">
-              <path d="M8 44c10-2 16-16 22-26 4-7 8-6 6 2-3 12-9 26-6 28 4 2 10-14 15-20 3-4 5-2 4 2-1 6-3 12 1 12 5 0 9-10 13-12 3-1 3 3 2 6-2 6 1 8 6 4 6-5 9-16 14-18 3-1 2 4 0 8-3 7-4 13 1 12 6-2 10-12 16-14 4-1 2 6 1 9-1 5 3 6 7 2 5-5 7-12 12-13 4 0 1 7 4 8 6 1 14-8 22-10 10-2 30 0 44-4" />
-            </svg>
             <Button size="lg" href="#book">
               Book a call
             </Button>
+            {/* the signature sits on its own line, under the button, where a cheque is signed */}
+            <span className="pp-cheque-sigline" aria-hidden="true">
+              <svg className="pp-signature" viewBox="0 0 260 64">
+                <path d="M8 44c10-2 16-16 22-26 4-7 8-6 6 2-3 12-9 26-6 28 4 2 10-14 15-20 3-4 5-2 4 2-1 6-3 12 1 12 5 0 9-10 13-12 3-1 3 3 2 6-2 6 1 8 6 4 6-5 9-16 14-18 3-1 2 4 0 8-3 7-4 13 1 12 6-2 10-12 16-14 4-1 2 6 1 9-1 5 3 6 7 2 5-5 7-12 12-13 4 0 1 7 4 8 6 1 14-8 22-10 10-2 30 0 44-4" />
+              </svg>
+            </span>
             <span className="pp-cheque-k">{cheque.signLabel}</span>
           </div>
+          <Stamp className="pp-cheque-stamp">{cheque.stamp}</Stamp>
         </div>
         <p className="pp-cheque-micr" aria-hidden="true">
           {cheque.micr}
         </p>
-        <Stamp className="pp-cheque-stamp">{cheque.stamp}</Stamp>
       </div>
     </Sheet>
   );
