@@ -1,15 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Inter, Inter_Tight } from "next/font/google";
+import { Geist_Mono, Instrument_Serif, Inter, Inter_Tight } from "next/font/google";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 
 const interTight = Inter_Tight({
   subsets: ["latin"],
-  weight: ["500", "800", "900"],
+  weight: ["400", "500", "600", "800", "900"],
   variable: "--font-inter-tight",
   display: "swap",
 });
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-inter", display: "swap" });
+/* the italic serif for accent words in headings (Sociora-style two-font headlines) */
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
+  display: "swap",
+});
 const geistMono = Geist_Mono({ subsets: ["latin"], weight: ["500"], variable: "--font-geist-mono", display: "swap" });
 
 export const metadata: Metadata = {
@@ -25,14 +33,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#eef1ee",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${interTight.variable} ${inter.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${interTight.variable} ${inter.variable} ${instrumentSerif.variable} ${geistMono.variable}`}>
       <body>{children}</body>
     </html>
   );

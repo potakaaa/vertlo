@@ -9,6 +9,7 @@ import type { PortalData } from "@/components/landing/portal/types";
 import type { FlowStep } from "@/components/landing/HowFlow";
 
 /**
+ * Headings: `*words*` render in the italic serif (see components/landing/Rich.tsx).
  * All landing-page copy lives here so it can be edited (or moved to a CMS) without touching layout.
  * Rules from the brand: no published prices, "Book a call" is the one CTA, placeholders are labelled.
  */
@@ -81,6 +82,7 @@ export const portal: PortalData = {
   ],
 };
 
+export const trust = { heading: "Trusted by *high-risk brands*" };
 export const logos = ["LOGO 01", "LOGO 02", "LOGO 03", "LOGO 04", "LOGO 05", "LOGO 06"];
 
 export const problem: {
@@ -115,7 +117,7 @@ export const problem: {
 
 export const how: { eyebrow: string; title: string; steps: FlowStep[] } = {
   eyebrow: "How it works",
-  title: "Connect. Route. Keep selling.",
+  title: "Connect. Route. *Keep selling.*",
   // Rendered by HowFlow: one scroll-driven scene (connect → route → keep), steps alongside.
   steps: [
     {
@@ -138,7 +140,7 @@ export const how: { eyebrow: string; title: string; steps: FlowStep[] } = {
 
 export const whatYouGet: { eyebrow: string; title: string; blurb: string; items: FeatureGridProps["items"] } = {
   eyebrow: "What you get",
-  title: "One bad email won’t stop your checkout.",
+  title: "One bad email won’t *stop your checkout.*",
   blurb: "Routing, failover, dispute alerts and every store in one CRM.",
   // Ruled 2×2 grid with white shadow cards. Numbers are demo data, labelled "Illustrative data".
   items: [
@@ -149,8 +151,8 @@ export const whatYouGet: { eyebrow: string; title: string; blurb: string; items:
   ],
 };
 
-export const forBrands: FeaturePanelProps = {
-  title: "We’ll issue the accounts you need.",
+export const forBrands: Omit<FeaturePanelProps, "title"> & { title: string } = {
+  title: "We’ll issue the *accounts you need.*",
   description: "We underwrite in-house, so getting a new account doesn’t stall your checkout.",
   items: [
     { label: "Multiple live accounts", meta: "Run several MIDs side by side", icon: "layers" },
@@ -164,12 +166,12 @@ export const forBrands: FeaturePanelProps = {
 
 export const providers = {
   eyebrow: "Providers",
-  title: "Connect the providers you already use.",
+  title: "Connect the providers *you already use.*",
 };
 
 export const industries: { eyebrow: string; title: string; items: IndustryCardsProps["items"] } = {
   eyebrow: "Industries",
-  title: "Made for brands banks call risky.",
+  title: "Made for brands *banks call risky.*",
   // Industry list is a working assumption: confirm with Vertlo before launch.
   items: [
     { art: "supplements", title: "Supplements", body: "Monthly reorders keep flowing when one account tightens up." },
@@ -187,7 +189,7 @@ export type MerchantQuote = { story: MerchantStory; value: string; label: string
 // Placeholders: replace with real, approved quotes and numbers before launch. Never ship invented ones.
 export const testimonials: { eyebrow: string; title: string; items: MerchantQuote[] } = {
   eyebrow: "Merchants",
-  title: "Merchants who kept selling.",
+  title: "Merchants who *kept selling.*",
   items: [
     {
       story: "closed",
@@ -216,7 +218,8 @@ export const testimonials: { eyebrow: string; title: string; items: MerchantQuot
   ],
 };
 
-export const faq: Pick<FAQProps, "blurb" | "items"> = {
+export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string } = {
+  title: "Questions, *answered.*",
   blurb: "Ask us anything else on a call.",
   items: [
     {
@@ -239,7 +242,9 @@ export const faq: Pick<FAQProps, "blurb" | "items"> = {
 };
 
 export const cta = {
-  title: "Put every account in one CRM.",
+  eyebrow: "Get started",
+  title: "Put every account *in one CRM.*",
+  blurb: "A 30-minute call. We map your providers and accounts, and show you the portal with your numbers.",
   points: ["Multiple live accounts", "Failover in seconds", "Underwriting in-house"],
 };
 
