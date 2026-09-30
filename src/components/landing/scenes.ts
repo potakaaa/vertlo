@@ -2,11 +2,12 @@
 
 import { gsap } from "@/lib/motion";
 
-/* Each page's scene: a GSAP timeline built from the page's own markup, which Edition either scrubs
-   inside the page-turn timeline (desktop) or ties to the page's scroll (phones), or jumps to the end
-   (reduced motion). The markup is always in its final state, so without JS the paper reads complete;
-   every scene tweens from a starting state to that final state with fromTo. Scenes are named by the
-   page's `data-scene`; every page also prints its engravings in from the top. */
+/* Each page's scene: GSAP timelines built from the page's own markup. On desktop Edition scrubs the
+   whole scene inside the page-turn timeline (sceneFor). On phones a page is taller than the screen, so
+   the scene comes apart (scenePartsFor) and each part runs as it scrolls in. With reduced motion the
+   scene jumps to its end. The markup is always in its final state, so without JS the paper reads
+   complete; every scene tweens from a starting state to that final state with fromTo. Scenes are named
+   by the page's `data-scene`; every page also prints its engravings in from the top. */
 
 type Tl = gsap.core.Timeline;
 type Build = (page: HTMLElement, tl: Tl) => void;
@@ -18,10 +19,20 @@ function setDown(tl: Tl, items: Element[], at = 0.1) {
   if (items.length) tl.fromTo(items, { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out", stagger: 0.14 }, at);
 }
 
+/** Engravings print in from the top. */
+function printIn(tl: Tl, imgs: Element[]) {
+  if (imgs.length) tl.fromTo(imgs, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9, ease: "power1.inOut", stagger: 0.15 }, 0);
+}
+
+/* Stacked, a scene is either a list whose items each set down as they scroll in (`EACH`), or one
+   figure the whole scene plays on as it crosses the screen (`FOCUS`). */
+const EACH: Record<string, string> = { briefs: ".vt-ic-card, .pr-madefor", qa: ".pr-qa-item" };
+const FOCUS: Record<string, string> = { reroute: ".pr-board", underwriting: ".pr-timeline", numbers: ".pr-table", classifieds: ".pr-coupon" };
+
 const SCENES: Record<string, Build> = {
   /* A2: the dot-matrix briefs set down one by one, then the made-for line */
   briefs(page, tl) {
-    setDown(tl, [...all(page, ".vt-ic-card"), ...all(page, ".pr-madefor")]);
+    setDown(tl, all(page, EACH.briefs));
   },
 
   /* A3: the minute US-01 is paused. The clock ticks over 09:41; US-01's share drains and is struck
@@ -78,7 +89,7 @@ const SCENES: Record<string, Build> = {
 
   /* B3: the questions set down */
   qa(page, tl) {
-    setDown(tl, all(page, ".pr-qa-item"), 0.05);
+    setDown(tl, all(page, EACH.qa), 0.05);
   },
 
   /* B4: the scissors run along the cut line, then the coupon lifts off the page */
@@ -94,9 +105,26 @@ const SCENES: Record<string, Build> = {
 /** The page's scene (its engravings printing in, plus its named scene), or null if it has none. */
 export function sceneFor(page: HTMLElement): Tl | null {
   const tl = gsap.timeline();
-  const art = all(page, ".pr-engraving img");
-  if (art.length) tl.fromTo(art, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9, ease: "power1.inOut", stagger: 0.15 }, 0);
+  printIn(tl, all(page, ".pr-engraving img"));
   const build = SCENES[page.dataset.scene ?? ""];
   if (build) build(page, tl);
   return tl.duration() ? tl : null;
+}
+
+/** A part of a page's scene with the element whose scroll drives it. `span` says how far it runs: an
+    "item" finishes soon after it enters; a "figure" plays for as long as it takes to come fully into view. */
+export type ScenePart = { trigger: HTMLElement; tl: Tl; span: "item" | "figure" };
+
+/** The page's scene taken apart for stacked pages: each engraving, each list item, or the one figure. */
+export function scenePartsFor(page: HTMLElement): ScenePart[] {
+  const part = (trigger: HTMLElement, span: ScenePart["span"], build: (tl: Tl) => void): ScenePart => {
+    const tl = gsap.timeline();
+    build(tl);
+    return { trigger, tl, span };
+  };
+  const parts = all(page, ".pr-engraving").map((el) => part(el, "item", (tl) => printIn(tl, all(el, "img"))));
+  const name = page.dataset.scene ?? "";
+  if (EACH[name]) parts.push(...all(page, EACH[name]).map((el) => part(el, "item", (tl) => setDown(tl, [el], 0))));
+  else if (SCENES[name]) parts.push(part(page.querySelector<HTMLElement>(FOCUS[name]) ?? page, "figure", (tl) => SCENES[name](page, tl)));
+  return parts.filter((p) => p.tl.duration() > 0);
 }

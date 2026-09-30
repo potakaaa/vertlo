@@ -106,6 +106,19 @@ main { display: block; padding-top: var(--head); }
 .pr-page-shade { position: absolute; inset: 0; background: oklch(0 0 0 / .035); opacity: 0; pointer-events: none; }
 /* stacked (phones, narrow screens, reduced motion): sheets one under the other */
 .pr-page + .pr-page { border-top: 1px solid var(--rule); }
+/* stacked with motion (Edition.tsx adds pr-ed--cover): the upward turn. Each sheet holds at the foot of the
+   screen (under the running head if it's short) while the next slides over it; Edition.tsx drops the
+   covered sheet back and darkens it. --page-h is the sheet's height, published from JS. */
+.pr-ed--cover .pr-ed-view { background: var(--desk); }
+.pr-ed--cover .pr-page {
+  position: sticky; top: min(var(--head), calc(100svh - var(--page-h, 100svh)));
+  display: grid; min-height: calc(100svh - var(--head)); /* a sheet always covers the one under it */
+  transform-origin: 50% calc(100% - 50svh);              /* drop back around the part that's on screen */
+}
+.pr-ed--cover .pr-page + .pr-page { border-top: 0; box-shadow: 0 -1px 0 var(--rule), 0 -22px 40px -26px oklch(0 0 0 / .3); }
+.pr-ed--cover .pr-page-shade { background: oklch(0 0 0 / .12); }
+/* while ScrollTrigger measures, the sheets sit where they flow */
+.pr-ed--cover.pr-measuring .pr-page { position: relative; top: auto; }
 
 /* turned (wide screens that allow motion): each section pins and its pages lie on top of each other;
    Edition.tsx slides each next sheet in over the last. Only with JS (.pr-js), so without it the pages stack. */

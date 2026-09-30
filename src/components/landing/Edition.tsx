@@ -4,14 +4,16 @@ import Image from "next/image";
 import { useEffect, useRef, type ReactNode } from "react";
 import { gsap, ScrollTrigger, MQ } from "@/lib/motion";
 import { Notification } from "@/components/vertlo";
-import { sceneFor } from "@/components/landing/scenes";
+import { sceneFor, scenePartsFor } from "@/components/landing/scenes";
 
 /* The edition: the site is a paper you turn page by page. On desktop each section (A, then B) pins and
    scrolling turns its pages sideways: the next sheet slides over the last, which drops back a little
    and darkens underneath, then the new page's scene plays (scenes.ts) before the next turn. The scroll
    snaps to finished pages. Between the sections the paper opens to a centre spread that
-   scrolls down (Spread). On phones and with reduced motion the pages stack as sheets and each scene
-   plays as its page scrolls through (or shows finished). Styles in app/press.css (pr-ed, pr-page). */
+   scrolls down (Spread). On phones and narrow screens the pages stack and turn upwards instead: each
+   sheet holds at the foot of the screen while the next slides over it, and the covered sheet drops back
+   and darkens; each part of a page's scene runs as it scrolls in. With reduced motion the pages simply
+   stack and every scene shows finished. Styles in app/press.css (pr-ed, pr-page). */
 
 /** Where the page turns: wide screens that allow motion. Kept in step with press.css. */
 export const TURN = "(min-width: 961px) and (prefers-reduced-motion: no-preference)";
@@ -43,16 +45,54 @@ export function Edition({ label, children }: { label: string; children: ReactNod
       const { turn, reduce } = ctx.conditions as { turn: boolean; stack: boolean; reduce: boolean };
 
       if (!turn) {
-        pages.forEach((p) => {
-          const scene = sceneFor(p);
-          if (scene) {
-            if (reduce) scene.progress(1);
-            else ScrollTrigger.create({ trigger: p, start: "top 72%", end: "center 52%", scrub: 0.6, animation: scene });
-          }
+        /* where a page starts in the flow: measured from the section, because a held (sticky) sheet's own
+           position is wherever it's stuck */
+        const flowTop = (i: number) =>
+          root.getBoundingClientRect().top + window.scrollY + pages.slice(0, i).reduce((h, p) => h + p.offsetHeight, 0);
+        pages.forEach((p, i) => {
           ScrollTrigger.create({ trigger: p, start: "top 50%", end: "bottom 50%", onToggle: (s) => s.isActive && announcePage(infoOf(p)) });
-          pageTargets.set(p.id, () => p.getBoundingClientRect().top + window.scrollY - headHeight());
+          pageTargets.set(p.id, () => flowTop(i) - headHeight());
         });
-        return () => pages.forEach((p) => pageTargets.delete(p.id));
+        const forget = () => pages.forEach((p) => pageTargets.delete(p.id));
+        if (reduce) {
+          pages.forEach((p) => sceneFor(p)?.progress(1));
+          return forget;
+        }
+
+        /* the upward turn: press.css holds each sheet (position: sticky) at the foot of the screen, or
+           under the running head if it's short, using the height we publish as --page-h */
+        root.classList.add("pr-ed--cover");
+        const sizes = new ResizeObserver((entries) =>
+          entries.forEach((e) => (e.target as HTMLElement).style.setProperty("--page-h", `${(e.target as HTMLElement).offsetHeight}px`)),
+        );
+        pages.forEach((p) => sizes.observe(p));
+        /* ScrollTrigger must measure the sheets where they flow, not where they're held */
+        const measuring = () => root.classList.add("pr-measuring");
+        const measured = () => root.classList.remove("pr-measuring");
+        ScrollTrigger.addEventListener("refreshInit", measuring);
+        ScrollTrigger.addEventListener("refresh", measured);
+
+        pages.forEach((p, i) => {
+          scenePartsFor(p).forEach(({ trigger, tl, span }) =>
+            ScrollTrigger.create({ trigger, start: "top 86%", end: span === "item" ? "top 48%" : "bottom 82%", scrub: 0.6, animation: tl }),
+          );
+          /* as the next sheet slides up over this one, this one drops back and darkens */
+          const next = pages[i + 1];
+          if (!next) return;
+          const cover = gsap.timeline({ scrollTrigger: { trigger: next, start: "top bottom", end: () => `top ${headHeight()}px`, scrub: true } });
+          cover.fromTo(p, { scale: 1 }, { scale: 0.95, ease: "none" }, 0);
+          const shade = p.querySelector(".pr-page-shade");
+          if (shade) cover.fromTo(shade, { opacity: 0 }, { opacity: 1, ease: "none" }, 0);
+        });
+
+        return () => {
+          forget();
+          sizes.disconnect();
+          ScrollTrigger.removeEventListener("refreshInit", measuring);
+          ScrollTrigger.removeEventListener("refresh", measured);
+          root.classList.remove("pr-ed--cover", "pr-measuring");
+          pages.forEach((p) => p.style.removeProperty("--page-h"));
+        };
       }
 
       /* one timeline for the whole section: each page turns in, and its scene starts while the sheet is
