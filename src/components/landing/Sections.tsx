@@ -106,7 +106,6 @@ export function Hero() {
       <div className="lp-hero-bg" aria-hidden="true" />
       <HeroGrid />
       <div className="lp-wrap lp-hero">
-        <Badge className="lp-hero-eyebrow">{c.hero.eyebrow}</Badge>
         <h1 className="lp-h1">
           {c.hero.lead}
           <br className="lp-br" />{" "}

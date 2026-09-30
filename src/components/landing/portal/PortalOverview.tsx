@@ -109,10 +109,7 @@ export function PortalOverview({ data }: { data: PortalData }) {
         </div>
 
         <div className="lpo-body">
-          <div className="lpo-head">
-            <div><div className="vtp-h">Overview</div><div className="vtp-sub">Your payment operation at a glance — all brands.</div></div>
-            <span className="lpo-live"><i />Live · updated just now</span>
-          </div>
+          <div className="vtp-h">Overview</div>
 
           <div className="lpo-kpis">
             {data.kpis.map((k, i) => (
@@ -165,7 +162,7 @@ export function PortalOverview({ data }: { data: PortalData }) {
 
           <div className="lpo-rowc">
             <section className="lpo-panel lpo-health">
-              <div className="lpo-panel-h"><div>Payment health<small>Against your limits and targets</small></div><span className="vtp-healthy"><i />Healthy</span></div>
+              <div className="lpo-panel-h"><div>Payment health<small>Within limits · 1 to watch</small></div></div>
               {data.health.map((m) => (
                 <div key={m.label} className="lpo-hrow">
                   <div className="lpo-hrow-t"><span>{m.label}</span><b>{m.value}<small> · {m.of}</small></b><em className={`lpo-${m.tone}`}>{m.status}</em></div>

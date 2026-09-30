@@ -30,6 +30,7 @@ export type PortalData = {
   attention: { tone: "red" | "amber" | "grey"; title: string; meta: string; action: string; on?: boolean }[];
   /** the scroll tour: one camera stop per entry, in order */
   tour: { region: PortalRegion; caption: string }[];
-  pops: { time: string; message: string; status?: { tone?: "ok" | "paused"; label: string } }[];
+  /** stage notifications: the message says what happened, no status badge */
+  pops: { time: string; message: string }[];
 };
 
