@@ -122,11 +122,13 @@ export const portal: PortalData = {
     { tone: "amber", title: "MID US-04 nearing monthly cap", meta: "72% utilised · projected cap Jul 26", action: "Review", on: true },
     { tone: "amber", title: "Compliance document expiring", meta: "Insurance certificate · Jul 20", action: "Upload" },
   ],
-  // Three stops, kept short so the problem arrives soon after the hero.
+  // Three stops, kept short so the problem arrives soon after the hero. The camera's zoom follows the
+  // target's size, so the tour alternates: wide (the numbers), close (the routing panel, the reroute),
+  // then wide again (health and what needs attention) instead of panning at one zoom.
   tour: [
     { region: "kpis", caption: "Every account's numbers on one screen" },
-    { region: "volume", caption: "Jul 10: US-01 paused, approvals held" },
-    { region: "attention", caption: "What needs you, sorted by what it costs" },
+    { region: "routing", caption: "Jul 10: US-01 paused, the rest took its orders" },
+    { region: "lower", caption: "Payment health, and what needs you next" },
   ],
   pops: [
     { time: "09:41", message: "MID US-01 paused. Traffic rerouted to UK-02 and US-03." },
