@@ -136,7 +136,6 @@ export function HowFlow({ steps, caption }: { steps: FlowStep[]; caption?: React
           >
             <span className="lp-flow-num" aria-hidden="true">{i + 1}</span>
             <div className="lp-flow-copy">
-              {s.kicker ? <span className="lp-flow-kicker">{pad(i + 1)} · {s.kicker}</span> : null}
               <h3>{s.title}</h3>
               <p>{s.body}</p>
             </div>

@@ -6,7 +6,7 @@ import type { MerchantQuote, MerchantStory } from "@/content/landing";
 
 /* Merchant stories: one quote at a time beside a line chart that draws what happened to that merchant's
    payments. Tabs advance on their own: the progress fill is a CSS animation and its `animationend` moves
-   to the next story, so pausing (hover, focus, offscreen, background tab) is just `animation-play-state`.
+   to the next story, so pausing (hover, focus, offscreen, background tab, the Pause button) is just `animation-play-state`.
    Reduced motion: no auto-advance, charts appear drawn, text appears without the fade. */
 
 const STORY_MS = 7000;
@@ -18,6 +18,7 @@ export function MerchantStories({ items }: { items: MerchantQuote[] }) {
   const [held, setHeld] = useState(false);
   const [inView, setInView] = useState(false);
   const [auto, setAuto] = useState(true);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     setAuto(!prefersReducedMotion());
@@ -38,7 +39,7 @@ export function MerchantStories({ items }: { items: MerchantQuote[] }) {
   };
 
   const t = items[i];
-  const running = auto && inView && !held;
+  const running = auto && inView && !held && !paused;
 
   return (
     <div
@@ -71,6 +72,12 @@ export function MerchantStories({ items }: { items: MerchantQuote[] }) {
           </figcaption>
         </figure>
       </div>
+
+      {auto ? (
+        <button type="button" className="lp-ms-pause" aria-pressed={paused} onClick={() => setPaused((v) => !v)}>
+          {paused ? "Play" : "Pause"}
+        </button>
+      ) : null}
 
       <div className="lp-ms-tabs" role="tablist" aria-label="Merchant stories" onKeyDown={onKey}>
         {items.map((it, k) => (
@@ -201,7 +208,6 @@ function StoryChart({ story }: { story: MerchantStory }) {
   return (
     <div className="lp-ms-win">
       <div className="lp-ms-win-head">
-        <span className="lp-ms-win-dot" aria-hidden="true" />
         <span>{c.title}</span>
         <span className="lp-ms-win-meta">Last 10 {c.step.toLowerCase()}s</span>
       </div>

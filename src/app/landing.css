@@ -19,7 +19,7 @@ section[id], div[id] { scroll-margin-top: 72px; }
 /* HowFlow: steps left, sticky scene right. --p (0–1) is the scrubbed scroll progress, set from JS. */
 .lp-flow { --flow-h: min(560px, 66vh); --step-h: 72vh; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: clamp(40px, 6vw, 104px); padding-bottom: 14vh; }
 .lp-flow-stage { grid-column: 2; grid-row: 1; align-self: start; position: sticky; top: max(112px, calc(50vh - var(--flow-h) / 2)); height: var(--flow-h); display: flex; flex-direction: column; }
-.lp-flow-meta { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0 0; font: 600 12px/1 var(--font-sans); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); }
+.lp-flow-meta { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0 0; font: 500 12.5px/1 var(--font-sans); color: var(--ink-3); }
 .lp-flow-meta b { font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
 .lp-flow-meta-k { color: var(--forest); }
 .lp-flow-bar { display: flex; gap: 6px; }
@@ -40,11 +40,9 @@ section[id], div[id] { scroll-margin-top: 72px; }
 .lp-flow-copy { opacity: .34; transform: translateY(8px); transition: opacity .5s ease, transform .6s cubic-bezier(.22,1,.36,1); }
 .lp-flow-step[data-state="done"] .lp-flow-copy { opacity: .5; transform: none; }
 .lp-flow-step[data-state="active"] .lp-flow-copy { opacity: 1; transform: none; }
-.lp-flow-kicker { display: block; margin-bottom: 14px; font: 700 12px/1 var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--forest); }
 .lp-flow-step h3 { margin: 0; font: 600 clamp(28px, 2.6vw, 40px)/1.08 var(--font-serif); font-variation-settings: "opsz" 60; letter-spacing: -.012em; color: var(--ink); text-wrap: balance; }
 .lp-flow-step p { margin: 12px 0 0; max-width: 36ch; font: 400 clamp(17px, 1.3vw, 19px)/1.5 var(--font-serif); color: var(--ink); text-wrap: pretty; }
 
-.lp-pf-m { display: none; }
 /* PortalOverview (lpo-*): the product shot's Overview page, 1240 × 860, dark portal tokens (vtp-*) */
 .lpo-body { flex: 1; min-height: 0; padding: 16px 22px 20px; display: flex; flex-direction: column; gap: 12px; }
 .lpo-kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
@@ -119,7 +117,7 @@ section[id], div[id] { scroll-margin-top: 72px; }
 .lp-tour[data-tour] .vt-stage-tilt { transform: rotateX(var(--tour-rx, 14deg)) rotateY(var(--ry)); }
 .lp-tour[data-tour] .vt-stage-caps { display: block; position: absolute; left: 0; right: 0; top: 20px; height: 36px; z-index: 3; pointer-events: none; }
 /* captions: a plain label like How it works' "01 / 03 · SETUP", no pill */
-.lp-tour[data-tour] .vt-stage-cap { position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: center; gap: 12px; height: 36px; font: 500 12px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--on-stealth); animation: none; width: auto; margin: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+.lp-tour[data-tour] .vt-stage-cap { position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: center; gap: 12px; height: 36px; font: 500 12px/1 var(--font-sans); color: var(--on-stealth); animation: none; width: auto; margin: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; }
 .lp-tour[data-tour] .vt-stage-cap b { font-weight: 500; color: var(--on-stealth-faint); font-variant-numeric: tabular-nums; }
 @media (max-width: 720px) { .lp-tour[data-tour] .vt-stage-tilt { transform: none; } .lp-tour[data-tour] .vt-stage { padding-bottom: 62px; } .lp-tour[data-tour] .vt-stage-caps { top: auto; bottom: 14px; height: 34px; } .lp-tour[data-tour] .vt-stage-cap { height: 34px; font-size: 11px; } }
 
@@ -132,7 +130,7 @@ section[id], div[id] { scroll-margin-top: 72px; }
 .lp-ms-quote { margin: 0; padding: 40px 48px; display: flex; flex-direction: column; gap: 28px; justify-content: center; min-height: 320px; }
 
 /* metric: understated, technical */
-.lp-ms-metric { margin: 0; font: 500 12px/1.4 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--ink-faint); animation: lp-ms-fade .5s var(--ms-ease) both; }
+.lp-ms-metric { margin: 0; font: 500 12px/1.4 var(--font-sans); color: var(--ink-faint); animation: lp-ms-fade .5s var(--ms-ease) both; }
 .lp-ms-value { display: inline-block; margin-right: 6px; color: var(--ink); font-weight: 700; }
 .lp-ms-quote blockquote { margin: 0; font: 400 clamp(22px, 2vw, 30px)/1.3 var(--font-serif); letter-spacing: -.01em; color: var(--ink); text-wrap: pretty; }
 .lp-ms-quote blockquote { animation: lp-ms-fade .5s var(--ms-ease) .1s both; }
@@ -147,36 +145,34 @@ section[id], div[id] { scroll-margin-top: 72px; }
   display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-bottom: 1px solid var(--rule-soft);
   font: 500 13px/1 var(--font-sans); color: var(--ink);
 }
-.lp-ms-win-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: vt-live 1.8s ease-out infinite; }
-.lp-ms-win-meta { margin-left: auto; font: 500 10.5px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); }
+.lp-ms-win-meta { margin-left: auto; font: 500 12px/1 var(--font-sans); color: var(--ink-faint); }
 .lp-ms-plot { position: relative; padding: 12px 14px 6px; }
 .lp-ms-svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
 .lp-ms-after { fill: rgba(22,196,90,.045); animation: lp-ms-fade .6s var(--ms-ease) .5s both; }
 .lp-ms-tick line { stroke: rgba(11,20,16,.07); stroke-dasharray: 2 4; }
-.lp-ms-tick text, .lp-ms-phase { font: 500 9px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; fill: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.lp-ms-tick text, .lp-ms-phase { font: 500 10.5px var(--font-sans); fill: var(--ink-faint); font-variant-numeric: tabular-nums; }
 .lp-ms-line { fill: none; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: lp-ms-draw 1.4s var(--ms-ease) both; }
 .lp-ms-line[data-tone="total"] { stroke: var(--ink); stroke-width: 2; }
 .lp-ms-line[data-tone="acct"] { stroke: rgba(11,20,16,.28); }
-.lp-ms-line[data-tone="down"] { stroke: var(--red); }
+.lp-ms-line[data-tone="down"] { stroke: var(--ink-3); }
 .lp-ms-line[data-tone="up"] { stroke: var(--green); stroke-width: 2; }
 .lp-ms-area { fill: rgba(11,20,16,.04); animation: lp-ms-fade .8s var(--ms-ease) .6s both; }
 .lp-ms-event line { stroke-dasharray: 3 3; stroke: rgba(11,20,16,.3); }
-.lp-ms-event[data-tone="down"] line { stroke: rgba(229,72,77,.55); }
+.lp-ms-event[data-tone="down"] line { stroke: var(--rule); }
 .lp-ms-event[data-tone="up"] line { stroke: rgba(10,122,59,.5); }
-.lp-ms-event text { font: 500 9px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; }
-.lp-ms-event[data-tone="down"] text { fill: var(--red); }
+.lp-ms-event text { font: 500 10.5px var(--font-sans); }
+.lp-ms-event[data-tone="down"] text { fill: var(--ink-3); }
 .lp-ms-event[data-tone="up"] text { fill: var(--green-deep); }
 .lp-ms-event { animation: lp-ms-fade .5s var(--ms-ease) .7s both; }
-.lp-ms-dot { fill: var(--green); animation: lp-ms-fade .4s var(--ms-ease) 1.3s both, lp-ms-ping 2.2s ease-out 1.7s infinite; }
+.lp-ms-dot { fill: var(--green); animation: lp-ms-fade .4s var(--ms-ease) 1.3s both; }
 @keyframes lp-ms-draw { to { stroke-dashoffset: 0; } }
-@keyframes lp-ms-ping { 0% { stroke: rgba(22,196,90,.6); stroke-width: 0; } 70%, 100% { stroke: rgba(22,196,90,0); stroke-width: 12; } }
 
 /* scrub: crosshair + dots in the chart, values in a small tooltip */
 .lp-ms-hit { fill: transparent; cursor: crosshair; }
 .lp-ms-cross line { stroke: rgba(11,20,16,.35); }
 .lp-ms-cross circle { fill: var(--bg); stroke-width: 1.5; stroke: var(--ink); }
 .lp-ms-cross circle[data-tone="acct"] { stroke: rgba(11,20,16,.45); }
-.lp-ms-cross circle[data-tone="down"] { stroke: var(--red); }
+.lp-ms-cross circle[data-tone="down"] { stroke: var(--ink-3); }
 .lp-ms-cross circle[data-tone="up"] { stroke: var(--green); }
 .lp-ms-tip {
   position: absolute; top: 44px; z-index: 2; pointer-events: none; min-width: 132px; padding: 8px 10px; display: grid; gap: 4px;
@@ -184,13 +180,13 @@ section[id], div[id] { scroll-margin-top: 72px; }
   font: 500 11px/1.2 var(--font-sans); transform: translateX(10px);
 }
 .lp-ms-tip[data-side="left"] { transform: translateX(calc(-100% - 10px)); }
-.lp-ms-tip b { font: 500 9.5px/1.4 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--on-stealth-faint); }
+.lp-ms-tip b { font: 500 12px/1.4 var(--font-sans); color: var(--on-stealth-faint); }
 .lp-ms-tip span, .lp-ms-legend li { display: flex; align-items: center; gap: 6px; }
 .lp-ms-tip em, .lp-ms-legend em { margin-left: auto; padding-left: 10px; font-style: normal; font-variant-numeric: tabular-nums; }
 .lp-ms-tip i, .lp-ms-legend i { width: 10px; height: 2px; border-radius: 1px; flex: none; background: currentColor; }
 .lp-ms-tip [data-tone="total"] i { background: var(--on-stealth); }
 .lp-ms-tip [data-tone="acct"] i { background: var(--on-stealth-faint); }
-.lp-ms-tip [data-tone="down"] i, .lp-ms-legend [data-tone="down"] i { background: var(--red); }
+.lp-ms-tip [data-tone="down"] i, .lp-ms-legend [data-tone="down"] i { background: var(--ink-3); }
 .lp-ms-tip [data-tone="up"] i, .lp-ms-legend [data-tone="up"] i { background: var(--green); }
 
 /* legend: last value per series */
@@ -201,8 +197,8 @@ section[id], div[id] { scroll-margin-top: 72px; }
 .lp-ms-legend em { padding-left: 2px; color: var(--ink); }
 .lp-ms-legend [data-tone="total"] i { background: var(--ink); }
 .lp-ms-legend [data-tone="acct"] i { background: rgba(11,20,16,.3); }
-.lp-ms-legend [data-tone="down"] em { color: var(--red); }
-.lp-ms-legend .lp-ms-illus { margin-left: auto; font: 500 9.5px/1.2 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
+.lp-ms-legend [data-tone="down"] em { color: var(--ink-3); }
+.lp-ms-legend .lp-ms-illus { margin-left: auto; font: 500 12px/1.2 var(--font-sans); color: var(--ink-faint); }
 
 /* tabs: a progress track per story; the fill's animationend advances */
 .lp-ms-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--rule-soft); }
@@ -213,7 +209,7 @@ section[id], div[id] { scroll-margin-top: 72px; }
 .lp-ms-tab + .lp-ms-tab { border-left: 1px solid var(--rule-soft); }
 .lp-ms-tab:hover, .lp-ms-tab[aria-selected="true"] { color: var(--ink); }
 .lp-ms-tab:focus-visible { outline: 2px solid var(--forest); outline-offset: -4px; }
-.lp-ms-tab-n { font: 500 11px/1 var(--font-mono); letter-spacing: .06em; color: var(--ink-faint); }
+.lp-ms-tab-n { font: 500 12px/1 var(--font-sans); color: var(--ink-faint); }
 .lp-ms-tab[aria-selected="true"] .lp-ms-tab-n { color: var(--green-deep); }
 .lp-ms-tab-t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lp-ms-track { position: absolute; left: 32px; right: 32px; top: -1px; height: 2px; overflow: hidden; }
@@ -223,7 +219,7 @@ section[id], div[id] { scroll-margin-top: 72px; }
 
 @media (prefers-reduced-motion: reduce) {
   .lp-ms-line { stroke-dashoffset: 0; }
-  .lp-ms-line, .lp-ms-event, .lp-ms-dot, .lp-ms-after, .lp-ms-area, .lp-ms-legend, .lp-ms-win-dot, .lp-ms-metric, .lp-ms-quote blockquote, .lp-ms-quote figcaption { animation: none; }
+  .lp-ms-line, .lp-ms-event, .lp-ms-dot, .lp-ms-after, .lp-ms-area, .lp-ms-legend, .lp-ms-metric, .lp-ms-quote blockquote, .lp-ms-quote figcaption { animation: none; }
 }
 @media (max-width: 960px) {
   .lp-ms-stage { grid-template-columns: 1fr; }
@@ -238,9 +234,6 @@ section[id], div[id] { scroll-margin-top: 72px; }
   .lp-ms-quote { padding: 28px 20px; min-height: 0; gap: 22px; }
   .lp-ms-tab { padding: 18px 16px 16px; min-height: 56px; }
   .lp-ms-track { left: 16px; right: 16px; }
-  .lp-ms-tab-t { display: none; }
-  .lp-pf-d { display: none; }
-  .lp-pf-m { display: block; }
   /* HowFlow: the scene sticks under the header, steps scroll beneath it */
   .lp-flow { --flow-h: min(50svh, calc(75vw + 40px)); --step-h: 58svh; grid-template-columns: minmax(0, 1fr); padding: 0; border-top: 0; }
   .lp-flow-stage { grid-column: 1; grid-row: 1; top: 56px; z-index: 2; margin-inline: calc(var(--lp-x) * -1); padding-inline: var(--lp-x); background: var(--mist); border-block: 1px solid var(--rule-soft); box-sizing: border-box; transition: box-shadow .2s; }

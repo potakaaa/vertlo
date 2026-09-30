@@ -1,33 +1,35 @@
-import { CrmSlice, Diamond, Icon, IndustryCards, ProviderFlow } from "@/components/vertlo";
+import { Diamond, IndustryCards } from "@/components/vertlo";
 import * as c from "@/content/landing";
 import { HowFlow } from "@/components/landing/HowFlow";
 import { MerchantStories } from "@/components/landing/MerchantStories";
 import { PortalTour } from "@/components/landing/PortalTour";
 import {
   BookCall,
-  Colophon,
   Coupon,
   DataTable,
-  Fig,
   FrontMast,
   Headline,
+  Imprint,
+  MadeFor,
   Notice,
   QA,
   RunningHead,
+  Timeline,
 } from "@/components/landing/Press";
-import { Count, Edition, Engraving, Page, RerouteBoard, Spread } from "@/components/landing/Edition";
+import { Edition, Engraving, Page, RerouteBoard, Spread } from "@/components/landing/Edition";
 
 /* Concept C, "the edition": the site is a paper you turn page by page (Edition.tsx). The front section
    (A1–A4) turns sideways: the front page, then Risk, Routing and Underwriting, each page one screen with
-   its own scene. The paper then opens to a centre spread that scrolls down: the portal on a laptop, how
-   routing is wired, the providers. The back section (B1–B5) turns sideways again: Markets, the numbers,
-   Letters, Q&A, and the Classifieds page with the clip-out coupon. Stipple engravings (public/images/press)
-   print onto each page. Copy is a headline and one line a page; figures carry the rest. */
+   its own composition and scene. The paper then opens to a centre spread that scrolls down: the portal on
+   a laptop and how routing is wired. The back section (B1–B4) turns sideways again: the numbers, Letters,
+   Q&A, and the Classifieds page with the clip-out coupon; the imprint closes the paper. Stipple engravings
+   (public/images/press) print onto the pages. Copy is a headline and one line a page; figures carry the
+   rest, numbered in reading order (Figure 1 routing board, 2 underwriting, 3 portal, 4 how it's wired). */
 
 const folio = (id: string) => {
   const p = c.edition.pages.find((x) => x.id === id);
   if (!p) throw new Error(`No page "${id}" in the edition`);
-  return { id: p.id, no: p.no, section: p.section };
+  return p;
 };
 
 export function Head() {
@@ -36,9 +38,10 @@ export function Head() {
 
 /* A1–A4: the front section, turned sideways */
 export function FrontSection() {
-  const u = c.forBrands;
+  const u = c.underwriting;
   return (
     <Edition label="Front section, pages A1 to A4">
+      {/* A1: the lead story beside Exhibit A */}
       <Page {...folio("front")} folio={false} turn={c.edition.turn}>
         <FrontMast nameplate={c.masthead.nameplate} edition={c.masthead.edition} motto={c.masthead.motto} />
         <div className="pr-front">
@@ -57,139 +60,94 @@ export function FrontSection() {
         </div>
       </Page>
 
+      {/* A2: a secondary story set across the page: three briefs, and who it's made for on one ruled line */}
       <Page {...folio("risk")} scene="briefs" turn={c.edition.turn}>
-        <div className="pr-split">
-          <div className="pr-split-l">
+        <div className="pr-risk">
+          <div className="pr-risk-head">
             <Headline title={c.problem.title} deck={c.problem.blurb} />
-            <Engraving src="/images/press/envelope.jpg" />
+            <Engraving src="/images/press/goods.jpg" />
           </div>
           <IndustryCards items={c.problem.items} className="pr-briefs" />
+          <MadeFor {...c.problem.madeFor} />
         </div>
       </Page>
 
+      {/* A3: the second lead: the routing board at the minute of the pause (Figure 1) */}
       <Page {...folio("routing")} scene="reroute" turn={c.edition.turn}>
         <div className="pr-split">
           <div className="pr-split-l">
-            <Headline title={c.routing.title} deck={c.routing.deck} />
-            <Engraving src="/images/press/terminal.jpg" />
+            <Headline size="lead" title={c.routing.title} deck={c.routing.deck} />
+            <Engraving src="/images/press/checkout.jpg" />
           </div>
           <RerouteBoard {...c.routing.board} notice={c.notice.reroute} />
         </div>
       </Page>
 
+      {/* A4: one application's timeline, drawn across the page (Figure 2) */}
       <Page {...folio("underwriting")} scene="underwriting" turn="Scroll on: the paper opens">
-        <div className="pr-split">
-          <div className="pr-split-l">
+        <div className="pr-uw">
+          <div className="pr-uw-head">
             <Headline title={u.title} deck={u.deck} />
-            <ul className="pr-points">
-              {u.items.map((it) =>
-                typeof it === "string" ? null : (
-                  <li key={it.label}>
-                    <Icon name={it.icon ?? "layers"} size={20} />
-                    <span>
-                      <b>{it.label}</b>
-                      {it.meta}
-                    </span>
-                  </li>
-                ),
-              )}
-            </ul>
+            <Engraving src="/images/press/pen.jpg" />
           </div>
-          <div className="pr-uw-art">
-            <Engraving src="/images/press/pen.jpg" className="pr-engraving--sm" />
-            <Fig label="Figure 4" caption={u.figure}>
-              <div className="pr-slices">
-                <CrmSlice kind="underwriting" decorative />
-                <CrmSlice kind="mids" decorative />
-              </div>
-            </Fig>
-          </div>
+          <figure className="pr-fig">
+            <Timeline steps={u.steps} />
+            <figcaption className="pr-cap">
+              <b>{u.figure.label}.</b> {u.figure.caption} <span className="pr-cap-credit">{u.figure.credit}</span>
+            </figcaption>
+          </figure>
         </div>
       </Page>
     </Edition>
   );
 }
 
-/* C: the centre spread, scrolled down: the portal on a laptop (Figure 1, pinned and toured), how routing
-   is wired (Figure 2, HowFlow), and the providers (Figure 3) */
+/* C: the centre spread, scrolled down: the portal on a laptop (Figure 3, pinned and toured) and how
+   routing is wired (Figure 4, HowFlow) */
 export function CentreSpread() {
-  const fig2 = (
+  const flowCaption = (
     <>
-      <b>{c.figure2.label}.</b> {c.figure2.caption}
-      <span className="pr-cap-credit">Illustrative</span>
+      <b>{c.flowFigure.label}.</b> {c.flowFigure.caption} <span className="pr-cap-credit">{c.flowFigure.credit}</span>
     </>
   );
+  const page = folio("centre");
   return (
-    <Spread {...folio("centre")}>
+    <Spread {...page}>
       <div className="lp-wrap pr-spread-head">
         <header className="pr-folio">
-          <span>
-            <b>C</b> Centre spread
-          </span>
-          <span className="pr-folio-r">Vertlo · Vol. 1 · No. 1</span>
+          <b>{page.no}</b> {page.section}
         </header>
-        <Headline title="The portal, opened up." deck={c.edition.centre} />
+        <Headline size="lead" title="The portal, opened up." deck={c.edition.centre} />
       </div>
-      <section className="pr-figsec" aria-label="Figure 1: the Vertlo portal">
+      <section className="pr-figsec" aria-label={`${c.portalFigure.label}: the Vertlo portal`}>
         <div className="lp-wrap lp-stage">
           <PortalTour data={c.portal} clipH={760} clipHMobile={860} />
         </div>
         <div className="lp-wrap">
-          <p className="pr-cap pr-cap--fig1">
-            <b>{c.figure1.label}.</b> {c.figure1.caption}
-            <span className="pr-cap-credit">{c.figure1.credit}</span>
+          <p className="pr-cap pr-cap--fig">
+            <b>{c.portalFigure.label}.</b> {c.portalFigure.caption} <span className="pr-cap-credit">{c.portalFigure.credit}</span>
           </p>
         </div>
       </section>
       <div className="lp-wrap pr-spread-part" id="how">
         <Headline title={c.how.title} deck={c.how.deck} />
-        <HowFlow steps={c.how.steps} caption={fig2} />
-        <p className="pr-cap pr-cap--m">{fig2}</p>
-      </div>
-      <div className="lp-wrap pr-spread-part">
-        <Fig label={c.providers.label} caption={`${c.providers.title} ${c.providers.caption}`} credit="Diagram" className="pr-pf">
-          <div className="lp-pf-d">
-            <ProviderFlow />
-          </div>
-          <div className="lp-pf-m">
-            <ProviderFlow layout="vertical" />
-          </div>
-        </Fig>
+        <HowFlow steps={c.how.steps} caption={flowCaption} />
+        <p className="pr-cap pr-cap--m">{flowCaption}</p>
       </div>
     </Spread>
   );
 }
 
-/* B1–B5: the back section, turned sideways, ending on the coupon */
+/* B1–B4: the back section, turned sideways, ending on the coupon */
 export function BackSection() {
   return (
-    <Edition label="Back section, pages B1 to B5">
-      <Page {...folio("markets")} scene="briefs" turn={c.edition.turn}>
-        <div className="pr-split">
-          <div className="pr-split-l">
-            <Headline title={c.industries.title} deck="Supplements, subscriptions and digital goods, on the processors they already use." />
-            <Engraving src="/images/press/shopfront.jpg" />
-          </div>
-          <IndustryCards items={c.industries.items} className="pr-briefs" />
-        </div>
-      </Page>
-
+    <Edition label="Back section, pages B1 to B4">
+      {/* B1: a table-led page: Table 1 large, the headline in the margin */}
       <Page {...folio("numbers")} scene="numbers" turn={c.edition.turn}>
         <div className="pr-numbers">
-          <Headline title={c.numbers.title} deck={c.numbers.deck} />
-          <dl className="pr-figures">
-            {c.numbers.figures.map((f) => (
-              <div key={f.label}>
-                <dt>{f.label}</dt>
-                <dd>
-                  <Count to={f.to} decimals={f.decimals} prefix={f.prefix} suffix={f.suffix} />
-                  <small>{f.note}</small>
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <div className="pr-numbers-row">
-            <DataTable {...c.table} />
+          <DataTable {...c.table} />
+          <div className="pr-numbers-side">
+            <Headline title={c.numbers.title} deck={c.numbers.deck} />
             <Engraving src="/images/press/parcels.jpg" />
           </div>
         </div>
@@ -215,13 +173,13 @@ export function BackSection() {
         </div>
       </Page>
 
+      {/* B4: the merchants' register, then the coupon as the last thing printed */}
       <Page {...folio("classifieds")} scene="classifieds">
-        <div className="pr-classifieds" id="book">
-          <Coupon label={c.cta.label} title={c.cta.title} blurb={c.cta.blurb} bring={c.cta.bring} terms={c.cta.terms} />
+        <div className="pr-classifieds">
           <div className="pr-trust">
             <p className="pr-trust-h">
               <span>{c.trust.heading}</span>
-              <span className="pr-trust-note">{c.trust.note}</span>
+              <span>{c.trust.note}</span>
             </p>
             <ul className="pr-logos">
               {c.logos.map((l) => (
@@ -232,6 +190,9 @@ export function BackSection() {
               ))}
             </ul>
           </div>
+          <div id="book">
+            <Coupon title={c.cta.title} blurb={c.cta.blurb} bring={c.cta.bring} terms={c.cta.terms} />
+          </div>
         </div>
       </Page>
     </Edition>
@@ -239,5 +200,5 @@ export function BackSection() {
 }
 
 export function SiteFooter() {
-  return <Colophon nameplate={c.masthead.nameplate} tagline={c.footer.tagline} colophon={c.footer.colophon} columns={c.footer.columns} />;
+  return <Imprint nameplate={c.masthead.nameplate} tagline={c.imprint.tagline} notes={c.imprint.notes} pages={c.edition.pages} />;
 }

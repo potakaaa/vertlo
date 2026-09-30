@@ -188,9 +188,9 @@ function lit(x: number, y: number, [x0, y0, x1, y1]: Rect) {
   return 1 - (1 - DIM) * smooth(clamp01(d / 4));
 }
 
-const INK = "11,20,16", GREEN = "22,196,90", RED = "229,72,77";
-const CELL: Record<Col, string> = { w: INK, g: GREEN, r: RED };
-const TEXT: Record<Col, string> = { w: INK, g: "10,122,59", r: "196,48,54" };
+const INK = "11,20,16", GREEN = "22,196,90", MUTED = "92,104,98"; // paused prints muted: red is kept for the strike
+const CELL: Record<Col, string> = { w: INK, g: GREEN, r: MUTED };
+const TEXT: Record<Col, string> = { w: INK, g: "10,122,59", r: MUTED };
 
 /** Focus position for scroll progress p: 0 → step 1 … 2 → step 3. Reduced motion parks p at each
     step's end, so the step reads straight off it; otherwise the focus moves around step boundaries. */

@@ -8,8 +8,8 @@ import { headHeight, scrollTargetFor } from "@/components/landing/Edition";
 /** Page-level scroll: Lenis smooth scrolling driven by GSAP's ticker so ScrollTrigger (pins, scrubs)
     reads the same scroll position on the same frame; one ScrollTrigger re-measure whenever the page
     height changes after load (fonts, client-rendered art); and in-page links. A link to a page of the
-    edition scrolls to where that page lies open (inside a pinned section that's not the page's own
-    offset), so anchors resolve through scrollTargetFor; anything else lands under the running head.
+    edition, or to anything printed on one, scrolls to where that page lies open (inside a pinned section
+    that's not the element's own offset), via scrollTargetFor; anything else lands under the running head.
     `press:scrollto` events (keyboard focus on a closed page) scroll the same way. Lenis is off for
     prefers-reduced-motion, and scrolling jumps instead. */
 export function SmoothScroll() {
@@ -35,9 +35,13 @@ export function SmoothScroll() {
       if (lenis) lenis.scrollTo(y, { immediate, duration: immediate ? 0 : 1.4 });
       else window.scrollTo(0, y);
     };
+    /* the id of the edition page an anchor is, or sits on (the coupon's `#book` is on the last page) */
+    const pageOf = (id: string) => document.getElementById(id)?.closest<HTMLElement>(".pr-page")?.id ?? null;
     const targetOf = (id: string) => {
-      const page = scrollTargetFor(id);
-      if (page !== null) return page;
+      const page = pageOf(id);
+      if (page) return scrollTargetFor(page);
+      const direct = scrollTargetFor(id);
+      if (direct !== null) return direct;
       const el = document.getElementById(id);
       return el ? el.getBoundingClientRect().top + window.scrollY - headHeight() : null;
     };
@@ -64,10 +68,10 @@ export function SmoothScroll() {
        edition, once its section has said where the page lies open), go there */
     const onFirstRefresh = () => {
       const id = decodeURIComponent(location.hash.slice(1));
-      const el = id ? document.getElementById(id) : null;
-      if (el?.closest(".pr-ed") && scrollTargetFor(id) === null) return; // not measured yet: wait for the next refresh
+      const page = id ? pageOf(id) : null;
+      if (page && scrollTargetFor(page) === null) return; // not measured yet: wait for the next refresh
       ScrollTrigger.removeEventListener("refresh", onFirstRefresh);
-      const y = el ? targetOf(id) : null;
+      const y = id ? targetOf(id) : null;
       if (y !== null) scrollTo(y, true);
     };
     ScrollTrigger.addEventListener("refresh", onFirstRefresh);

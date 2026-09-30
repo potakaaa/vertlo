@@ -1,4 +1,4 @@
-import type { FAQProps, FeaturePanelProps, IndustryCardsProps, LinkItem } from "@/components/vertlo";
+import type { FAQProps, IndustryCardsProps } from "@/components/vertlo";
 import type { PortalData } from "@/components/landing/portal/types";
 import type { FlowStep } from "@/components/landing/HowFlow";
 
@@ -20,18 +20,14 @@ export const edition: { pages: { id: string; no: string; section: string }[]; tu
     { id: "routing", no: "A3", section: "Routing" },
     { id: "underwriting", no: "A4", section: "Underwriting" },
     { id: "centre", no: "C", section: "Centre spread" },
-    { id: "markets", no: "B1", section: "Markets" },
-    { id: "numbers", no: "B2", section: "The numbers" },
-    { id: "letters", no: "B3", section: "Letters" },
-    { id: "questions", no: "B4", section: "Q&A" },
-    { id: "classifieds", no: "B5", section: "Classifieds" },
+    { id: "numbers", no: "B1", section: "The numbers" },
+    { id: "letters", no: "B2", section: "Letters" },
+    { id: "questions", no: "B3", section: "Q&A" },
+    { id: "classifieds", no: "B4", section: "Classifieds" },
   ],
   turn: "Scroll to turn the page",
   centre: "The paper opens: the product, at full size.",
 };
-
-/** The front page's "Inside" index and the running head's contents. */
-export const navLinks: LinkItem[] = edition.pages.map((p) => ({ label: p.section, href: `#${p.id}` }));
 
 export const masthead = {
   nameplate: "Vertlo",
@@ -108,14 +104,14 @@ export const portal: PortalData = {
   ],
   pops: [
     { time: "09:41", message: "MID US-01 paused. Traffic rerouted to UK-02 and US-03." },
-    { time: "09:52", message: "New MID approved: US-04. Added to routing." },
+    { time: "09:52", message: "MID US-04 carrying 20% of volume. Approvals steady." },
     { time: "10:07", message: "Dispute DSP-0221 caught early. Refunded before chargeback." },
   ],
 };
 
-/** Figure 1: the portal tour's caption. */
-export const figure1 = {
-  label: "Figure 1",
+/** Figure 3: the portal tour's caption. */
+export const portalFigure = {
+  label: "Figure 3",
   caption: "The portal’s Overview. Scroll to tour it.",
   credit: "Illustrative data",
 };
@@ -124,12 +120,11 @@ export const trust = { heading: "Merchants on Vertlo", note: "Placeholder logos"
 export const logos = ["LOGO 01", "LOGO 02", "LOGO 03", "LOGO 04", "LOGO 05", "LOGO 06"];
 
 export const problem: {
-  eyebrow: string;
   title: string;
   blurb: string;
   items: IndustryCardsProps["items"];
+  madeFor: { label: string; items: string[] };
 } = {
-  eyebrow: "Risk",
   title: "Three ways a high-risk checkout stops.",
   blurb:
     "High-risk brands can lose an account with one email. Most also run payments across separate tools and chat groups.",
@@ -151,10 +146,11 @@ export const problem: {
       body: "High-risk applications get declined or stall. We underwrite in-house and issue them.",
     },
   ],
+  // Industry list is a working assumption: confirm with Vertlo before launch.
+  madeFor: { label: "Made for", items: ["Supplements", "Subscriptions", "Digital goods"] },
 };
 
-export const how: { eyebrow: string; title: string; deck: string; steps: FlowStep[] } = {
-  eyebrow: "Routing",
+export const how: { title: string; deck: string; steps: FlowStep[] } = {
   title: "Set it up once. It routes from there.",
   deck: "Connect the processors you have, set the rules, and let each order find a live account.",
   // Rendered by HowFlow: one scroll-driven scene (connect → route → keep), steps alongside.
@@ -162,7 +158,7 @@ export const how: { eyebrow: string; title: string; deck: string; steps: FlowSte
     {
       kicker: "Setup",
       title: "Connect your providers",
-      body: "Bring every processor and merchant account into one CRM.",
+      body: "Visa and Mastercard acquirers, PayPal and your own processor, in one CRM.",
     },
     {
       kicker: "Your rules",
@@ -177,14 +173,15 @@ export const how: { eyebrow: string; title: string; deck: string; steps: FlowSte
   ],
 };
 
-/** Figure 2: the HowFlow scene's caption. */
-export const figure2 = {
-  label: "Figure 2",
+/** Figure 4: the HowFlow scene's caption. A schematic: its MIDs are generic, not the demo account's. */
+export const flowFigure = {
+  label: "Figure 4",
   caption: "Processors in, volume split across MIDs, and a paused MID's share moved to the rest.",
+  credit: "Schematic",
 };
 
-/** A3: the routing board. The morning US-01 is paused, its share drains to 0 and the live MIDs take it.
-    Shares before are illustrative; after matches the portal's routing split (42 / 38 / 20). */
+/** A3: the routing board (Figure 1). The morning US-01 is paused, its 30% drains to 0 and goes to US-03 and
+    UK-02, as the notification says; US-04 holds its share. After matches the portal's split (42 / 38 / 20). */
 export const routing = {
   title: "One account pauses. The rest take the traffic.",
   deck: "When a processor pauses a MID, Vertlo takes it out of routing and splits its share across the accounts still live.",
@@ -195,26 +192,22 @@ export const routing = {
     from: "09:40",
     to: "09:41",
     orders: "Orders per minute",
+    label: "Figure 1",
+    caption: "The routing board the minute US-01 is paused.",
     note: "Illustrative data",
     rows: [
       { id: "US-01", provider: "Processor A", before: 30, after: 0 },
-      { id: "US-03", provider: "Processor C", before: 28, after: 42 },
-      { id: "UK-02", provider: "Processor B", before: 26, after: 38 },
-      { id: "US-04", provider: "Processor A", before: 16, after: 20 },
+      { id: "US-03", provider: "Processor C", before: 27, after: 42 },
+      { id: "UK-02", provider: "Processor B", before: 23, after: 38 },
+      { id: "US-04", provider: "Processor A", before: 20, after: 20 },
     ],
   },
 };
 
-/** B2: the month on the demo account, counted up, from the portal's own figures. */
+/** B1: the month on the demo account. Table 1 carries the page. */
 export const numbers = {
   title: "The month, in numbers.",
   deck: "One account paused mid-month. Thirty days on the demo account, from the portal.",
-  figures: [
-    { to: 1.84, prefix: "$", suffix: "M", decimals: 2, label: "Gross volume", note: "+12.4% on the prior 30 days" },
-    { to: 92.6, prefix: "", suffix: "%", decimals: 1, label: "Approval rate", note: "No dip the day US-01 paused" },
-    { to: 0.62, prefix: "", suffix: "%", decimals: 2, label: "Chargeback ratio", note: "Limit 1.0%" },
-    { to: 3, prefix: "", suffix: " of 4", decimals: 0, label: "MIDs live", note: "US-01 paused, rerouted" },
-  ],
 };
 
 /** Table 1: the demo account's month, from the same data as the portal. Illustrative, and labelled so. */
@@ -233,34 +226,17 @@ export const table = {
   foot: ["All", "100%", "92.6%", "$1.84M volume"],
 };
 
-export const forBrands: Pick<FeaturePanelProps, "items"> & { eyebrow: string; title: string; deck: string; figure: string } = {
-  eyebrow: "Underwriting",
+/** A4: underwriting, told as one application's timeline on the demo account (the same dates the portal shows). */
+export const underwriting = {
   title: "We’ll issue the accounts you need.",
   deck: "We underwrite in-house, so getting a new account doesn’t stall your checkout.",
-  figure: "Underwriting and your MIDs in the portal.",
-  items: [
-    { label: "Multiple live accounts", meta: "Run several MIDs side by side", icon: "layers" },
-    { label: "Underwriting in-house", meta: "No outside approvals to wait on", icon: "shield" },
-    { label: "Dispute alerts", meta: "Refund before it’s a chargeback", icon: "bell" },
-    { label: "One CRM", meta: "Every provider on one screen", icon: "dashboard" },
+  steps: [
+    { date: "Jul 02", label: "Application submitted" },
+    { date: "Jul 03", label: "Documents verified" },
+    { date: "Jul 05", label: "Underwriting review" },
+    { date: "Jul 08", label: "MID US-04 approved", note: "Added to routing the same day" },
   ],
-};
-
-export const providers = {
-  label: "Figure 3",
-  title: "Connect the providers you already use.",
-  caption: "Your processors in, your merchant accounts out.",
-};
-
-export const industries: { eyebrow: string; title: string; items: IndustryCardsProps["items"] } = {
-  eyebrow: "Markets",
-  title: "Made for brands banks call risky.",
-  // Industry list is a working assumption: confirm with Vertlo before launch.
-  items: [
-    { art: "supplements", title: "Supplements", body: "Monthly reorders keep flowing when one account tightens up." },
-    { art: "subscriptions", title: "Subscriptions", body: "A failed renewal is retried on another account." },
-    { art: "digital", title: "Digital goods", body: "Payments go through on whichever account is live." },
-  ],
+  figure: { label: "Figure 2", caption: "One application on the demo account, from submission to a live MID.", credit: "Illustrative data" },
 };
 
 /** Which illustrative chart plays beside a quote. */
@@ -269,8 +245,7 @@ export type MerchantStory = "closed" | "hours" | "newMid";
 export type MerchantQuote = { story: MerchantStory; value: string; label: string; quote: string; name: string; business: string };
 
 // Placeholders: replace with real, approved quotes and numbers before launch. Never ship invented ones.
-export const testimonials: { eyebrow: string; title: string; note: string; items: MerchantQuote[] } = {
-  eyebrow: "Merchants",
+export const testimonials: { title: string; note: string; items: MerchantQuote[] } = {
   title: "Merchants who kept selling.",
   note: "Placeholder quotes until merchants approve their own.",
   items: [
@@ -301,8 +276,7 @@ export const testimonials: { eyebrow: string; title: string; note: string; items
   ],
 };
 
-export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string; eyebrow: string } = {
-  eyebrow: "Q&A",
+export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string } = {
   title: "What merchants ask before the call.",
   blurb: "Ask us anything else on a call.",
   items: [
@@ -325,45 +299,17 @@ export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string; eyebrow: 
   ],
 };
 
-/** The closing call, printed as a clip-out coupon. */
+/** The closing call, printed as a clip-out coupon. Its headline calls back to the front page's promise. */
 export const cta = {
-  label: "Clip and keep",
-  title: "Put every account in one CRM.",
+  title: "Keep selling when one account closes.",
   blurb: "A 30-minute call. We map your providers and accounts, and show you the portal with your numbers.",
   /** What to bring, printed as tick boxes on the coupon. */
   bring: ["Your processors", "Your live and paused MIDs", "Last month’s chargeback ratio"],
-  points: ["Multiple live accounts", "Failover in seconds", "Underwriting in-house"],
   terms: "Pricing is quoted per merchant, on the call.",
 };
 
-export const footer = {
+/** The imprint at the foot of the paper. Its contents list comes from `edition.pages`. */
+export const imprint = {
   tagline: "The payment CRM for high-risk ecommerce.",
-  colophon: "Figures and tables marked illustrative use demo data.",
-  columns: [
-    {
-      title: "Product",
-      links: [
-        { label: "Routing", href: "#how" },
-        { label: "Failover", href: "#how" },
-        { label: "Dispute alerts", href: "#portal" },
-        { label: "Underwriting", href: "#underwriting" },
-        { label: "Portal", href: "#figure-1" },
-      ],
-    },
-    {
-      title: "Company",
-      links: [
-        { label: "Markets", href: "#industries" },
-        { label: "Merchants", href: "#reviews" },
-        { label: "Book a call", href: "#book" },
-      ],
-    },
-    {
-      title: "Account",
-      links: [
-        { label: "Login", href: "#book" },
-        { label: "Support", href: "#book" },
-      ],
-    },
-  ],
+  notes: ["Figures and tables marked illustrative use demo data.", "Set in Newsreader and Public Sans."],
 };

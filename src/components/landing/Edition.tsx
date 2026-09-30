@@ -90,7 +90,8 @@ export function Edition({ label, children }: { label: string; children: ReactNod
         pin: true,
         scrub: 0.7,
         animation: tl,
-        invalidateOnRefresh: true,
+        // no invalidateOnRefresh: it would reset the scenes' counters (clock, shares) to their start values
+        // while the page sits finished; nothing in the scenes measures the layout
         // nearest page, not directional: a link that lands on a page stays there
         snap: { snapTo: snaps(), directional: false, duration: { min: 0.25, max: 0.8 }, delay: 0.1, ease: "power1.inOut" },
         onUpdate: (self) => {
@@ -128,7 +129,7 @@ export function Edition({ label, children }: { label: string; children: ReactNod
   );
 }
 
-/** One page of the paper: its folio (number, section, the paper's name) on top, its content, and a turn cue. */
+/** One page of the paper: its folio (number and section) on top, its content, and a turn cue. */
 export function Page({
   id,
   no,
@@ -151,17 +152,13 @@ export function Page({
       <div className="lp-wrap pr-page-in">
         {folio ? (
           <header className="pr-folio">
-            <span>
-              <b>{no}</b> {section}
-            </span>
-            <span className="pr-folio-r">Vertlo · Vol. 1 · No. 1</span>
+            <b>{no}</b> {section}
           </header>
         ) : null}
         <div className="pr-page-body">{children}</div>
         {turn ? (
           <footer className="pr-page-foot" aria-hidden="true">
-            <span>{turn}</span>
-            <span className="pr-page-no">{no}</span>
+            {turn}
           </footer>
         ) : null}
       </div>
@@ -199,16 +196,6 @@ export function Engraving({ src, className, sizes = "(max-width: 960px) 60vw, 26
   );
 }
 
-/** A number the page counts up to; the final figure is in the markup, so it reads right without JS. */
-export function Count({ to, decimals = 0, prefix = "", suffix = "" }: { to: number; decimals?: number; prefix?: string; suffix?: string }) {
-  const text = `${prefix}${to.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}${suffix}`;
-  return (
-    <span className="pr-count" data-to={to} data-decimals={decimals} data-prefix={prefix} data-suffix={suffix}>
-      {text}
-    </span>
-  );
-}
-
 type BoardRow = { id: string; provider: string; before: number; after: number };
 
 /** A3's routing board, set in its final state (US-01 paused, the rest carrying its share); the scene
@@ -220,6 +207,8 @@ export function RerouteBoard({
   from,
   to,
   orders,
+  label,
+  caption,
   note,
   rows,
   notice,
@@ -230,6 +219,8 @@ export function RerouteBoard({
   from: string;
   to: string;
   orders: string;
+  label: string;
+  caption: string;
   note: string;
   rows: BoardRow[];
   notice: { time: string; message: string };
@@ -280,7 +271,7 @@ export function RerouteBoard({
         </div>
       </div>
       <figcaption className="pr-cap">
-        <b>Figure.</b> The routing board the minute US-01 is paused. <span className="pr-cap-credit">{note}</span>
+        <b>{label}.</b> {caption} <span className="pr-cap-credit">{note}</span>
       </figcaption>
     </figure>
   );

@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Notification, type LinkItem } from "@/components/vertlo";
+import { Notification } from "@/components/vertlo";
 
-/* The paper's printed pieces: the front page's masthead and index, the running head that follows the
-   open page, headlines, numbered figures and tables, Exhibit A, the Q&A column, the clip-out coupon and
-   the colophon. The page-turning edition that holds them is Edition.tsx; the scroll scenes are
+/* The paper's printed pieces: the front page's masthead, the running head that follows the open page,
+   headlines, numbered figures and tables, Exhibit A, the underwriting timeline, the Q&A column, the
+   clip-out coupon and the imprint. The page-turning edition that holds them is Edition.tsx; the scroll scenes are
    scenes.ts. Styles in app/press.css (pr-*). Outside the scenes, motion is print-like: the strike inks
    across, figures ink in (InkIn below); with reduced motion everything is simply printed. */
 
@@ -28,7 +28,8 @@ export function Dateline({ className }: { className?: string }) {
   );
 }
 
-/** The call to action, set as a plain printed button. The page has only this one. */
+/** The call to action, set as a plain printed button. The page has only this one. `#book` is the coupon on
+    the last page; SmoothScroll opens the page an anchor sits on. */
 export function BookCall({ size = "md", className }: { size?: "sm" | "md" | "lg"; className?: string }) {
   return (
     <a className={`pr-btn pr-btn--${size}${className ? ` ${className}` : ""}`} href="#book">
@@ -57,9 +58,9 @@ export function FrontMast({ nameplate, edition, motto }: { nameplate: string; ed
   );
 }
 
-/** The running head, fixed over every page: the nameplate, the open page's folio, the page strip (every
-    page by number, the open one marked), the contents on smaller screens, and the call. It follows the
-    `press:page` events the edition sends as pages open. */
+/** The running head, fixed over every page: the nameplate (hidden while the front page's own masthead is
+    showing), every section by name with the open one marked, the contents on smaller screens, and the
+    call. It follows the `press:page` events the edition sends as pages open. */
 export function RunningHead({ nameplate, pages }: { nameplate: string; pages: Folio[] }) {
   const [cur, setCur] = useState(pages[0]);
   const [open, setOpen] = useState(false);
@@ -80,21 +81,19 @@ export function RunningHead({ nameplate, pages }: { nameplate: string; pages: Fo
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  const front = cur.id === pages[0].id;
   return (
-    <header className="pr-run">
+    <header className="pr-run" data-front={front || undefined}>
       <div className="lp-wrap pr-run-in">
-        <a className="pr-run-name" href={`#${pages[0].id}`}>
+        <a className="pr-run-name" href={`#${pages[0].id}`} tabIndex={front ? -1 : undefined} aria-hidden={front || undefined}>
           {nameplate}
         </a>
-        <span className="pr-run-folio" aria-live="polite">
-          <b>{cur.no}</b> {cur.section}
-        </span>
-        <nav className="pr-run-pages" aria-label="Pages">
+        <nav className="pr-run-pages" aria-label="Sections">
           <ol>
             {pages.map((p) => (
               <li key={p.id}>
-                <a href={`#${p.id}`} aria-current={p.id === cur.id ? "page" : undefined} title={`${p.no} · ${p.section}`}>
-                  {p.no}
+                <a href={`#${p.id}`} aria-current={p.id === cur.id ? "page" : undefined}>
+                  {p.section}
                 </a>
               </li>
             ))}
@@ -123,26 +122,11 @@ export function RunningHead({ nameplate, pages }: { nameplate: string; pages: Fo
 
 /* ── section furniture ────────────────────────────── */
 
-/** A story's headline block: kicker, headline, deck. `as` sets the heading level. */
-export function Headline({
-  kicker,
-  title,
-  deck,
-  as: H = "h2",
-  id,
-}: {
-  kicker?: string;
-  title: string;
-  deck?: string;
-  as?: "h1" | "h2";
-  id?: string;
-}) {
+/** A story's headline and deck. A paper sets its lead bigger than its secondary stories: `size`. */
+export function Headline({ title, deck, size = "secondary" }: { title: string; deck?: string; size?: "lead" | "secondary" }) {
   return (
     <div className="pr-hl">
-      {kicker ? <p className="pr-kicker">{kicker}</p> : null}
-      <H className={H === "h1" ? "pr-h1" : "pr-h2"} id={id}>
-        {title}
-      </H>
+      <h2 className={size === "lead" ? "pr-h2 pr-h2--lead" : "pr-h2"}>{title}</h2>
       {deck ? <p className="pr-deck">{deck}</p> : null}
     </div>
   );
@@ -177,6 +161,33 @@ export function Fig({
   );
 }
 
+/** A dated timeline printed across the page: one rule, a tick per step, the date over what happened. */
+export function Timeline({ steps }: { steps: { date: string; label: string; note?: string }[] }) {
+  return (
+    <ol className="pr-timeline">
+      {steps.map((s, i) => (
+        <li key={s.date} data-done={i === steps.length - 1 || undefined}>
+          <time>{s.date}</time>
+          <span className="pr-timeline-l">{s.label}</span>
+          {s.note ? <span className="pr-timeline-n">{s.note}</span> : null}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/** One ruled line naming who the product is made for. */
+export function MadeFor({ label, items }: { label: string; items: string[] }) {
+  return (
+    <p className="pr-madefor">
+      <span>{label}</span>
+      {items.map((it) => (
+        <b key={it}>{it}</b>
+      ))}
+    </p>
+  );
+}
+
 /* ── the lead story's exhibit ─────────────────────── */
 
 type NoticeProps = {
@@ -195,7 +206,7 @@ export function Notice({ label, caption, sender, date, subject, body, reroute }:
   return (
     <figure className="pr-notice">
       <div className="pr-exhibit">
-        <article className="pr-mail" data-ink="strike" aria-label={`Email: ${subject}`}>
+        <article className="pr-mail" data-ink="strike" aria-label={`Email, struck through: ${subject}`}>
           <header className="pr-mail-top">
             <span className="pr-mail-av" aria-hidden="true">
               {sender.charAt(0)}
@@ -331,19 +342,7 @@ export function QA({ items }: { items: { q: string; a: string }[] }) {
 }
 
 /** The closing call as a clip-out coupon: dashed cut line, scissors, what to bring, the one button. */
-export function Coupon({
-  label,
-  title,
-  blurb,
-  bring,
-  terms,
-}: {
-  label: string;
-  title: string;
-  blurb: string;
-  bring: string[];
-  terms: string;
-}) {
+export function Coupon({ title, blurb, bring, terms }: { title: string; blurb: string; bring: string[]; terms: string }) {
   return (
     <div className="pr-coupon">
       <span className="pr-scissors" aria-hidden="true">
@@ -364,8 +363,7 @@ export function Coupon({
       </span>
       <div className="pr-coupon-in">
         <div className="pr-coupon-main">
-          <p className="pr-kicker">{label}</p>
-          <h2 className="pr-h2" id="book-t">
+          <h2 className="pr-h2 pr-h2--lead">
             {title}
           </h2>
           <p className="pr-deck">{blurb}</p>
@@ -390,48 +388,39 @@ export function Coupon({
   );
 }
 
-/** The back page's colophon: nameplate, the paper's sections as links, the fine print. */
-export function Colophon({
-  nameplate,
-  tagline,
-  colophon,
-  columns,
-}: {
-  nameplate: string;
-  tagline: string;
-  colophon: string;
-  columns: { title: string; links: LinkItem[] }[];
-}) {
+/** The imprint at the foot of the paper: the nameplate, this edition's contents (every page, by number), the
+    call, and the fine print. */
+export function Imprint({ nameplate, tagline, notes, pages }: { nameplate: string; tagline: string; notes: string[]; pages: Folio[] }) {
   return (
-    <footer className="lp-wrap pr-foot" id="company">
-      <div className="pr-foot-top">
-        <div className="pr-foot-brand">
-          <a className="pr-foot-name" href="#top">
+    <footer className="lp-wrap pr-imprint">
+      <div className="pr-imprint-box">
+        <div className="pr-imprint-brand">
+          <a className="pr-imprint-name" href={`#${pages[0].id}`}>
             {nameplate}
           </a>
           <p>{tagline}</p>
+          <BookCall />
         </div>
-        {columns.map((c) => (
-          <nav key={c.title} aria-label={c.title}>
-            <p className="pr-label">{c.title}</p>
-            <ul>
-              {c.links.map((l) => (
-                <li key={l.label}>
-                  <a href={l.href}>{l.label}</a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        ))}
+        <nav aria-label="In this edition">
+          <p className="pr-label">In this edition</p>
+          <ol>
+            {pages.map((p) => (
+              <li key={p.id}>
+                <a href={`#${p.id}`}>
+                  <b>{p.no}</b>
+                  {p.section}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
       </div>
-      <div className="pr-foot-legal">
+      <p className="pr-imprint-legal">
         <span>© {new Date().getFullYear()} Vertlo</span>
-        <span>{colophon}</span>
-        <span className="pr-foot-links">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-        </span>
-      </div>
+        {notes.map((n) => (
+          <span key={n}>{n}</span>
+        ))}
+      </p>
     </footer>
   );
 }

@@ -18,19 +18,10 @@ function setDown(tl: Tl, items: Element[], at = 0.1) {
   if (items.length) tl.fromTo(items, { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out", stagger: 0.14 }, at);
 }
 
-/** A number counting from `from` to its final figure (read from data-to on a Count). */
-function count(tl: Tl, el: HTMLElement, at: number, duration = 1, from = 0) {
-  const to = Number(el.dataset.to), dec = Number(el.dataset.decimals) || 0;
-  const fmt = (v: number) =>
-    `${el.dataset.prefix ?? ""}${v.toLocaleString("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec })}${el.dataset.suffix ?? ""}`;
-  const o = { v: from };
-  tl.fromTo(o, { v: from }, { v: to, duration, ease: "power2.out", onUpdate: () => void (el.textContent = fmt(o.v)) }, at);
-}
-
 const SCENES: Record<string, Build> = {
-  /* dot-matrix briefs set down one by one */
+  /* A2: the dot-matrix briefs set down one by one, then the made-for line */
   briefs(page, tl) {
-    setDown(tl, all(page, ".vt-ic-card"));
+    setDown(tl, [...all(page, ".vt-ic-card"), ...all(page, ".pr-madefor")]);
   },
 
   /* A3: the minute US-01 is paused. The clock ticks over 09:41; US-01's share drains and is struck
@@ -70,32 +61,33 @@ const SCENES: Record<string, Build> = {
     tl.fromTo(board.querySelector(".pr-board-note"), { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, at + 0.75);
   },
 
-  /* A4: the application's steps tick through; the new MID joins the accounts */
+  /* A4: the timeline's rule draws across the page and each dated step lands on it in turn */
   underwriting(page, tl) {
-    setDown(tl, all(page, ".pr-points li"), 0);
-    const rows = all(page, ".vts-row");
-    if (rows.length) tl.fromTo(rows, { autoAlpha: 0.15, x: -10 }, { autoAlpha: 1, x: 0, duration: 0.35, ease: "power2.out", stagger: 0.09 }, 0.35);
+    const line = page.querySelector(".pr-timeline");
+    const steps = all(page, ".pr-timeline li");
+    if (!line || !steps.length) return;
+    tl.fromTo(line, { "--drawn": 0 }, { "--drawn": 1, duration: 1.2, ease: "power1.inOut" }, 0.1);
+    tl.fromTo(steps, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: "power2.out", stagger: 0.28 }, 0.15);
   },
 
-  /* B2: the month's figures count up; Table 1's rows print in */
+  /* B1: Table 1's rows print in */
   numbers(page, tl) {
-    all(page, ".pr-count").forEach((el, i) => count(tl, el, 0.1 + i * 0.12, 1.1));
     const rows = all(page, ".pr-table tbody tr, .pr-table tfoot tr");
-    if (rows.length) tl.fromTo(rows, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out", stagger: 0.08 }, 0.5);
+    if (rows.length) tl.fromTo(rows, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.1 }, 0.1);
   },
 
-  /* B4: the questions set down */
+  /* B3: the questions set down */
   qa(page, tl) {
     setDown(tl, all(page, ".pr-qa-item"), 0.05);
   },
 
-  /* B5: the scissors run along the cut line, then the coupon lifts off the page */
+  /* B4: the scissors run along the cut line, then the coupon lifts off the page */
   classifieds(page, tl) {
     const coupon = page.querySelector<HTMLElement>(".pr-coupon");
-    const scissors = page.querySelector<HTMLElement>(".pr-scissors");
-    if (!coupon || !scissors) return;
-    tl.fromTo(scissors, { x: 0 }, { x: () => coupon.offsetWidth - scissors.offsetWidth - 2 * scissors.offsetLeft, duration: 1.1, ease: "power1.inOut" }, 0.05);
-    tl.fromTo(coupon, { rotate: 0, y: 0, "--lift": 0 }, { rotate: -1.2, y: -8, "--lift": 1, duration: 0.45, ease: "power2.out" }, 1.1);
+    if (!coupon) return;
+    // --cut runs 0 → 1; press.css turns it into the scissors' travel along the cut line
+    tl.fromTo(coupon, { "--cut": 0 }, { "--cut": 1, duration: 1.1, ease: "power1.inOut" }, 0.05);
+    tl.fromTo(coupon, { y: 0, "--lift": 0 }, { y: -8, "--lift": 1, duration: 0.45, ease: "power2.out" }, 1.1);
   },
 };
 
