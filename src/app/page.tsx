@@ -1,14 +1,15 @@
 import { SmoothScroll } from "@/components/site/SmoothScroll";
-import { SiteHeader } from "@/components/site/SiteHeader";
+import { InkIn } from "@/components/landing/Press";
 import {
   FAQSection,
   FinalCTA,
   ForBrands,
+  Front,
   Hero,
   How,
   Industries,
+  Portal,
   Problem,
-  Providers,
   SiteFooter,
   Testimonials,
   Trust,
@@ -19,15 +20,16 @@ export default function Home() {
   return (
     <>
       <SmoothScroll />
-      <SiteHeader />
+      <InkIn />
+      <Front />
       <main>
         <Hero />
+        <Portal />
         <Trust />
         <Problem />
         <How />
         <WhatYouGet />
         <ForBrands />
-        <Providers />
         <Industries />
         <Testimonials />
         <FAQSection />

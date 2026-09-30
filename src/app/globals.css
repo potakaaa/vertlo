@@ -10,7 +10,7 @@
 @import "../styles/tokens.css";
 @import "../styles/vertlo.css";
 @import "./landing.css";
-@import "./paper.css";
+@import "./press.css";
 
 /* Tokens exposed to Tailwind (bg-ink, text-green-deep, rounded-panel, md:… = phones vs. up) */
 @theme inline {
@@ -30,13 +30,16 @@
   --radius-card: var(--radius-card);
 }
 
-/* Fonts come from next/font (see layout.tsx); tokens.css names them by family, so point the tokens at the loaded fonts. */
+/* Fonts come from next/font (see layout.tsx); tokens.css names them by family, so point the tokens at the
+   loaded fonts. The serif sets headlines and copy; the sans sets labels, tables and the product UI, and
+   stands in for the design system's mono (IDs and codes use its tabular figures). */
 :root {
-  --font-display: var(--font-archivo), "Archivo", system-ui, sans-serif;
-  --font-sans: var(--font-archivo), "Archivo", system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+  --font-serif: var(--font-newsreader), "Newsreader", Georgia, serif;
+  --font-display: var(--font-serif);
+  --font-sans: var(--font-public-sans), "Public Sans", system-ui, sans-serif;
+  --font-mono: var(--font-public-sans), "Public Sans", system-ui, sans-serif;
 }
 
 html { scroll-behavior: auto; }
-a { color: var(--green-deep); }
+a { color: var(--forest); }
 a:hover { color: var(--ink); }

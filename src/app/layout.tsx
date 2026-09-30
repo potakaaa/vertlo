@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, IBM_Plex_Mono } from "next/font/google";
+import { Newsreader, Public_Sans } from "next/font/google";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 
-/* One family for all text: Archivo's width axis runs from the expanded capitals of the headlines
-   (banknote lettering) to the normal width of the body. Plex Mono sets serials, codes and labels. */
-const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-archivo", display: "swap" });
-const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono", display: "swap" });
+/* A trade paper's two faces: Newsreader, a news serif with optical sizes, sets the nameplate, the
+   headlines and the running copy (roman only: no italic accents); Public Sans sets the paper's
+   furniture: flags, kickers, captions, tables, and the product UI inside the figures. */
+const newsreader = Newsreader({ subsets: ["latin"], style: ["normal"], axes: ["opsz"], variable: "--font-newsreader", display: "swap" });
+const publicSans = Public_Sans({ subsets: ["latin"], variable: "--font-public-sans", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Vertlo — The payment CRM for high-risk ecommerce",
@@ -26,9 +27,15 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+/* Set before first paint so the ink-in starting states (press.css) never flash the printed page first. */
+const INK_SCRIPT = "document.documentElement.classList.add('pr-js')";
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${archivo.variable} ${plexMono.variable}`}>
+    <html lang="en" className={`${newsreader.variable} ${publicSans.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: INK_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   );

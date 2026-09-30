@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { gsap, ScrollTrigger, WIDTH_AND_MOTION, type WidthAndMotion } from "@/lib/motion";
 import { SCENE_W, SCENE_H, focusFor, monoFont, paintScene } from "@/components/landing/how-flow/scene";
 
@@ -12,7 +12,7 @@ import { SCENE_W, SCENE_H, focusFor, monoFont, paintScene } from "@/components/l
 export type FlowStep = { kicker?: string; title: string; body: string };
 
 
-export function HowFlow({ steps }: { steps: FlowStep[] }) {
+export function HowFlow({ steps, caption }: { steps: FlowStep[]; caption?: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -64,11 +64,11 @@ export function HowFlow({ steps }: { steps: FlowStep[] }) {
         const start = phone ? "top 74%" : "top 50%";
         const end = phone ? "bottom 74%" : "bottom 70%";
         /* phones: flag the scene while it is actually stuck under the header (it sits first in the
-           flow, so that's while the flow's top is above 84px), so its cover strip only shows then */
+           flow, so that's while the flow's top is above the 56px running head), so its cover strip only shows then */
         if (phone && cv.parentElement) {
           const stage = cv.parentElement;
           ScrollTrigger.create({
-            trigger: root, start: "top 84px", end: () => `bottom ${84 + stage.offsetHeight}px`,
+            trigger: root, start: "top 56px", end: () => `bottom ${56 + stage.offsetHeight}px`,
             toggleClass: { targets: stage, className: "is-stuck" },
           });
         }
@@ -122,6 +122,7 @@ export function HowFlow({ steps }: { steps: FlowStep[] }) {
           </span>
         </div>
         <canvas ref={canvasRef} className="lp-flow-canvas" />
+        {caption ? <p className="pr-cap">{caption}</p> : null}
       </div>
       <div className="lp-flow-steps">
         <span className="lp-flow-rail" aria-hidden="true" />
