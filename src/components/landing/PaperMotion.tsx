@@ -9,9 +9,8 @@ import { sheets as SHEETS } from "@/content/landing";
      normally, then stays), so the next one slides over it; measured here into --sheet-h.
    - arrival and cover: a sheet comes up with a slight turn and settles; as the next one covers it,
      it sinks back a little under a shadow.
-   - on load, the banknote is laid down and printed: the medallion inks in, the serial rolls into
-     place like a numbering machine, the headline and the engraved "1" print.
-     Under a mouse, the note tilts a degree or two and catches the light.
+   - on load, the banknote is printed: the medallion inks in, the microprint runs out from it, the
+     serial rolls into place like a numbering machine, the headline and the engraved "1" print.
    - in the sheets: each letter types on (the termination's verdict is then struck through and
      Vertlo's note typed under it), and the cheque's signature writes itself.
    - a slim rail in the left margin shows which sheet you're on (wide screens only).
@@ -69,10 +68,10 @@ export function PaperMotion() {
         const q = gsap.utils.selector(note);
         const intro = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.1 });
         intro
-          .fromTo(note, { y: 40, rotate: -1, scale: 0.985, autoAlpha: 0 }, { y: 0, rotate: 0, scale: 1, autoAlpha: 1, duration: 1.2, ease: "expo.out" })
+          .fromTo(note, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "none" })
           .fromTo(q(".pp-note-medallion"), { "--ink": "-20%", rotate: -24 }, { "--ink": "115%", rotate: 0, duration: 1.6, ease: "power2.inOut" }, 0.3)
           .from(q(".pp-note-serial"), { autoAlpha: 0, duration: 0.6 }, 0.6)
-          .from(q(".pp-note-micro"), { clipPath: "inset(0 50% 0 50%)", duration: 0.9, ease: "power2.inOut" }, 0.6)
+          .from(q(".pp-note-micro"), { clipPath: (i: number) => (i ? "inset(0 100% 0 0)" : "inset(0 0 0 100%)"), duration: 0.9, ease: "power2.inOut" }, 0.5)
           .from(q(".lp-h1, .lp-hero-sub"), { autoAlpha: 0, y: 18, stagger: 0.12, duration: 0.8 }, 0.55)
           .from(q(".pp-note-numeral"), { autoAlpha: 0, y: 12, duration: 1, ease: "expo.out" }, 0.8);
         const cta = document.querySelector(".lp-hero-cta");
@@ -94,34 +93,6 @@ export function PaperMotion() {
             onComplete: () => { serial.textContent = final; },
           }, 0.6);
         }
-      }
-
-      /* ── the note under a mouse: a slight tilt toward the cursor, and a glare ── */
-      const hero = note?.parentElement;
-      let tiltRaf = 0;
-      const onMove = (e: PointerEvent) => {
-        if (!note || e.pointerType !== "mouse" || tiltRaf) return;
-        tiltRaf = requestAnimationFrame(() => {
-          tiltRaf = 0;
-          const r = note.getBoundingClientRect();
-          const x = Math.min(0.5, Math.max(-0.5, (e.clientX - r.left) / r.width - 0.5));
-          const y = Math.min(0.5, Math.max(-0.5, (e.clientY - r.top) / r.height - 0.5));
-          /* axis-angle, on the individual `rotate` property, so it never fights GSAP's transform */
-          note.style.setProperty("--tilt", `${-y.toFixed(3)} ${x.toFixed(3)} 0 ${(Math.hypot(x, y) * 3.2).toFixed(2)}deg`);
-          note.style.setProperty("--gx", `${((x + 0.5) * 100).toFixed(1)}%`);
-          note.style.setProperty("--gy", `${((y + 0.5) * 100).toFixed(1)}%`);
-          note.setAttribute("data-lit", "");
-        });
-      };
-      const onLeave = () => {
-        if (!note) return;
-        cancelAnimationFrame(tiltRaf); tiltRaf = 0;
-        note.style.removeProperty("--tilt");
-        note.removeAttribute("data-lit");
-      };
-      if (note && hero && !phone) {
-        hero.addEventListener("pointermove", onMove);
-        hero.addEventListener("pointerleave", onLeave);
       }
 
       /* ── the stack: arrive, settle, sink when covered ── */
@@ -172,12 +143,6 @@ export function PaperMotion() {
         }
       }
 
-      return () => {
-        hero?.removeEventListener("pointermove", onMove);
-        hero?.removeEventListener("pointerleave", onLeave);
-        cancelAnimationFrame(tiltRaf);
-        onLeave();
-      };
     });
 
     /* the stack's heights settle after fonts and client-drawn art; re-measure the triggers once. The

@@ -15,23 +15,31 @@ import { Letter, Microprint, Sheet } from "@/components/landing/Paper";
    All art is drawn in code: guilloché from scripts/paper-art.mjs, the dot-matrix scenes, the diamond.
    Layout classes are in app/landing.css (lp-*), the paper look in app/paper.css (pp-*). */
 
-/* Hero and product in one pinned section: the headline printed on a banknote, the portal on a laptop
-   below it. The note is an object, kept to a few parts so the headline leads: a small medallion for a
-   portrait in the top corner with the issuer microprinted beside it, an engraved "1" denomination (one
-   account) in the opposite corner, a serial; it tilts a little under the cursor and catches the light
-   (PaperMotion). Scrolling zooms into the laptop until its screen fills the view, then runs the portal
-   tour (PortalTour, which fades `.lp-hero` out and back). */
+/* Hero and product in one pinned section: the page itself is the banknote, the portal on a laptop
+   below it. No card: the bill is the ground the headline is printed on (engraved waves, a rosette
+   running off each edge, a guilloché border along its foot), with a note's marks set around the
+   centred copy: a medallion portrait between two lines of microprint, a serial, an engraved "1"
+   (one account). Scrolling zooms into the laptop until its screen fills the view, then runs the
+   portal tour (PortalTour, which fades `.lp-hero` out and back). */
 export function Hero() {
   return (
     <section className="lp-hero-band" id="top">
       <div className="pp-hero-bg" aria-hidden="true" />
       <div className="lp-wrap lp-hero">
+        {/* the bill, full bleed behind the copy */}
+        <div className="pp-bill" aria-hidden="true">
+          <span className="pp-bill-rose pp-bill-rose--l" />
+          <span className="pp-bill-rose pp-bill-rose--r" />
+        </div>
         <div className="pp-note" data-note="">
           <span className="pp-note-serial" aria-hidden="true">
             {c.hero.serial}
           </span>
           <div className="pp-note-copy">
             <div className="pp-note-top" aria-hidden="true">
+              <p className="pp-note-micro pp-note-micro--l">
+                <Microprint text={c.hero.micro} />
+              </p>
               {/* the note's portrait: a guilloché medallion around the Vertlo diamond */}
               <span className="pp-note-medallion">
                 <Diamond size={22} />
@@ -53,7 +61,6 @@ export function Hero() {
           <span className="pp-note-numeral" aria-hidden="true">
             1
           </span>
-          <span className="pp-note-glare" aria-hidden="true" />
         </div>
         <div className="lp-hero-cta">
           <Button size="lg" href="#book">
@@ -72,15 +79,19 @@ export function Hero() {
   );
 }
 
-/* Under the laptop, before the stack: what it connects to, stated plainly. */
+/* Under the laptop, before the stack: what it connects to, the networks' own marks in grey. */
 export function WorksWith() {
   return (
     <section className="lp-wrap pp-works" aria-label={c.worksWith.label}>
       <p className="pp-works-k">{c.worksWith.label}</p>
       <ul className="pp-works-list">
-        {c.worksWith.items.map((it) => (
-          <li key={it}>{it}</li>
+        {c.worksWith.logos.map((l) => (
+          <li key={l.name}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- small static SVG marks */}
+            <img src={l.src} alt={l.name} width={l.w} height={l.h} />
+          </li>
         ))}
+        <li className="pp-works-rest">{c.worksWith.rest}</li>
       </ul>
     </section>
   );

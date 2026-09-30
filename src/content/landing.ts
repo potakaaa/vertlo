@@ -31,7 +31,13 @@ export const hero = {
 /* Under the laptop: what connects, stated plainly (the same list the FAQ gives). */
 export const worksWith = {
   label: "Works with",
-  items: ["Visa acquirers", "Mastercard acquirers", "PayPal", "Your current processor"],
+  /** Card-network and wallet marks (public/images/brands), each with the height that balances it optically. */
+  logos: [
+    { name: "Visa", src: "/images/brands/visa.svg", w: 66, h: 22 },
+    { name: "Mastercard", src: "/images/brands/mastercard.svg", w: 52, h: 32 },
+    { name: "PayPal", src: "/images/brands/paypal.svg", w: 98, h: 26 },
+  ],
+  rest: "and your current processor",
 };
 
 /* The page is a stack of documents laid on the desk: after the banknote (hero) and the laptop, each
