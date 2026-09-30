@@ -162,7 +162,7 @@ export function PortalOverview({ data }: { data: PortalData }) {
 
           <div className="lpo-rowc">
             <section className="lpo-panel lpo-health">
-              <div className="lpo-panel-h"><div>Payment health<small>Against your limits and targets</small></div><span className="vtp-healthy"><i />Healthy</span></div>
+              <div className="lpo-panel-h"><div>Payment health<small>Within limits · 1 to watch</small></div></div>
               {data.health.map((m) => (
                 <div key={m.label} className="lpo-hrow">
                   <div className="lpo-hrow-t"><span>{m.label}</span><b>{m.value}<small> · {m.of}</small></b><em className={`lpo-${m.tone}`}>{m.status}</em></div>

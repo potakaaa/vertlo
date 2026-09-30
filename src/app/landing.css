@@ -360,22 +360,24 @@ section[id], div[id] { scroll-margin-top: 96px; }
 .lp-tour[data-tour] .vt-cam { animation: none !important; }
 .lp-tour[data-tour] .vt-stage-tilt { transform: rotateX(var(--tour-rx, 14deg)) rotateY(var(--ry)); }
 .lp-tour[data-tour] .vt-stage-caps { display: block; position: absolute; left: 0; right: 0; top: 20px; height: 36px; z-index: 3; pointer-events: none; }
-.lp-tour[data-tour] .vt-stage-cap { position: absolute; left: 50%; top: 0; margin-left: -110px; width: 220px; justify-content: center; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; border-radius: 999px; background: rgba(11,20,16,.9); box-shadow: inset 0 0 0 1px rgba(22,196,90,.45), 0 8px 24px rgba(0,0,0,.4); color: var(--on-stealth); font-size: 13px; font-weight: 500; animation: none; }
-.lp-tour[data-tour] .vt-stage-cap i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
-@media (max-width: 720px) { .lp-tour[data-tour] .vt-stage-tilt { transform: none; } .lp-tour[data-tour] .vt-stage { padding-bottom: 62px; } .lp-tour[data-tour] .vt-stage-caps { top: auto; bottom: 14px; height: 34px; } .lp-tour[data-tour] .vt-stage-cap { height: 34px; } }
+/* captions: a plain label like How it works' "01 / 03 · SETUP", no pill */
+.lp-tour[data-tour] .vt-stage-cap { position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: center; gap: 12px; height: 36px; font: 500 12px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--on-stealth); animation: none; width: auto; margin: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+.lp-tour[data-tour] .vt-stage-cap b { font-weight: 500; color: var(--on-stealth-faint); font-variant-numeric: tabular-nums; }
+@media (max-width: 720px) { .lp-tour[data-tour] .vt-stage-tilt { transform: none; } .lp-tour[data-tour] .vt-stage { padding-bottom: 62px; } .lp-tour[data-tour] .vt-stage-caps { top: auto; bottom: 14px; height: 34px; } .lp-tour[data-tour] .vt-stage-cap { height: 34px; font-size: 11px; } }
 
-/* FeatureGridMotion: GSAP drives the cards while a cell plays, so drop their hover transition then;
-   once played, the live dots in the tags keep a soft ping */
+/* status as content, not badges (site: changes in lib.tsx): slice subtitles, feature-grid counts */
+.vts-sub { display: block; margin-top: 3px; font-size: 12px; font-weight: 400; color: var(--on-stealth-faint); }
+.vt-fg-count { font-size: 12px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+
+/* FeatureGridMotion: GSAP drives the cards while a cell plays, so drop their hover transition then */
 .lp-fg-motion .vt-fg-cell[data-anim="run"] .vt-fg-card { transition: none; }
 .lp-fg-motion .vt-fg-tn { transition: color .4s ease-out, text-decoration-color .4s ease-out; }
 /* counted and flipped values: equal-width digits so nothing shifts while they change */
-.lp-fg-motion .vt-fg-big, .lp-fg-motion .vt-fg-tag { font-variant-numeric: tabular-nums; }
-.lp-fg-motion .vt-fg-cell[data-anim="done"] .vt-fg-tag .vt-fg-dot:not(.vt-fg-dot--red) { animation: lp-fg-ping 2.4s ease-out infinite; }
+.lp-fg-motion .vt-fg-big { font-variant-numeric: tabular-nums; }
 /* failover: after the incident, the alert rings keep pinging outwards */
 .lp-fg-motion .vt-fg-cell[data-anim="done"] .vt-fg-artwrap svg circle { transform-box: fill-box; transform-origin: center; animation: lp-fg-ring 2.4s ease-out infinite; }
 .lp-fg-motion .vt-fg-cell[data-anim="done"] .vt-fg-artwrap svg circle + circle { animation-delay: .45s; }
 @keyframes lp-fg-ring { 0% { transform: scale(.5); opacity: 1; } 75%, 100% { transform: scale(1.35); opacity: 0; } }
-@keyframes lp-fg-ping { 0% { box-shadow: 0 0 0 0 rgba(22,196,90,.45); } 70%, 100% { box-shadow: 0 0 0 6px rgba(22,196,90,0); } }
 .lp-industries { padding-top: 0; gap: clamp(24px, 2.8vw, 40px); }
 .lp-wyg { padding-bottom: var(--lp-y); }
 
@@ -576,5 +578,5 @@ section[id], div[id] { scroll-margin-top: 96px; }
   .lp-node, .lp-node::after, .lp-grid-bg, .lp-hero > * { animation: none !important; }
   .lp-header .vt-nav-links::before { transition-property: opacity, background-color; }
   .lp-flow-copy, .lp-flow-num::before { transition: none; }
-  .lp-fg-motion .vt-fg-tag .vt-fg-dot, .lp-fg-motion .vt-fg-artwrap svg circle { animation: none !important; }
+  .lp-fg-motion .vt-fg-artwrap svg circle { animation: none !important; }
 }

@@ -151,7 +151,11 @@ export function PortalTour({ data, clipH = 640, clipHMobile = PORTAL_H }: Props)
           </div>
         </div>
         <div className="vt-stage-caps" aria-hidden="true">
-          {data.tour.map((t, i) => <span key={t.region} className={`vt-stage-cap vt-stage-cap--${i + 1}`}><i />{t.caption}</span>)}
+          {data.tour.map((t, i) => (
+            <span key={t.region} className={`vt-stage-cap vt-stage-cap--${i + 1}`}>
+              <b>{String(i + 1).padStart(2, "0")} / {String(data.tour.length).padStart(2, "0")}</b>{t.caption}
+            </span>
+          ))}
         </div>
         <div className="vt-stage-pops">
           {POP_SLOTS.map((slot, i) => data.pops[i] && (

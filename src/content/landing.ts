@@ -75,9 +75,9 @@ export const portal: PortalData = {
     { region: "health", caption: "Payment health" },
   ],
   pops: [
-    { time: "09:41", message: "MID US-01 paused. Traffic rerouted to UK-02 and US-03.", status: { tone: "paused", label: "Rerouted" } },
-    { time: "09:52", message: "New MID approved: US-04. Added to routing.", status: { label: "Approved" } },
-    { time: "10:07", message: "Dispute DSP-0221 caught early. Refunded before chargeback.", status: { label: "Saved" } },
+    { time: "09:41", message: "MID US-01 paused. Traffic rerouted to UK-02 and US-03." },
+    { time: "09:52", message: "New MID approved: US-04. Added to routing." },
+    { time: "10:07", message: "Dispute DSP-0221 caught early. Refunded before chargeback." },
   ],
 };
 
@@ -150,7 +150,6 @@ export const whatYouGet: { eyebrow: string; title: string; blurb: string; items:
 };
 
 export const forBrands: FeaturePanelProps = {
-  tag: "For high-risk brands",
   title: "We’ll issue the accounts you need.",
   description: "We underwrite in-house, so getting a new account doesn’t stall your checkout.",
   items: [
@@ -160,6 +159,7 @@ export const forBrands: FeaturePanelProps = {
     { label: "One CRM", meta: "Every provider on one screen", icon: "dashboard" },
   ],
   ctaHref: "#book",
+  chip: false,
 };
 
 export const providers = {

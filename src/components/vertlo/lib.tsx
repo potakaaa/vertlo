@@ -349,7 +349,8 @@ function PortalStage(p) {
 }
 
 /* CrmSlice: card-sized pieces of the portal */
-function sliceHead(t, right) { return h("div", { className: "vts-h" }, h("span", null, t), right || null); }
+/* site: status reads as a subtitle under the title (sub), not a badge */
+function sliceHead(t, right, sub) { return h("div", { className: "vts-h" }, h("span", null, t, sub ? h("small", { className: "vts-sub" }, sub) : null), right || null); }
 function midRow(id, prov, state, share, key, hot) {
   var dot = state === "Paused" ? "red" : state === "Approved" ? "green" : "green";
   return h("div", { key: key, className: cx("vts-row", hot && "vts-row--hot") },
@@ -360,7 +361,7 @@ function midRow(id, prov, state, share, key, hot) {
 var SLICES = {
   kpis: function () { return h("div", { className: "vts-kpis" }, Kpi(KPIS[0], 0, true), Kpi(KPIS[2], 2, true), Kpi(KPIS[3], 3, true), Kpi(KPIS[7], 7, true)); },
   mids: function () {
-    return h("div", null, sliceHead("Merchant accounts", h("span", { className: "vtp-healthy" }, h("i", null), "3 live")),
+    return h("div", null, sliceHead("Merchant accounts", null, "3 of 4 live · US-01 paused"),
       midRow("US-01", "Processor A", "Paused", "Paused · rerouted", 1),
       midRow("UK-02", "Processor B", "Live", "38% of volume", 2),
       midRow("US-03", "Processor C", "Live", "42% of volume", 3),
@@ -377,11 +378,11 @@ var SLICES = {
       attnRow(ATTN[0], 0),
       h("div", { className: "vts-alert" }, h("span", { className: "vtp-dot vtp-dot--green vtp-pulse" }), h("div", null, h("b", null, "Alert received · DSP-0224"), h("div", { className: "vts-muted" }, "Refunded $54.00 before it became a chargeback")), h("span", { className: "vtp-up" }, "Saved")));
   },
-  health: function () { return h("div", null, sliceHead("Payment health", h("span", { className: "vtp-healthy" }, h("i", null), "Healthy")), HEALTH.slice(0, 5).map(function (r, i) { return h("div", { key: i, className: "vtp-hrow" }, h("span", null, r[0]), h("span", { className: "vtp-" + (r[2] || "n") }, r[1])); })); },
+  health: function () { return h("div", null, sliceHead("Payment health", null, "Within limits · 1 to watch"), HEALTH.slice(0, 5).map(function (r, i) { return h("div", { key: i, className: "vtp-hrow" }, h("span", null, r[0]), h("span", { className: "vtp-" + (r[2] || "n") }, r[1])); })); },
   attention: function () { return h("div", null, sliceHead("Attention required", h("span", { className: "vts-muted" }, "5 items")), ATTN.slice(0, 3).map(attnRow)); },
   underwriting: function () {
     var steps = [["Application submitted", "Jul 02", 1], ["Documents verified", "Jul 03", 1], ["Underwriting review", "Jul 05", 1], ["MID US-04 approved", "Jul 08", 2]];
-    return h("div", null, sliceHead("New merchant account", h("span", { className: "vtp-healthy" }, h("i", null), "Approved")),
+    return h("div", null, sliceHead("New merchant account", null, "Approved Jul 08 · 6 days"),
       steps.map(function (s, i) { return h("div", { key: i, className: cx("vts-step", s[2] === 2 && "vts-step--on"), style: { animationDelay: (i * 160) + "ms" } }, h("span", { className: "vts-check" }, h(Icon, { name: "check", size: 12, strokeWidth: 2.4 })), h("span", null, s[0]), h("span", { className: "vts-right vts-muted" }, s[1])); }),
       h("div", { className: "vts-note" }, "Added to routing automatically"));
   },
@@ -797,7 +798,7 @@ function FeaturePanel(p) {
     h("div", { className: "vt-fp-visual", "aria-hidden": true },
       p.art || [h("div", { key: "o", className: "vt-pc-orb vt-fp-orb" }), h("div", { key: "g", className: "vt-pc-ghost vt-fp-ghost" }), h(CrmSlice, { key: "s", kind: p.slice || "underwriting", className: "vt-pc-slice vt-fp-slice", decorative: true }),
         h(CrmSlice, { key: "s2", kind: p.slice2 || "mids", className: "vt-pc-slice vt-fp-slice vt-fp-slice--2", decorative: true }),
-        h("div", { key: "c", className: "vt-fp-chip" }, h("span", { className: "vtp-dot vtp-dot--green vtp-pulse" }), p.chip || "Approved in-house")]));
+        /* site: chip={false} drops the floating chip */ p.chip === false ? null : h("div", { key: "c", className: "vt-fp-chip" }, h("span", { className: "vtp-dot vtp-dot--green vtp-pulse" }), p.chip || "Approved in-house")]));
 }
 
 /* ── ProviderFlow: providers → Vertlo → your accounts, with light running the lines (for white sections) ── */
@@ -893,7 +894,8 @@ function fgGrid(xs, ys, dias, extra) {
   return h("svg", { key: "grid", width: FG_W, height: FG_H, viewBox: "0 0 " + FG_W + " " + FG_H, style: { position: "absolute", left: 0, top: 0 }, "aria-hidden": true }, out, extra);
 }
 function fgCard(k, x, y, w, kids, cls) { return h("div", { key: k, className: "vt-fg-card" + (cls ? " " + cls : ""), style: { left: x, top: y, width: w } }, kids); }
-function fgHead(title, tag, red) { return h("div", { key: "h", className: "vt-fg-ch" }, h("b", null, title), tag ? h("span", { className: "vt-fg-tag" }, h("i", { className: "vt-fg-dot" + (red ? " vt-fg-dot--red" : "") }), tag) : null); }
+/* site: no status badges; a plain muted count on the right at most, the status lives in the card's sub line */
+function fgHead(title, count) { return h("div", { key: "h", className: "vt-fg-ch" }, h("b", null, title), count ? h("span", { className: "vt-fg-count" }, count) : null); }
 function fgRow(k, sw, id, name, right, rightCls) { return h("div", { key: k, className: "vt-fg-row" }, sw, id ? h("span", { className: "vt-fg-mono" }, id) : null, h("span", { className: "vt-fg-mute" }, name), h("b", { className: "vt-fg-num" + (rightCls ? " " + rightCls : "") }, right)); }
 var FGARTS = {
   routing: function () {
@@ -901,8 +903,8 @@ var FGARTS = {
     return [
       fgGrid([104, 272, 440], [96, 236, 372], [[104, 96], [440, 96], [104, 372, 9, G], [440, 372]]),
       fgCard("c", 56, 44, 432, [
-        fgHead("Routing rule", "Failover on"),
-        h("div", { key: "s", className: "vt-fg-sub" }, "Split by approval rate, all brands"),
+        fgHead("Routing rule"),
+        h("div", { key: "s", className: "vt-fg-sub" }, "Split by approval rate · failover on"),
         h("div", { key: "b", className: "vt-fg-split" }, rows.map(function (r, i) { return h("span", { key: i, style: { flex: r[2], background: r[3] } }); })),
         rows.map(function (r, i) { return fgRow("r" + i, h("i", { className: "vt-fg-sw", style: { background: r[3] } }), r[0], r[1], r[2] + "%"); })
       ]),
@@ -917,8 +919,8 @@ var FGARTS = {
     return [
       fgGrid([130, 272, 414], [92, 214, 350], [[130, 92], [414, 92], [130, 350], [414, 350, 9, G]], arcs),
       fgCard("c", 64, 138, 416, [
-        fgHead("Merchant accounts", "2 live"),
-        h("div", { key: "s", className: "vt-fg-sub" }, "One account paused, traffic rerouted"),
+        fgHead("Merchant accounts"),
+        h("div", { key: "s", className: "vt-fg-sub" }, "2 of 3 live · US-01 paused, traffic rerouted"),
         fgRow("r1", h("i", { className: "vt-fg-dot vt-fg-dot--red" }), "US-01", "Processor A", "Paused", "vt-fg-red"),
         fgRow("r2", h("i", { className: "vt-fg-dot" }), "UK-02", "Processor B", "Live"),
         fgRow("r3", h("i", { className: "vt-fg-dot" }), "US-03", "Processor C", "Live")
@@ -935,7 +937,7 @@ var FGARTS = {
         fgRow("r2", h("i", { className: "vt-fg-dot vt-fg-dot--amber" }), null, h("span", null, h("b", { className: "vt-fg-t2" }, "Approval rate declined on UK-02"), h("span", { className: "vt-fg-sub2" }, "UK Visa debit · last 7 days")), h("span", { className: "vt-fg-btn" }, "Review"))
       ]),
       fgCard("b", 120, 232, 376, [
-        fgHead("Early dispute alert", "Caught"),
+        fgHead("Early dispute alert"),
         h("div", { key: "tl", className: "vt-fg-tl" },
           h("span", { key: "o", className: "vt-fg-tn" }, h("i", { className: "vt-fg-tdot" }), "Order"),
           h("span", { key: "l1", className: "vt-fg-tline" }),
@@ -952,12 +954,12 @@ var FGARTS = {
       fgGrid([88, 272, 456], [84, 226, 368], [[88, 84], [456, 84], [88, 368], [456, 368, 9, G]]),
       h("div", { key: "back", className: "vt-fg-card vt-fg-back", style: { left: 84, top: 84, width: 432, height: 250 } }),
       fgCard("f", 40, 44, 432, [
-        fgHead("All brands", "Last 30 days"),
-        h("div", { key: "s", className: "vt-fg-sub" }, "Payouts across every store"),
+        fgHead("All brands"),
+        h("div", { key: "s", className: "vt-fg-sub" }, "Payouts from 3 stores · last 30 days"),
         rows.map(function (r, i) { return fgRow("r" + i, h("i", { className: "vt-fg-dot" }), null, r[0], r[1]); }),
         h("div", { key: "tot", className: "vt-fg-row vt-fg-total" }, h("span", { className: "vt-fg-mute" }, "Total payouts"), h("b", { className: "vt-fg-num" }, "$132,735"))
       ]),
-      fgCard("c", 320, 318, 176, [h("div", { key: "t", className: "vt-fg-toast" }, h(Diamond, { size: 8 }), h("span", null, "3 stores, 1 CRM"))], "vt-fg-card--pill")
+      /* site: the "3 stores, 1 CRM" chip now reads in the sub line above */
     ];
   }
 };

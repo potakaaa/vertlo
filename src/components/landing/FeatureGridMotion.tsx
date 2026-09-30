@@ -8,8 +8,8 @@ import { FeatureGrid, type FeatureGridProps } from "@/components/vertlo";
    routing → the split fills and approval climbs; failover → a MID pauses and traffic reroutes;
    disputes → alerts arrive and the chargeback is struck out; stores → payouts count up.
    Works on the generated FeatureGrid markup (vt-fg-*) without touching it; every text or class
-   it changes is put back on cleanup. Once a cell has played (data-anim="done") its live bits
-   ping in CSS, paused off-screen. Reduced motion: nothing moves, the final state shows. */
+   it changes is put back on cleanup. Once the failover cell has played (data-anim="done") its
+   alert rings keep pinging in CSS, paused off-screen. Reduced motion: nothing moves, the final state shows. */
 
 type Art = FeatureGridProps["items"][number]["art"];
 type Tl = gsap.core.Timeline;
@@ -86,16 +86,15 @@ export function FeatureGridMotion(props: FeatureGridProps) {
           const [card, toast] = cell.querySelectorAll(".vt-fg-card");
           const rows = card.querySelectorAll(".vt-fg-row");
           const dot = rows[0]?.querySelector(".vt-fg-dot") ?? null, status = rows[0]?.querySelector(".vt-fg-num") ?? null;
-          const tag = card.querySelector(".vt-fg-tag"), sub = card.querySelector(".vt-fg-sub");
+          const sub = card.querySelector(".vt-fg-sub");
           const rings = [...cell.querySelectorAll("svg circle")], alert = cell.querySelector('svg rect[fill="#e5484d"]');
-          const finalTag = tag?.textContent?.trim() ?? "", finalSub = sub?.textContent ?? "", finalStatus = status?.textContent ?? "";
+          const finalSub = sub?.textContent ?? "", finalStatus = status?.textContent ?? "";
 
           /* start healthy: every MID live */
           setClass(dot, "vt-fg-dot--red", false);
           setClass(status, "vt-fg-red", false);
           setText(status, "Live");
-          setText(tag, finalTag.replace(/^\d+/, (n) => String(Number(n) + 1)));
-          setText(sub, "All accounts live");
+          setText(sub, `${rows.length} of ${rows.length} live`);
 
           pop(tl, card, 0.1);
           tl.fromTo(rows, { autoAlpha: 0, x: -12 }, { autoAlpha: 1, x: 0, duration: 0.6, ease: "power3.out", stagger: 0.1 }, 0.4);
@@ -109,7 +108,6 @@ export function FeatureGridMotion(props: FeatureGridProps) {
           flip(tl, status, 1.6, () => { setClass(status, "vt-fg-red", true); setText(status, finalStatus); });
           tl.call(() => setClass(dot, "vt-fg-dot--red", true), [], 1.6);
           if (dot) tl.fromTo(dot, { scale: 0.4 }, { scale: 1, duration: 0.6, ease: "elastic.out(1.2, 0.4)" }, 1.6);
-          flip(tl, tag, 2.0, () => setText(tag, finalTag));
           flip(tl, sub, 2.05, () => setText(sub, finalSub));
           /* the rest take the traffic */
           rows.forEach((row, i) => {
@@ -124,7 +122,7 @@ export function FeatureGridMotion(props: FeatureGridProps) {
 
         disputes(cell, tl) {
           const [inbox, alertCard] = cell.querySelectorAll(".vt-fg-card");
-          const rows = inbox.querySelectorAll(".vt-fg-row"), tag = inbox.querySelector(".vt-fg-tag");
+          const rows = inbox.querySelectorAll(".vt-fg-row"), tag = inbox.querySelector(".vt-fg-count");
           const finalTag = tag?.textContent?.trim() ?? "";
           setText(tag, "0 items");
 
@@ -137,14 +135,13 @@ export function FeatureGridMotion(props: FeatureGridProps) {
             flip(tl, tag, at + 0.05, () => setText(tag, i === rows.length - 1 ? finalTag : `${i + 1} item${i ? "s" : ""}`));
           });
 
-          const caught = alertCard.querySelector(".vt-fg-tag");
           const [order, alert, cb] = alertCard.querySelectorAll(".vt-fg-tn");
           const [l1, l2] = alertCard.querySelectorAll(".vt-fg-tline");
           const x = cb?.querySelector(".vt-fg-tx"), foot = alertCard.querySelector(".vt-fg-foot");
           setClass(cb, "vt-fg-tn--off", false);
 
           pop(tl, alertCard, 1.4);
-          gsap.set([order, alert, cb, caught, x].filter(Boolean), { autoAlpha: 0 });
+          gsap.set([order, alert, cb, x].filter(Boolean), { autoAlpha: 0 });
           gsap.set([l1, l2], { scaleX: 0, transformOrigin: "0 50%" });
 
           tl.to(order, { autoAlpha: 1, duration: 0.4 }, 1.75)
@@ -159,11 +156,10 @@ export function FeatureGridMotion(props: FeatureGridProps) {
           if (foot) tl.fromTo(foot, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out" }, 3.65);
           const check = foot?.querySelector(".vt-fg-check");
           if (check) tl.fromTo(check, { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.6, ease: "back.out(2.5)" }, 3.75);
-          if (caught) tl.fromTo(caught, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(3)" }, 3.8);
         },
 
         stores(cell, tl) {
-          const [back, front, pill] = cell.querySelectorAll(".vt-fg-card");
+          const [back, front] = cell.querySelectorAll(".vt-fg-card");
           pop(tl, back, 0.05, { y: 44, scale: 0.92 });
           pop(tl, front, 0.2);
           const rows = front.querySelectorAll(".vt-fg-row:not(.vt-fg-total)");
@@ -175,9 +171,6 @@ export function FeatureGridMotion(props: FeatureGridProps) {
           });
           const total = front.querySelector(".vt-fg-total .vt-fg-num");
           count(tl, total, 0, num(total), money, 0.9, 1.6);
-          pop(tl, pill, 2.1, { x: 28, y: 0, scale: 0.9 });
-          const d = pill?.querySelector("svg");
-          if (d) tl.fromTo(d, { rotation: -180, scale: 0 }, { rotation: 0, scale: 1, duration: 0.8, ease: "back.out(2)" }, 2.2);
         },
       };
 

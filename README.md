@@ -57,7 +57,7 @@ src/
 
 `src/components/vertlo/lib.tsx` is generated from the design system's component bundle, so the site matches the approved canvas exactly. That covers the portal, the ruled feature grid, the dot-matrix and pixel art, the provider flow and the rest. `vertlo.css` and `tokens.css` are copied from it too.
 The internals use `h()` (= `React.createElement`) and carry `// @ts-nocheck`; the **public API is fully typed** (`types.ts`, applied in `index.ts`).
-When the design system changes, regenerate these three files rather than hand-editing them. The site-only additions are real hrefs on Nav, FAQ, CTABand, FeaturePanel and Footer, and `clipHMobile` on PortalStage. They are marked `site:` or live in `types.ts`.
+When the design system changes, regenerate these three files rather than hand-editing them. The site-only additions are real hrefs on Nav, FAQ, CTABand, FeaturePanel and Footer, `clipHMobile` on PortalStage, and **status as content, not badges**: CrmSlice and FeatureGrid cards say their status in a subtitle ("3 of 4 live · US-01 paused") or a plain count instead of dot-pill tags, and FeaturePanel takes `chip={false}`. They are marked `site:` or live in `types.ts`; carry them into the bundle when it is regenerated.
 
 ### Site layer on top of the bundle
 
@@ -92,6 +92,7 @@ Page structure, top to bottom:
 Rules to keep:
 - Use `vt-*` classes and the components for anything in the design system. Tailwind runs **without preflight** on purpose, because the component CSS was designed against browser defaults. Use utilities for new page-level layout. Tokens are exposed as `bg-ink`, `text-green-deep`, `rounded-panel`, `md:` (= 721px+), etc.
 - The system is flat: no gradients, glows or blur. Only white cards get a (soft) shadow. A black section is the backdrop itself (`vt-bleed`), so never nest a black card inside it to hold more cards.
+- No badge pills or eyebrow pills with status dots: say status in the content (a subtitle, a plain muted count, or the row value itself).
 - Use one green. Red marks paused, declined or over-limit states; amber marks "watch". Don't publish prices; the framing is reliability and approval rates.
 
 ## Responsive behaviour
