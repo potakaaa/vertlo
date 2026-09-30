@@ -24,8 +24,9 @@ export function SmoothScroll() {
     pageRo.observe(document.body);
     const stopResize = () => { clearTimeout(refreshId); pageRo.disconnect(); };
 
-    /* In-page links, measured with sticky layers let go (html[data-measure-flow], see paper.css): a
-       target inside a sheet that's stuck on screen resolves to where it sits in the page. */
+    /* In-page links, measured in page flow: html[data-measure-flow] is set while measuring, so a
+       layout that sticks things to the screen can let go of them in CSS and the target resolves to
+       where it sits in the page. (The Route has no sticky layers; the hook is here for ones that do.) */
     let lenis: Lenis | null = null;
     const flowTop = (el: HTMLElement) => {
       const root = document.documentElement;

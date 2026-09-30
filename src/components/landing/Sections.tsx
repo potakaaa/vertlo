@@ -1,97 +1,352 @@
-import {
-  Button,
-  Diamond,
-  FAQ,
-  FeaturePanel,
-  Footer,
-  IndustryCards,
-  ProviderFlow,
-  RotatingWord,
-} from "@/components/vertlo";
+import type { CSSProperties, ReactNode } from "react";
+import { Footer } from "@/components/vertlo";
 import * as c from "@/content/landing";
-import { FlipWords } from "@/components/landing/FlipWords";
-import { HowFlow } from "@/components/landing/HowFlow";
 import { MerchantStories } from "@/components/landing/MerchantStories";
-import { FeatureGridMotion } from "@/components/landing/FeatureGridMotion";
 import { PortalTour } from "@/components/landing/PortalTour";
-import { rich } from "@/components/landing/Rich";
-import { Microprint, Sheet, Stamp } from "@/components/landing/Paper";
+import { Questions } from "@/components/landing/Questions";
 
-/* Concept A, security paper. The page is a desk (the misty green ground) with papers laid on it:
-   a banknote with the headline, the laptop running the portal, then a stack of documents, one per
-   section, each sliding up and settling on the one before (sticky sheets, see Paper.tsx; the scroll
-   motion is PaperMotion.tsx). Guilloché art and engraved vignettes are in public/images/paper
-   (scripts/paper-art.mjs; the vignettes are generated engravings). Accent words are set in the ink
-   colour (`*words*` in content, see Rich.tsx). Every section is a server component; the interactive
-   bits are client components. Layout classes are in app/landing.css (lp-*), the paper look in
-   app/paper.css (pp-*). */
+/* Concept: The Route. The page is one line, and you follow one order down it from checkout to payout
+   (content/landing.ts holds the order's story). There are no section bands: each section is a stop on
+   the line, with its copy beside it. The sections here only lay out copy and place points for the line:
+   `data-rt` names a point, `data-lane` says which lane it sits in (route.css turns lanes into
+   positions: centre, right and left on desktop, the left edge on phones), and `data-at` marks
+   anything that changes once the line has passed a point. Route.tsx measures the points, draws the line
+   through them and moves the order. Every section is a server component. Layout and look are in
+   app/route.css (rt-*). */
 
-/* Hero and product in one pinned section: the headline printed on a banknote, the portal on a laptop
-   below it. Scrolling zooms into the laptop until its screen fills the view, then runs the portal
-   tour (PortalTour, which fades `.lp-hero` out and back). */
-export function Hero() {
+type Lane = "c" | "r" | "l" | "d" | "x" | "b";
+type PointProps = { name: string; lane: Lane; via?: "vh"; y?: string };
+const at = (y?: string) => (y ? ({ "--y": y } as CSSProperties) : undefined);
+
+/** A point the line passes through, with nothing drawn on it. */
+function Anchor({ name, lane, via, y }: PointProps) {
+  return <i className="rt-anchor" data-rt={name} data-lane={lane} data-via={via} style={at(y)} />;
+}
+
+/** A point drawn on the line: a small diamond that fills when the line reaches it, and a label beside it.
+    `off`/`to` colour it as an account (live, stopped) before and after. */
+function Node({
+  name, lane, via, y, on, off, to, side, time, label, children,
+}: PointProps & { on?: string; off?: "live"; to?: "live" | "stop"; side?: "right"; time?: string; label?: string; children?: ReactNode }) {
   return (
-    <section className="lp-hero-band" id="top">
-      <div className="pp-hero-bg" aria-hidden="true" />
-      <div className="lp-wrap lp-hero">
-        <div className="pp-note" data-note="">
-          <span className="pp-note-corner pp-note-corner--tl" aria-hidden="true">
-            {c.hero.serial}
-          </span>
-          <span className="pp-note-corner pp-note-corner--br" aria-hidden="true">
-            {c.hero.series}
-          </span>
-          <figure className="pp-note-vignette" aria-hidden="true" />
-          <div className="pp-note-copy">
-            <p className="pp-note-micro" aria-hidden="true">
-              <Microprint />
-            </p>
-            <h1 className="lp-h1">
-              {c.hero.lead}{" "}
-              <Stamp tone="red" className="pp-hero-stamp">
-                {c.hero.stamp}
-              </Stamp>
-              <br className="lp-br" />{" "}
-              {c.hero.accent}{" "}
-              <span className="lp-nowrap">
-                <em className="pp-ink">
-                  <FlipWords words={c.hero.flip} />
-                </em>
-                .
-              </span>
-            </h1>
-            <p className="lp-hero-sub">{c.hero.subhead}</p>
+    <span className="rt-node" data-rt={name} data-at={on ?? name} data-lane={lane} data-via={via} data-off={off} data-to={to} data-side={side} style={at(y)}>
+      <i className="rt-node-dot" />
+      {(time || label || children) && (
+        <span className="rt-node-label">
+          {time && <span className="rt-node-time">{time}</span>}
+          {label && <span>{label}</span>}
+          {children}
+        </span>
+      )}
+    </span>
+  );
+}
+
+/** Text that changes once the line has passed `point`. */
+function Swap({ point, off, on }: { point: string; off: ReactNode; on: ReactNode }) {
+  return (
+    <span className="rt-swap" data-at={point}>
+      <span>{off}</span>
+      <span>{on}</span>
+    </span>
+  );
+}
+
+/** What the system printed: each line appears when the line reaches its point. */
+function Log({ lines, className }: { lines: c.LogLine[]; className?: string }) {
+  return (
+    <ol className={`rt-log${className ? ` ${className}` : ""}`}>
+      {lines.map((l, i) => (
+        <li key={i} data-at={l.at}>
+          <time>{l.time}</time>
+          <span>{l.text}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function Tick() {
+  return (
+    <svg className="rt-tick" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path d="M2.5 7.5l3 3 6-7" pathLength="1" />
+    </svg>
+  );
+}
+
+function Btn({ href, size, children }: { href: string; size?: "sm" | "lg"; children: ReactNode }) {
+  return (
+    <a className={`rt-btn${size ? ` rt-btn--${size}` : ""}`} href={href}>
+      <span>{children}</span>
+      <svg className="rt-btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M3 8h10M9 4l4 4-4 4" />
+      </svg>
+    </a>
+  );
+}
+
+/* Stop 1, Checkout: the headline, and the order on the line beside it. The card itself is drawn by
+   RouteLine (it is the thing that moves); this leaves room for it and says it aloud. */
+export function Hero() {
+  const o = c.order;
+  return (
+    <section className="rt-hero" id="top">
+      <div className="rt-row">
+        <div className="rt-hero-copy">
+          <h1 className="rt-h1">
+            <span className="rt-h1-dim">{c.hero.lead}</span> <span>{c.hero.accent}</span>
+          </h1>
+          <p className="rt-sub">{c.hero.subhead}</p>
+          <div className="rt-actions">
+            <Btn href="#book" size="lg">
+              Book a call
+            </Btn>
+            <a className="rt-link" href="#how">
+              See how it works
+            </a>
           </div>
-          <span className="pp-note-seal" aria-hidden="true" />
         </div>
-        <div className="lp-hero-cta">
-          <Button size="lg" href="#book">
-            Book a call
-          </Button>
-          <Button variant="ghost" size="lg" href="#how" arrow={false}>
-            See how it works
-          </Button>
+        <div className="rt-slot rt-slot--start">
+          <i className="rt-anchor rt-anchor--slot" data-rt="checkout" />
+          <p className="sr-only">
+            {o.label} order {o.id}: {o.amount}, {o.card}, {o.merchant}, created {o.stages[0].time}. This page follows it from
+            checkout to payout.
+          </p>
         </div>
-      </div>
-      <div className="lp-wrap lp-stage">
-        <PortalTour data={c.portal} clipH={760} clipHMobile={860} />
-        <span className="lp-illus">Illustrative data</span>
       </div>
     </section>
   );
 }
 
-export function Trust() {
+/* The view right after checkout: the order is in the portal. The line runs in behind the laptop and
+   out underneath it; the order is out of sight while it is inside (data-in / data-out are this
+   section's top and bottom padding, the distance from its edges to the device). */
+export function Portal() {
   return (
-    <section className="lp-wrap lp-trust" aria-labelledby="trust-t">
-      <h2 className="lp-trust-t" id="trust-t">
-        {rich(c.trust.heading)}
-      </h2>
-      <ul className="lp-logos">
-        {c.logos.map((l) => (
-          <li key={l} className="lp-logo">
-            <Diamond size={9} outline />
-            {l}
+    <div className="rt-zone" id="portal" data-rt-zone="" data-in="28" data-out="36">
+      <section className="rt-portal">
+        <div className="rt-portal-in">
+          <PortalTour data={c.portal} clipH={760} clipHMobile={860} />
+          <span className="lp-illus">Illustrative data</span>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+/* Stop 2, Paused: the order is sent to US-01, and US-01 closes. Its node turns red and the line to it
+   goes dotted; the log prints what happened. The fan below is the three accounts the router splits across. */
+export function Paused() {
+  const p = c.paused;
+  const lanes: Record<string, Lane> = { us01: "c", us03: "d", uk02: "x" };
+  return (
+    <section className="rt-stop" id="paused">
+      <div className="rt-row">
+        <Node name="router" lane="c" y="var(--node-h2)" time={p.node.time} label={p.node.label} />
+        <div className="rt-copy rt-copy--c">
+          <h2 className="rt-h2">{p.title}</h2>
+          <p className="rt-lede">{p.blurb}</p>
+        </div>
+        <Log lines={p.log} className="rt-log--side" />
+      </div>
+      <div className="rt-row rt-fan" role="img" aria-label={p.alt}>
+        <Anchor name="pause" lane="c" y="8px" />
+        <Anchor name="junction" lane="c" y="64px" />
+        {p.accounts.map((a) => (
+          <Node
+            key={a.id}
+            name={a.name}
+            on={a.name === "us01" ? "pause" : undefined}
+            lane={lanes[a.name]}
+            y="170px"
+            off="live"
+            to={a.name === "us01" ? "stop" : "live"}
+            side={a.name === "uk02" ? "right" : undefined}
+          >
+            <b>{a.id}</b>
+            <Swap point={a.name === "us01" ? "pause" : "junction"} off={a.before} on={a.after} />
+          </Node>
+        ))}
+        <Anchor name="rejoin" lane="r" via="vh" y="236px" />
+      </div>
+    </section>
+  );
+}
+
+/* Stop 3, Rerouted: the line has bent round the paused account. How it works, in three lines. */
+export function Rerouted() {
+  const h = c.how;
+  return (
+    <section className="rt-stop rt-stop--tight" id="how">
+      <div className="rt-row">
+        <Node name="rerouted" lane="r" y="var(--node-h2)" time={h.node.time} label={h.node.label} />
+        <div className="rt-copy">
+          <h2 className="rt-h2">{h.title}</h2>
+          <dl className="rt-steps">
+            {h.steps.map((s) => (
+              <div key={s.title}>
+                <dt>{s.title}</dt>
+                <dd>{s.body}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** The record a check leaves; its last line is printed when the order passes the check. */
+function Panel({ item, point }: { item: c.Check; point: string }) {
+  return (
+    <div className="rt-panel" data-art={item.art}>
+      <p className="rt-panel-head">{item.head}</p>
+      <ul>
+        {item.rows.map((r) => (
+          <li key={r.k + r.v} data-tone={r.tone} data-bar={r.bar !== undefined ? "" : undefined}>
+            <span>{r.k}</span>
+            {r.bar !== undefined && (
+              <i className="rt-bar">
+                <i style={{ width: `${r.bar}%` }} />
+              </i>
+            )}
+            <span>{r.v}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="rt-panel-result" data-at={point}>
+        <Tick />
+        <span>{item.result}</span>
+      </p>
+    </div>
+  );
+}
+
+/* Stop 4, Approved: the order passes four checks on the line, then the providers feed in from the side. */
+export function Approved() {
+  const w = c.whatYouGet;
+  return (
+    <section className="rt-stop" id="approved">
+      <div className="rt-row">
+        <Node name="approved" lane="r" y="var(--node-h2)" time={w.node.time} label={w.node.label} />
+        <div className="rt-copy">
+          <h2 className="rt-h2">{w.title}</h2>
+          <p className="rt-lede">{w.blurb}</p>
+        </div>
+      </div>
+      <ol className="rt-checks">
+        {w.items.map((it, i) => (
+          <li key={it.art} className="rt-row rt-check">
+            <Node name={`cp${i}`} lane="r" y="12px" time={it.node.time} label={it.node.label} />
+            <div className="rt-check-copy">
+              <h3 className="rt-h3">{it.title}</h3>
+              <p>{it.body}</p>
+            </div>
+            <Panel item={it} point={`cp${i}`} />
+          </li>
+        ))}
+      </ol>
+      <div className="rt-row">
+        <p className="rt-note rt-note--checks">{w.note}</p>
+      </div>
+      <div className="rt-row rt-feed">
+        <Anchor name="feed" lane="r" />
+        <h3 className="rt-h2 rt-feed-title">{c.providers.title}</h3>
+        <ul className="rt-providers">
+          {c.providers.items.map((name, i) => (
+            <li key={name} data-at={`prov${i}`}>
+              <i className="rt-anchor rt-anchor--in" data-rt={`prov${i}`} />
+              {name}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/* Stop 5, Underwritten: a branch leaves the line, US-04 is issued on it and goes live, and it joins again. */
+export function Underwritten() {
+  const f = c.forBrands;
+  return (
+    <section className="rt-stop" id="underwriting">
+      <div className="rt-row">
+        <Node name="uw" lane="r" y="var(--node-h2)" time={f.node.time} label={f.node.label} />
+        <div className="rt-copy">
+          <h2 className="rt-h2">{f.title}</h2>
+          <p className="rt-lede">{f.description}</p>
+          <ul className="rt-facts">
+            {f.items.map((it) => (
+              <li key={it.label}>
+                <b>{it.label}</b>
+                <span>{it.meta}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div className="rt-row rt-branch">
+        <Log lines={f.log} />
+        <div className="rt-art" role="img" aria-label={f.alt}>
+          <Node name="split" lane="r" y="var(--split-y)" time={f.split.time} label={f.split.label} />
+          <Node name="us04" lane="b" y="var(--us04-y)" to="live" side="right">
+            <b>{f.account.id}</b>
+            <Swap point="us04" off={f.account.before} on={f.account.after} />
+          </Node>
+          <Anchor name="join" lane="r" y="var(--join-y)" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* Stop 6, Settled: the line sweeps across to the left edge and the order docks beside the payout it is in. */
+export function Settled() {
+  const s = c.settled;
+  return (
+    <section className="rt-stop" id="settled">
+      <div className="rt-row rt-sweep">
+        <Anchor name="home" lane="l" via="vh" />
+        <div className="rt-slot rt-slot--dock" aria-hidden="true">
+          <i className="rt-anchor rt-anchor--slot" data-rt="payout" />
+        </div>
+        <div className="rt-copy rt-copy--statement">
+          <h2 className="rt-h2">{s.title}</h2>
+          <p className="rt-lede">{s.blurb}</p>
+          <div className="rt-statement" role="table" aria-label="Payout statement">
+            {s.rows.map((r) => (
+              <div key={r.what} role="row" data-at={r.after ? "payout" : undefined}>
+                <span role="cell">{r.date}</span>
+                <span role="cell">{r.what}</span>
+                <span role="cell">{r.to}</span>
+                <span role="cell">{r.amount}</span>
+                <span role="cell">{r.after && <Swap point="payout" off={r.before} on={r.after} />}</span>
+              </div>
+            ))}
+          </div>
+          <p className="rt-note">{s.note}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* At the arrival: who it's for, as three stations on the line. */
+export function Industries() {
+  const n = c.industries;
+  return (
+    <section className="rt-stop" id="industries">
+      <div className="rt-row">
+        <div className="rt-copy rt-copy--l">
+          <h2 className="rt-h2">{n.title}</h2>
+        </div>
+      </div>
+      <ul className="rt-stations">
+        {n.items.map((it, i) => (
+          <li key={it.title} className="rt-row rt-station">
+            <Node name={`ind${i}`} lane="l" y="50%" />
+            <h3 className="rt-h3">{it.title}</h3>
+            <p>{it.body}</p>
           </li>
         ))}
       </ul>
@@ -99,204 +354,81 @@ export function Trust() {
   );
 }
 
-/* Sheet 1, the problem: the termination letter every high-risk merchant dreads. Its lines type on as
-   the sheet arrives, the verdict is struck through, and Vertlo's answer is stamped over it. */
-export function Notice() {
-  const n = c.notice;
+/* Merchants' own accounts of it (placeholders until real quotes exist), and who else is on it. */
+export function Stories() {
   return (
-    <Sheet id="notice">
-      <div className="pp-notice">
-        <article className="pp-letter" aria-label={n.label}>
-          <header className="pp-letter-head">
-            <span>
-              <b>{n.from}</b>
-              {n.fromSub}
+    <section className="rt-stop" id="reviews">
+      <div className="rt-row">
+        <div className="rt-copy rt-copy--l">
+          <h2 className="rt-h2">{c.testimonials.title}</h2>
+        </div>
+        <div className="rt-wide rt-stories">
+          <MerchantStories items={c.testimonials.items} />
+        </div>
+        <div className="rt-wide rt-trust">
+          <h3>{c.trust.heading}</h3>
+          <ul>
+            {c.logos.map((l) => (
+              <li key={l}>{l}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function Faq() {
+  return (
+    <section className="rt-stop" id="faq">
+      <div className="rt-row rt-faq">
+        <div className="rt-faq-side">
+          <h2 className="rt-h2">{c.faq.title}</h2>
+          <p className="rt-lede">{c.faq.blurb}</p>
+        </div>
+        <Questions items={c.faq.items} />
+      </div>
+    </section>
+  );
+}
+
+/* Where the line ends: it runs into the one button. */
+export function Book() {
+  const b = c.cta;
+  return (
+    <section className="rt-stop rt-book" id="book">
+      <div className="rt-row">
+        <div className="rt-copy rt-copy--l rt-copy--book">
+          <h2 className="rt-h2 rt-h2--lg">{b.title}</h2>
+          <p className="rt-lede">{b.blurb}</p>
+          <div className="rt-actions">
+            <span className="rt-terminus">
+              <i className="rt-anchor rt-anchor--in" data-rt="end" data-via="vh" />
+              <Btn href="#book" size="lg">
+                Book a call
+              </Btn>
             </span>
-            <span>{n.date}</span>
-          </header>
-          <p className="pp-letter-ref">{n.ref}</p>
-          {n.lines.map((l, i) => (
-            <p key={i} className="pp-letter-line">
-              {i > 0 ? <del>{l}</del> : l}
-            </p>
-          ))}
-          <p className="pp-letter-sign">{n.sign}</p>
-          <p className="pp-letter-reply">
-            <Diamond size={8} />
-            <span>{n.reply}</span>
-          </p>
-          <Stamp className="pp-letter-stamp">{n.stamp}</Stamp>
-          <span className="pp-illus">{n.label}</span>
-        </article>
-        <div className="pp-notice-copy">
-          <h2 className="lp-h2">
-            Keep selling when your account{" "}
-            <em className="pp-ink">
-              <RotatingWord words={c.problem.rotating} />
-            </em>
-          </h2>
-          <p className="lp-lede">{c.problem.blurb}</p>
-        </div>
-      </div>
-      <IndustryCards items={c.problem.items} />
-    </Sheet>
-  );
-}
-
-/* Sheet 2, how it works: a statement of account, the flow scrubbed by scroll (HowFlow). */
-export function Statement() {
-  const p = c.portal;
-  return (
-    <Sheet id="statement" anchor="how">
-      <div className="pp-sheet-head">
-        <h2 className="lp-h2">{rich(c.how.title)}</h2>
-        <dl className="pp-ledger-meta">
-          <div>
-            <dt>Account</dt>
-            <dd>{p.merchant}</dd>
-          </div>
-          <div>
-            <dt>Period</dt>
-            <dd>
-              {p.period.from} – {p.period.to}
-            </dd>
-          </div>
-          <div>
-            <dt>Accounts</dt>
-            <dd>{p.routing.length} MIDs · {p.routing.filter((r) => r.state !== "paused").length} live</dd>
-          </div>
-        </dl>
-      </div>
-      <HowFlow steps={c.how.steps} />
-    </Sheet>
-  );
-}
-
-/* Sheet 3, what you get and the providers it connects: a certificate-style schedule with a seal. */
-export function Schedule() {
-  return (
-    <Sheet id="schedule">
-      <span className="pp-seal" aria-hidden="true" />
-      <div className="pp-sheet-head pp-sheet-head--split">
-        <h2 className="lp-h2">{rich(c.whatYouGet.title)}</h2>
-        <p className="lp-lede">{c.whatYouGet.blurb}</p>
-      </div>
-      <div className="lp-wyg">
-        <FeatureGridMotion items={c.whatYouGet.items} />
-      </div>
-      <div className="pp-schedule-b">
-        <h3 className="pp-sub">
-          <span className="pp-sub-k">Schedule B</span>
-          {rich(c.providers.title)}
-        </h3>
-        <div className="lp-pf-d">
-          <ProviderFlow />
-        </div>
-        <div className="lp-pf-m">
-          <ProviderFlow layout="vertical" />
-        </div>
-      </div>
-    </Sheet>
-  );
-}
-
-/* Sheet 4, underwriting: the one dark document, a letter of approval with a vault engraving. */
-export function Approval() {
-  return (
-    <Sheet id="approval" tone="dark">
-      <span className="pp-approval-vault" aria-hidden="true" />
-      <FeaturePanel {...c.forBrands} title={rich(c.forBrands.title)} />
-    </Sheet>
-  );
-}
-
-/* Sheet 5, who it's for: the register of industries, then merchants' own accounts of it. */
-export function Register() {
-  return (
-    <Sheet id="register" anchor="industries">
-      <div className="pp-sheet-head pp-sheet-head--split pp-register-head">
-        <h2 className="lp-h2">{rich(c.industries.title)}</h2>
-        <span className="pp-register-globe" aria-hidden="true" />
-      </div>
-      <IndustryCards items={c.industries.items} />
-      <div className="pp-register-stories" id="reviews">
-        <h3 className="pp-sub">
-          <span className="pp-sub-k">{c.testimonials.eyebrow}</span>
-          {rich(c.testimonials.title)}
-        </h3>
-        <MerchantStories items={c.testimonials.items} />
-      </div>
-    </Sheet>
-  );
-}
-
-/* Sheet 6, questions: the terms, kept short and plain. */
-export function Terms() {
-  return (
-    <Sheet id="terms">
-      <FAQ title={rich(c.faq.title)} blurb={c.faq.blurb} items={c.faq.items} ctaHref="#book" />
-    </Sheet>
-  );
-}
-
-/* Sheet 7, the closing call: a cheque made out to the merchant's checkout, laid last on the stack.
-   Guilloché ground, serial, a pay line, a memo, the one CTA on the signature line (its signature
-   writes itself in as the cheque lands), and the approval stamped across. */
-export function FinalCTA() {
-  const { cheque } = c.cta;
-  return (
-    <Sheet id="cheque" anchor="book" bare>
-      <div className="pp-cheque">
-        <div className="pp-cheque-top">
-          <span className="pp-cheque-issuer">
-            <Diamond size={11} />
-            {cheque.issuer}
-          </span>
-          <span className="pp-cheque-no">
-            Nº {cheque.no}
-            <span>{cheque.date}</span>
-          </span>
-        </div>
-        <div className="pp-cheque-body">
-          <h2 className="lp-h2">{rich(c.cta.title)}</h2>
-          <p className="lp-blurb">{c.cta.blurb}</p>
-        </div>
-        <div className="pp-cheque-pay">
-          <span className="pp-cheque-k">{cheque.payLabel}</span>
-          <span className="pp-cheque-line">{cheque.payee}</span>
-          <span className="pp-cheque-amount">{cheque.amount}</span>
-        </div>
-        <div className="pp-cheque-foot">
-          <p className="pp-cheque-memo">
-            <span className="pp-cheque-k">Memo</span>
-            {c.cta.points.join(" · ")}
-          </p>
-          <div className="pp-cheque-sign">
-            <Button size="lg" href="#book">
-              Book a call
-            </Button>
-            {/* the signature sits on its own line, under the button, where a cheque is signed */}
-            <span className="pp-cheque-sigline" aria-hidden="true">
-              <svg className="pp-signature" viewBox="0 0 260 64">
-                <path d="M8 44c10-2 16-16 22-26 4-7 8-6 6 2-3 12-9 26-6 28 4 2 10-14 15-20 3-4 5-2 4 2-1 6-3 12 1 12 5 0 9-10 13-12 3-1 3 3 2 6-2 6 1 8 6 4 6-5 9-16 14-18 3-1 2 4 0 8-3 7-4 13 1 12 6-2 10-12 16-14 4-1 2 6 1 9-1 5 3 6 7 2 5-5 7-12 12-13 4 0 1 7 4 8 6 1 14-8 22-10 10-2 30 0 44-4" />
-              </svg>
+            <span className="rt-next">
+              <i />
+              <b>{b.next.id}</b>
+              {b.next.label}
             </span>
-            <span className="pp-cheque-k">{cheque.signLabel}</span>
           </div>
-          <Stamp className="pp-cheque-stamp">{cheque.stamp}</Stamp>
+          <ul className="rt-points">
+            {b.points.map((p) => (
+              <li key={p}>{p}</li>
+            ))}
+          </ul>
         </div>
-        <p className="pp-cheque-micr" aria-hidden="true">
-          {cheque.micr}
-        </p>
       </div>
-    </Sheet>
+    </section>
   );
 }
 
 export function SiteFooter() {
   return (
-    <div className="lp-wrap lp-footer" id="company">
-      <Footer tagline={c.footer.tagline} columns={c.footer.columns} />
+    <div className="rt-footer" id="company">
+      <Footer tagline={c.footer.tagline} columns={c.footer.columns} wordmark={false} />
     </div>
   );
 }

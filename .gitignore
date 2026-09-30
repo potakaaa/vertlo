@@ -13,3 +13,6 @@ next-env.d.ts
 
 # local Claude Code worktrees
 .claude/worktrees/
+
+# local design review captures
+.impeccable/review/

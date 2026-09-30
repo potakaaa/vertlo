@@ -1,0 +1,434 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-30T10:34:42+00:00",
+  "title": "Design System: Vertlo",
+  "extensions": {
+    "colorMeta": {
+      "mist": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "oklch(95.5% 0.005 146)",
+        "tonalRamp": [
+          "#0a0c0a",
+          "#242624",
+          "#404340",
+          "#5f625f",
+          "#808380",
+          "#a3a6a3",
+          "#c7cac7",
+          "#ecefec"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "oklch(97.7% 0.004 135)",
+        "tonalRamp": [
+          "#0a0c0a",
+          "#242623",
+          "#414240",
+          "#60625f",
+          "#818380",
+          "#a4a6a3",
+          "#c8cac7",
+          "#edefec"
+        ]
+      },
+      "forest": {
+        "role": "primary",
+        "displayName": "Forest",
+        "canonical": "oklch(32.5% 0.045 158)",
+        "tonalRamp": [
+          "#001004",
+          "#0f2c1c",
+          "#2d4939",
+          "#4c6957",
+          "#6c8b78",
+          "#8eae9a",
+          "#b2d2be",
+          "#d7f8e3"
+        ]
+      },
+      "forest-hover": {
+        "role": "primary",
+        "displayName": "Forest Hover",
+        "canonical": "#2a4c38",
+        "tonalRamp": [
+          "#001004",
+          "#0f2c1c",
+          "#2d4939",
+          "#4c6957",
+          "#6c8b78",
+          "#8eae9a",
+          "#b2d2be",
+          "#d7f8e3"
+        ]
+      },
+      "live": {
+        "role": "secondary",
+        "displayName": "Live Green",
+        "canonical": "oklch(71.8% 0.196 149)",
+        "tonalRamp": [
+          "#001700",
+          "#003700",
+          "#005900",
+          "#007c08",
+          "#00a037",
+          "#22c55d",
+          "#6ce78a",
+          "#a3ffb8"
+        ]
+      },
+      "stop": {
+        "role": "tertiary",
+        "displayName": "Stop Red",
+        "canonical": "oklch(48.1% 0.131 28)",
+        "tonalRamp": [
+          "#2b0000",
+          "#520000",
+          "#781914",
+          "#9e3e34",
+          "#c46054",
+          "#eb8376",
+          "#ffa99c",
+          "#ffd3c6"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(18.1% 0.016 165)",
+        "tonalRamp": [
+          "#050d0a",
+          "#1e2823",
+          "#3a4540",
+          "#59645f",
+          "#7a8580",
+          "#9ca8a3",
+          "#c0cdc7",
+          "#e5f2ec"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "oklch(44.3% 0.020 162)",
+        "tonalRamp": [
+          "#040e09",
+          "#1c2822",
+          "#39453f",
+          "#58655e",
+          "#78867f",
+          "#9ba9a1",
+          "#becdc5",
+          "#e3f3ea"
+        ]
+      },
+      "ink-faint": {
+        "role": "neutral",
+        "displayName": "Ink Faint",
+        "canonical": "oklch(52.2% 0.018 160)",
+        "tonalRamp": [
+          "#050e09",
+          "#1d2822",
+          "#3a453f",
+          "#59655e",
+          "#79867f",
+          "#9ca9a1",
+          "#c0cdc5",
+          "#e5f2ea"
+        ]
+      },
+      "ink-dim": {
+        "role": "neutral",
+        "displayName": "Ink Dim (large text only)",
+        "canonical": "oklch(60.4% 0.018 162)",
+        "tonalRamp": [
+          "#050e09",
+          "#1d2822",
+          "#39453f",
+          "#58655e",
+          "#79867f",
+          "#9ba9a2",
+          "#bfcdc5",
+          "#e4f3eb"
+        ]
+      },
+      "track": {
+        "role": "neutral",
+        "displayName": "Track",
+        "canonical": "oklch(84.8% 0.014 156)",
+        "tonalRamp": [
+          "#070d09",
+          "#202722",
+          "#3c443f",
+          "#5b645e",
+          "#7c857f",
+          "#9ea8a1",
+          "#c2ccc5",
+          "#e7f2ea"
+        ]
+      },
+      "track-dead": {
+        "role": "neutral",
+        "displayName": "Dead Track",
+        "canonical": "#94a199"
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "rgba(31,59,43,.26)"
+      },
+      "rule-soft": {
+        "role": "neutral",
+        "displayName": "Rule Soft",
+        "canonical": "rgba(31,59,43,.13)"
+      },
+      "forest-wash": {
+        "role": "neutral",
+        "displayName": "Forest Wash",
+        "canonical": "rgba(31,59,43,.07)"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline (two block lines, first in Ink Dim) and the closing Book headline."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Each stop's heading."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Step, check and question names; 20px for industry stations."
+      },
+      "body-lg": {
+        "displayName": "Body Large",
+        "purpose": "Hero subhead only."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "The one line under each stop heading; answers."
+      },
+      "body-sm": {
+        "displayName": "Body Small",
+        "purpose": "Step and check descriptions."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nav links, provider names; buttons at 600."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Everything the system prints: node labels, logs, record panels, order card and tag."
+      },
+      "data-note": {
+        "displayName": "Data Note",
+        "purpose": "Illustrative footnotes under panels."
+      },
+      "amount": {
+        "displayName": "Amount",
+        "purpose": "The money on the order card."
+      }
+    },
+    "shadows": [
+      {
+        "name": "hairline-ring",
+        "value": "0 0 0 1px rgba(31,59,43,.26)",
+        "purpose": "A border drawn as a ring: order card, tag, portal notifications; Rule Soft on the story panel."
+      },
+      {
+        "name": "header-scrolled",
+        "value": "0 1px 0 rgba(31,59,43,.13)",
+        "purpose": "Header bottom hairline once the page has scrolled."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.2,0,0,1)",
+        "purpose": "Entrances, header hide, arrow slide, question open."
+      },
+      {
+        "name": "state-swap",
+        "value": "150-200ms ease-out",
+        "purpose": "Colour and opacity changes when the line passes a point (data-on)."
+      },
+      {
+        "name": "line-scrub",
+        "value": "exponential follow, tau 100ms, speed cap max(1500, 5 x distance) px/s",
+        "purpose": "Drawn length of the line following scroll."
+      },
+      {
+        "name": "line-intro",
+        "value": "0.9s power2.out, 0.15s delay",
+        "purpose": "On load the line draws down to the order."
+      },
+      {
+        "name": "press",
+        "value": "scale .96, 150ms ease-out",
+        "purpose": "Button and menu-button press."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "final state",
+        "purpose": "Whole route drawn, all states on, order settled at payout, transitions off."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "one-lane",
+        "value": "1100px"
+      },
+      {
+        "name": "menu",
+        "value": "860px"
+      },
+      {
+        "name": "phone",
+        "value": "720px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The only filled action: forest, 6px, arrow slides on hover. 52px at the hero and terminus.",
+      "html": "<a class=\"ds-btn\" href=\"#\">Book a call <svg class=\"ds-arrow\" width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" fill=\"none\"><path d=\"M2 7h10M8 3l4 4-4 4\"/></svg></a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 18px;border-radius:6px;background:#1f3b2b;color:#fff;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-weight:600;font-size:15px;line-height:1;text-decoration:none;transition:background-color .15s ease-out,scale .15s ease-out}.ds-btn:hover{background:#2a4c38}.ds-btn:active{scale:.96}.ds-btn:focus-visible{outline:2px solid #1f3b2b;outline-offset:3px}.ds-arrow{stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;transition:translate .2s cubic-bezier(.2,0,0,1)}.ds-btn:hover .ds-arrow{translate:3px 0}"
+    },
+    {
+      "name": "Text Action",
+      "kind": "button",
+      "refersTo": "link-action",
+      "description": "The secondary action: ink text with a hairline underline that turns forest.",
+      "html": "<a class=\"ds-link\" href=\"#\">See how it works</a>",
+      "css": ".ds-link{display:inline-block;padding:14px 0;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-weight:500;font-size:16px;line-height:1;color:#0b1410;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:6px;text-decoration-color:rgba(31,59,43,.26);transition:text-decoration-color .15s ease-out}.ds-link:hover{text-decoration-color:#1f3b2b}.ds-link:focus-visible{outline:2px solid #1f3b2b;outline-offset:3px;border-radius:2px}"
+    },
+    {
+      "name": "Header",
+      "kind": "nav",
+      "refersTo": "header",
+      "description": "Flat sticky strip on the mist; a hairline appears once scrolled.",
+      "html": "<header class=\"ds-head\"><span class=\"ds-logo\"><i></i>VERTLO</span><nav><a href=\"#\">Product</a><a href=\"#\">Industries</a><a href=\"#\">Reviews</a><a href=\"#\">Company</a></nav><span class=\"ds-end\"><a href=\"#\">Log in</a><a class=\"ds-btn-sm\" href=\"#\">Book a call</a></span></header>",
+      "css": ".ds-head{display:flex;align-items:center;gap:48px;height:72px;padding:0 24px;background:#eef1ee;box-shadow:0 1px 0 rgba(31,59,43,.13);font-family:'Schibsted Grotesk',system-ui,sans-serif;}.ds-logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:18px;letter-spacing:.05em;color:#0b1410}.ds-logo i{width:12px;height:12px;background:#1f3b2b;rotate:45deg;border-radius:1.5px}.ds-head nav{display:flex;gap:32px}.ds-head a{font-weight:500;font-size:15px;color:#4a5750;text-decoration:none;transition:color .15s ease-out}.ds-head a:hover{color:#0b1410}.ds-end{margin-left:auto;display:flex;align-items:center;gap:24px}.ds-head .ds-btn-sm{display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:6px;background:#1f3b2b;color:#fff;font-weight:600;font-size:14px}.ds-head .ds-btn-sm:hover{background:#2a4c38;color:#fff}"
+    },
+    {
+      "name": "Order Card",
+      "kind": "card",
+      "refersTo": "order-card",
+      "description": "The order where it starts and where it settles: paper, hairline ring, mono data, grotesk amount.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-row ds-top\"><span>Order #4821</span><span class=\"ds-st\"><i></i>Created</span></div><div class=\"ds-amt\">$129.00</div><div class=\"ds-row\"><span>Visa debit &middot;&middot; 4242</span><span>Jul 10, 09:41:02</span></div><div class=\"ds-row ds-faint\"><span>Nordvia Group LLC</span><span>Illustrative</span></div></div>",
+      "css": ".ds-card{width:300px;box-sizing:border-box;padding:10px 14px 11px;border-radius:6px;background:#f6f8f5;box-shadow:0 0 0 1px rgba(31,59,43,.26);display:grid;gap:5px;font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:500;font-size:12px;line-height:18px;color:#4a5750;white-space:nowrap}.ds-row{display:flex;justify-content:space-between;gap:12px}.ds-top{color:#0b1410}.ds-st{display:inline-flex;align-items:center;gap:8px}.ds-st i{width:7px;height:7px;rotate:45deg;border-radius:1px;background:#16c45a}.ds-amt{margin:2px 0 1px;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-weight:600;font-size:26px;line-height:1.1;letter-spacing:-.02em;color:#0b1410}.ds-faint{color:#616d66}"
+    },
+    {
+      "name": "Order Tag",
+      "kind": "chip",
+      "refersTo": "order-tag",
+      "description": "The order while it travels; status turns stop red while the account is paused.",
+      "html": "<span class=\"ds-tag\"><b>#4821</b><span>Routing to US-01</span></span> <span class=\"ds-tag ds-tag--stop\"><b>#4821</b><span>US-01 paused</span></span>",
+      "css": ".ds-tag{display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 9px;border-radius:5px;background:#f6f8f5;box-shadow:0 0 0 1px rgba(31,59,43,.26);font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:500;font-size:12px;line-height:1;color:#4a5750}.ds-tag b{font-weight:500;color:#0b1410}.ds-tag--stop span{color:#9a3a31}"
+    },
+    {
+      "name": "Route Node",
+      "kind": "custom",
+      "refersTo": "route-node",
+      "description": "A stop on the line: hollow diamond, filled when passed, live or stop by account state; mono label in the gutter left of the line.",
+      "html": "<div class=\"ds-route\"><div class=\"ds-node\"><span class=\"ds-lab\"><span class=\"ds-t\">09:41:02</span>Routed to US-01</span><i></i></div><div class=\"ds-node ds-on\"><span class=\"ds-lab\"><span class=\"ds-t\">09:41:03</span>Approved</span><i></i></div><div class=\"ds-node ds-live\"><span class=\"ds-lab\"><span class=\"ds-t\">US-03</span>Live</span><i></i></div><div class=\"ds-node ds-stop\"><span class=\"ds-lab\"><span class=\"ds-t\">US-01</span>Paused</span><i></i></div></div>",
+      "css": ".ds-route{display:grid;gap:44px;padding:16px 0 16px 160px;background:linear-gradient(#1f3b2b,#1f3b2b) 164.25px 0/1.5px 100% no-repeat #eef1ee}.ds-node{position:relative;height:10px}.ds-node i{position:absolute;left:0;top:0;box-sizing:border-box;width:10px;height:10px;rotate:45deg;border:1.5px solid #1f3b2b;border-radius:1.5px;background:#eef1ee;transition:background-color .18s ease-out,border-color .18s ease-out}.ds-on i{background:#1f3b2b}.ds-live i{background:#16c45a;border-color:#16c45a}.ds-stop i{background:#9a3a31;border-color:#9a3a31}.ds-lab{position:absolute;right:calc(100% - -13px);right:auto;left:-146px;width:128px;top:-4px;display:grid;justify-items:end;text-align:right;white-space:nowrap;font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:500;font-size:12px;line-height:18px;color:#0b1410}.ds-t{color:#616d66}.ds-stop .ds-lab{color:#9a3a31}"
+    },
+    {
+      "name": "Record Panel",
+      "kind": "card",
+      "refersTo": "record-panel",
+      "description": "What the system printed: no box, a top hairline, mono rows, a bar, and a result with a tick.",
+      "html": "<div class=\"ds-panel\"><p class=\"ds-ph\">Routing rules: split by approval rate</p><ul><li><span>US-03</span><span class=\"ds-bar\"><i style=\"width:54%\"></i></span><span>54%</span></li><li><span>UK-02</span><span class=\"ds-bar\"><i style=\"width:46%\"></i></span><span>46%</span></li><li class=\"ds-stopr\"><span>US-01</span><span class=\"ds-bar\"></span><span>Paused</span></li></ul><p class=\"ds-res\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" fill=\"none\"><path d=\"M2 6.5l2.5 2.5L10 3\"/></svg>#4821 sent to US-03</p></div>",
+      "css": ".ds-panel{max-width:320px;display:grid;gap:8px;padding-top:12px;border-top:1px solid rgba(31,59,43,.26);font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:500;font-size:12px;line-height:18px;color:#0b1410}.ds-ph{margin:0;color:#616d66}.ds-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:3px}.ds-panel li{display:grid;grid-template-columns:5ch 1fr 6ch;gap:14px;align-items:center}.ds-panel li>:last-child{text-align:right}.ds-stopr{color:#9a3a31}.ds-bar{display:block;height:4px;background:rgba(31,59,43,.13)}.ds-bar i{display:block;height:100%;background:#1f3b2b}.ds-res{margin:2px 0 0;padding-top:9px;border-top:1px solid rgba(31,59,43,.13);display:flex;align-items:center;gap:8px;color:#1f3b2b}.ds-res path{stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}"
+    },
+    {
+      "name": "System Log",
+      "kind": "custom",
+      "refersTo": "record-panel",
+      "description": "Printed log lines, time in faint; each appears as the line reaches it.",
+      "html": "<ol class=\"ds-log\"><li><time>09:41:02</time><span>#4821 sent to US-01</span></li><li><time>09:41:02</time><span>US-01 closed by its acquirer</span></li><li><time>09:41:03</time><span>#4821 retried on US-03</span></li></ol>",
+      "css": ".ds-log{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:500;font-size:12px;line-height:18px;color:#0b1410}.ds-log li{display:grid;grid-template-columns:8ch 1fr;gap:14px;transition:opacity .2s ease-out,translate .3s cubic-bezier(.2,0,0,1)}.ds-log time{color:#616d66}"
+    },
+    {
+      "name": "Question Row",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Hairline list row that opens by grid-row interpolation; the plus loses its vertical bar when open.",
+      "html": "<div class=\"ds-q\"><button aria-expanded=\"true\">How is Vertlo priced?<svg width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" fill=\"none\"><path d=\"M2 7h10\"/></svg></button><p>A setup fee plus a percentage per transaction, quoted per merchant on a call.</p></div>",
+      "css": ".ds-q{max-width:560px;border-top:1px solid rgba(31,59,43,.26);border-bottom:1px solid rgba(31,59,43,.13);font-family:'Schibsted Grotesk',system-ui,sans-serif;}.ds-q button{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:22px 0;cursor:pointer;font-weight:600;font-size:18px;line-height:1.35;letter-spacing:-.01em;color:#0b1410}.ds-q button:focus-visible{outline:2px solid #1f3b2b;outline-offset:2px}.ds-q svg{stroke:currentColor;stroke-width:1.75;stroke-linecap:round}.ds-q p{margin:0 0 24px;font-size:17px;line-height:1.55;color:#4a5750}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Route",
+    "overview": "The page is one line. A single 1.5px forest line drops from under the header, runs down a misty green ground, and carries one illustrative order from checkout to payout. Sections are stops on that line, never bands: copy sits beside the line, whitespace separates the stops, and nothing is boxed unless it is something the system printed. The line is a route map, not a curve: only horizontal and vertical runs joined by quarter-circle corners (14px radius), and the main line never travels upward.\n\nThe world is quiet and exact. Trust comes from precision rather than decoration: order ids, MIDs, timestamps and statuses are set in JetBrains Mono with tabular figures, laid flat on the mist or on a barely lighter paper panel with a hairline edge. Colour is almost entirely forest and ink on mist; bright green appears only on what is live, one muted red only on what has stopped. The one dark object on the page is the reused portal product shot, which sits in a laptop the line runs behind; it is the product, not a surface style.\n\nState is shown by the line passing a point. Everything that changes (a node filling, a log line appearing, a tick drawing, a statement row darkening) flips when the line reaches it and flips back when the reader scrolls up. With reduced motion the whole route is drawn, every state is on, and the order waits settled at its payout.",
+    "keyCharacteristics": [
+      "One continuous forest line, orthogonal runs with 14px corners, drawn by scroll.",
+      "Diamond (45 degree) nodes, pips and bullets; no circles in the route's own grammar.",
+      "Misty green ground everywhere, including the header; paper panels only for printed things.",
+      "Two faces: Schibsted Grotesk for words, JetBrains Mono for what the system prints.",
+      "Flat hairlines, 6px corners, no shadows, no gradients, no glass.",
+      "Mostly empty space: tall stop padding, a headline and one line of copy per stop."
+    ],
+    "rules": [
+      {
+        "name": "The Live Means Live Rule",
+        "body": "Bright green marks only something currently live (the moving order, a live account). If it is not live, it is forest.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Red Rule",
+        "body": "Stop red belongs to the paused account and nothing else. There is no warning orange, no error pink in the route's own layer.",
+        "section": "colors"
+      },
+      {
+        "name": "The Same Ground Rule",
+        "body": "The header, the stops and the footer all sit on mist. Separation comes from a hairline or from space, never from a differently coloured band.",
+        "section": "colors"
+      },
+      {
+        "name": "The Printed Data Rule",
+        "body": "Anything a system would print (ids, MIDs, times, statuses, amounts in records) is JetBrains Mono with tabular figures. Nothing a person says is ever set in mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Shouting Rule",
+        "body": "No uppercase, no letterspaced labels in the route layer. The base design system's uppercase footer headings and chart labels are reset to sentence case, zero tracking.",
+        "section": "typography"
+      },
+      {
+        "name": "The Lane Rule",
+        "body": "The line always runs between columns, never through copy. If a new stop needs the line, place its node by lane and height in CSS; do not position it in script.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Paper Rule",
+        "body": "Nothing casts a shadow, not even the mobile menu that floats over the page: it sits on paper with the same hairline ring as everything else.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** let the line carry the page: new sections are stops placed by lane and height, with a node and a mono label, not new bands.",
+      "**Do** keep copy to a headline and one line per stop, set beside the line with generous space above (`clamp(104px, 15vh, 184px)`).",
+      "**Do** set every printed value (ids, MIDs, timestamps, statuses) in JetBrains Mono 500 with tabular figures, and label illustrative data as illustrative.",
+      "**Do** express state by the line reaching a point (`data-on`), reversibly, and show the final state when motion is reduced.",
+      "**Do** use the diamond for every mark on the route: nodes, pips, bullets, status.",
+      "**Do** separate with Rule Soft hairlines and whitespace; use paper plus a hairline ring only for things the system printed or cards laid on the mist."
+    ],
+    "donts": [
+      "**Don't** stack full-width coloured bands or put a centred heading over a card grid.",
+      "**Don't** use bright green on anything that is not live, or red on anything but the paused account.",
+      "**Don't** add shadows, gradients, glass or glows anywhere; depth is paper tone plus a hairline.",
+      "**Don't** draw the line as a free curve or send the main line upward; runs are horizontal and vertical with 14px corners.",
+      "**Don't** use uppercase letterspaced labels, badges or small text above headings; a stop is announced by its node's printed label on the line.",
+      "**Don't** use Ink Dim for text under display size.",
+      "**Don't** add a second filled call to action; Book a call is the only one."
+    ]
+  }
+}

@@ -1,17 +1,20 @@
 import { SmoothScroll } from "@/components/site/SmoothScroll";
 import { SiteHeader } from "@/components/site/SiteHeader";
-import { PaperMotion } from "@/components/landing/PaperMotion";
+import { RouteLine } from "@/components/landing/Route";
+import { order, providers } from "@/content/landing";
 import {
-  Approval,
-  FinalCTA,
+  Approved,
+  Book,
+  Faq,
   Hero,
-  Notice,
-  Register,
-  Schedule,
+  Industries,
+  Paused,
+  Portal,
+  Rerouted,
+  Settled,
   SiteFooter,
-  Statement,
-  Terms,
-  Trust,
+  Stories,
+  Underwritten,
 } from "@/components/landing/Sections";
 
 export default function Home() {
@@ -20,21 +23,23 @@ export default function Home() {
       <SmoothScroll />
       <SiteHeader />
       <main>
-        <Hero />
-        <Trust />
-        {/* the stack of documents, one sheet per section (Concept A's structure) */}
-        <div className="pp-stack">
-          <Notice />
-          <Statement />
-          <Schedule />
-          <Approval />
-          <Register />
-          <Terms />
-          <FinalCTA />
+        {/* one line from the top of the hero to the last button; every section is a stop on it */}
+        <div className="rt">
+          <RouteLine order={order} feeders={providers.items.length} />
+          <Hero />
+          <Portal />
+          <Paused />
+          <Rerouted />
+          <Approved />
+          <Underwritten />
+          <Settled />
+          <Industries />
+          <Stories />
+          <Faq />
+          <Book />
         </div>
       </main>
       <SiteFooter />
-      <PaperMotion />
     </>
   );
 }

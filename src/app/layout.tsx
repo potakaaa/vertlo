@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, IBM_Plex_Mono } from "next/font/google";
+import { JetBrains_Mono, Schibsted_Grotesk } from "next/font/google";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 
-/* One family for all text: Archivo's width axis runs from the expanded capitals of the headlines
-   (banknote lettering) to the normal width of the body. Plex Mono sets serials, codes and labels. */
-const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-archivo", display: "swap" });
-const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono", display: "swap" });
+/* Two faces: Schibsted Grotesk for everything people read, JetBrains Mono for what the system
+   prints (order ids, MIDs, timestamps, statuses). */
+const grotesk = Schibsted_Grotesk({ subsets: ["latin"], variable: "--font-grotesk", display: "swap" });
+const jetbrains = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-jetbrains", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Vertlo — The payment CRM for high-risk ecommerce",
@@ -28,7 +28,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${archivo.variable} ${plexMono.variable}`}>
+    <html lang="en" className={`${grotesk.variable} ${jetbrains.variable}`}>
       <body>{children}</body>
     </html>
   );

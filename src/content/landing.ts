@@ -1,16 +1,10 @@
-import type {
-  FAQProps,
-  FeatureGridProps,
-  FeaturePanelProps,
-  IndustryCardsProps,
-  LinkItem,
-} from "@/components/vertlo";
+import type { FAQProps, LinkItem } from "@/components/vertlo";
 import type { PortalData } from "@/components/landing/portal/types";
-import type { FlowStep } from "@/components/landing/HowFlow";
 
 /**
- * Headings: `*words*` render in the ink colour (see components/landing/Rich.tsx).
  * All landing-page copy lives here so it can be edited (or moved to a CMS) without touching layout.
+ * The page follows one order down one line (Concept: The Route), so most of this file is that
+ * order's story: every id, time, share and amount below is illustrative and agrees with the rest.
  * Rules from the brand: no published prices, "Book a call" is the one CTA, placeholders are labelled.
  */
 
@@ -22,54 +16,36 @@ export const navLinks: LinkItem[] = [
 ];
 
 export const hero = {
-  /** The banknote line over the headline, and the stamp pressed onto "closes." */
-  series: "Series 2026",
-  serial: "Nº VT 000 001",
-  stamp: "Closed",
   lead: "One account closes.",
-  accent: "The rest keep",
-  /** Flips after "keep"; the first word is the one screen readers and no-JS visitors get. */
-  flip: ["selling", "shipping", "scaling", "earning", "growing"],
+  accent: "The rest keep selling.",
   subhead:
     "Every payment provider and merchant account in one CRM, routing orders around the one that stops.",
 };
 
-/* The page is a stack of documents laid on the desk: after the banknote (hero) and the laptop, each
-   section arrives as its own sheet and settles on the one before. `doc` is the sheet's printed title,
-   `form` its form code; the sheet number comes from its place in this list. */
-export const sheets = [
-  { id: "notice", doc: "Notice of termination", form: "Form RK-7" },
-  { id: "statement", doc: "Statement of account", form: "Form VT-20" },
-  { id: "schedule", doc: "Schedule of services", form: "Form VT-31" },
-  { id: "approval", doc: "Letter of approval", form: "Form VT-44" },
-  { id: "register", doc: "Register of merchants", form: "Form VT-52" },
-  { id: "terms", doc: "Terms, in plain English", form: "Form VT-60" },
-  { id: "cheque", doc: "Cheque", form: "Nº 000126" },
-] as const;
-export type SheetId = (typeof sheets)[number]["id"];
-
-/* Sheet 1: the letter every high-risk merchant dreads, then Vertlo's answer over it. Illustrative:
-   the processor is unnamed on purpose, and the story matches the portal's Jul 10 reroute. */
-export const notice = {
-  from: "Risk & Compliance",
-  fromSub: "Your acquiring bank",
-  ref: "Re: Merchant account US-01",
-  date: "Jul 10 · 09:41",
-  lines: [
-    "Dear merchant,",
-    "Following a routine review, merchant account US-01 is terminated with immediate effect.",
-    "Card processing on this account stops today. Reserves will be held for 180 days.",
-  ],
-  sign: "Risk Department",
-  reply: "09:41 — US-01 paused. Orders rerouted to UK-02 and US-03. Checkout never went dark.",
-  stamp: "Rerouted",
-  label: "Illustrative letter",
+/* The order the page follows. `stages` is its status along the line: each takes over when the order
+   passes the named point on the route (the data-rt anchors in Sections.tsx). */
+export type OrderStage = { at: string; status: string; time: string; tone?: "stop" | "done" };
+export const order = {
+  id: "#4821",
+  amount: "$129.00",
+  card: "Visa debit ·· 4242",
+  merchant: "Nordvia Group LLC",
+  label: "Illustrative",
+  stages: [
+    { at: "checkout", status: "Created", time: "Jul 10, 09:41:02" },
+    { at: "router", status: "Routing to US-01", time: "Jul 10, 09:41:02" },
+    { at: "pause", status: "US-01 paused", time: "Jul 10, 09:41:02", tone: "stop" },
+    { at: "junction", status: "Rerouted to US-03", time: "Jul 10, 09:41:03" },
+    { at: "approved", status: "Approved", time: "Jul 10, 09:41:03" },
+    { at: "home", status: "In payout P-0714", time: "Jul 14" },
+    { at: "payout", status: "Settled", time: "Paid out Jul 14", tone: "done" },
+  ] satisfies OrderStage[],
 };
 
 /* The product shot: the portal's Overview, all illustrative. Numbers reconcile: the 30 daily
    volumes sum to the $1.84M gross, and approvals average 92.6% weighted by volume. The dip on
    Jul 6 is the UK-02 debit decline (in Attention required); on Jul 10 US-01 paused and traffic
-   rerouted with no dip, which is the failover story told further down the page. */
+   rerouted with no dip, which is the failover the line shows further down the page. */
 export const portal: PortalData = {
   merchant: "Nordvia Group LLC",
   period: { from: "Jun 14", mid: "Jun 28", to: "Jul 13" },
@@ -111,121 +87,181 @@ export const portal: PortalData = {
     { region: "attention", caption: "What needs attention" },
     { region: "health", caption: "Payment health" },
   ],
+  /* the first one is the order the page follows, seen from inside the portal */
   pops: [
+    { time: "09:41", message: "Order #4821 received. $129.00, Visa debit." },
     { time: "09:41", message: "MID US-01 paused. Traffic rerouted to UK-02 and US-03." },
     { time: "09:52", message: "New MID approved: US-04. Added to routing." },
-    { time: "10:07", message: "Dispute DSP-0221 caught early. Refunded before chargeback." },
   ],
 };
 
-export const trust = { heading: "Trusted by *high-risk brands*" };
-export const logos = ["LOGO 01", "LOGO 02", "LOGO 03", "LOGO 04", "LOGO 05", "LOGO 06"];
+/** A line the system printed: a time, then what happened. `at` is the point on the route that prints it. */
+export type LogLine = { at: string; time: string; text: string };
 
-export const problem: {
-  eyebrow: string;
-  rotating: string[];
-  blurb: string;
-  items: IndustryCardsProps["items"];
-} = {
-  eyebrow: "The problem",
-  rotating: ["closes.", "freezes.", "gets flagged."],
+/* Stop 2, Paused: the order is sent to US-01 and the account closes under it. */
+export const paused = {
+  title: "Keep selling when your account closes.",
   blurb:
     "High-risk brands can lose an account with one email. Most also run payments across separate tools and chat groups.",
-  // Dot-matrix art on the black band (IndustryCards tone="dark").
-  items: [
-    {
-      art: "closed",
-      title: "Account closed, sales stop",
-      body: "One processor decision and checkout goes dark. Vertlo moves the traffic to your other live accounts.",
-    },
-    {
-      art: "scattered",
-      title: "Payments scattered everywhere",
-      body: "Providers, accounts and payouts across tools and chat groups. Vertlo puts them on one screen.",
-    },
-    {
-      art: "underwriting",
-      title: "New accounts are hard to get",
-      body: "High-risk applications get declined or stall. We underwrite in-house and issue them.",
-    },
+  node: { time: "09:41:02", label: "Routed to US-01" },
+  log: [
+    { at: "router", time: "09:41:02", text: "#4821 sent to US-01" },
+    { at: "pause", time: "09:41:02", text: "US-01 closed by its acquirer" },
+    { at: "pause", time: "09:41:02", text: "US-01 paused, 40% to 0%" },
+    { at: "junction", time: "09:41:03", text: "#4821 retried on US-03" },
+  ] satisfies LogLine[],
+  /* the three accounts the router splits across: share before the pause, then after it */
+  accounts: [
+    { id: "US-01", name: "us01", before: "Live · 40%", after: "Paused · 0%" },
+    { id: "US-03", name: "us03", before: "Live · 30%", after: "Live · 54%" },
+    { id: "UK-02", name: "uk02", before: "Live · 30%", after: "Live · 46%" },
   ],
+  alt: "Illustration: the order is sent to account US-01, which pauses. The route bends to account US-03, and UK-02 takes the rest of the traffic.",
 };
 
-export const how: { eyebrow: string; title: string; steps: FlowStep[] } = {
-  eyebrow: "How it works",
-  title: "Set it up once. *It routes from there.*",
-  // Rendered by HowFlow: one scroll-driven scene (connect → route → keep), steps alongside.
+/* Stop 3, Rerouted: how it works, in three lines. */
+export const how = {
+  title: "Set it up once. It routes from there.",
+  node: { time: "09:41:03", label: "Rerouted" },
   steps: [
-    {
-      kicker: "Setup",
-      title: "Connect your providers",
-      body: "Bring every processor and merchant account into one CRM.",
-    },
-    {
-      kicker: "Your rules",
-      title: "Route across accounts",
-      body: "Split volume by the rules you set, for steadier approval rates.",
-    },
-    {
-      kicker: "Every day after",
-      title: "Keep selling",
-      body: "If one account pauses, the rest take the traffic in seconds.",
-    },
+    { title: "Connect your providers", body: "Bring every processor and merchant account into one CRM." },
+    { title: "Route across accounts", body: "Split volume by the rules you set, for steadier approval rates." },
+    { title: "Keep selling", body: "If one account pauses, the rest take the traffic in seconds." },
   ],
 };
 
-export const whatYouGet: { eyebrow: string; title: string; blurb: string; items: FeatureGridProps["items"] } = {
-  eyebrow: "What you get",
-  title: "One bad email won’t *stop your checkout.*",
+/* Stop 4, Approved: the four checks the order passes on its way, each with the record it leaves. */
+export type Check = {
+  art: "routing" | "failover" | "disputes" | "stores";
+  /** the label on the line where the order passes this check */
+  node: { time: string; label: string };
+  title: string;
+  body: string;
+  /** what the panel is a record of */
+  head: string;
+  rows: { k: string; v: string; bar?: number; tone?: "stop" }[];
+  /** printed when the order passes the check */
+  result: string;
+};
+export const whatYouGet: { title: string; blurb: string; node: { time: string; label: string }; note: string; items: Check[] } = {
+  title: "One bad email won’t stop your checkout.",
   blurb: "Routing, failover, dispute alerts and every store in one CRM.",
-  // Ruled 2×2 grid with white shadow cards. Numbers are demo data, labelled "Illustrative data".
+  node: { time: "09:41:03", label: "Approved" },
+  note: "Illustrative data",
   items: [
-    { title: "Route across accounts", body: "Split volume by rules you set, for steadier approval rates.", art: "routing" },
-    { title: "Failover in seconds", body: "One MID pauses, the rest take the traffic.", art: "failover" },
-    { title: "Catch disputes early", body: "Refund before it becomes a chargeback.", art: "disputes" },
-    { title: "Every store, one CRM", body: "All your brands and their payouts in one place.", art: "stores" },
+    {
+      art: "routing",
+      node: { time: "09:41:03", label: "Split" },
+      title: "Route across accounts",
+      body: "Split volume by rules you set, for steadier approval rates.",
+      head: "Routing rule: split by approval rate",
+      rows: [
+        { k: "US-03", v: "54%", bar: 54 },
+        { k: "UK-02", v: "46%", bar: 46 },
+        { k: "US-01", v: "Paused", bar: 0, tone: "stop" },
+      ],
+      result: "#4821 sent to US-03",
+    },
+    {
+      art: "failover",
+      node: { time: "09:41:03", label: "Held" },
+      title: "Failover in seconds",
+      body: "One MID pauses, the rest take the traffic.",
+      head: "Merchant accounts: 2 of 3 live",
+      rows: [
+        { k: "09:41:02", v: "US-01 paused", tone: "stop" },
+        { k: "09:41:02", v: "Traffic to UK-02, US-03" },
+        { k: "09:41:03", v: "#4821 approved on US-03" },
+      ],
+      result: "Checkout stayed up",
+    },
+    {
+      art: "disputes",
+      node: { time: "09:41:04", label: "Monitored" },
+      title: "Catch disputes early",
+      body: "Refund before it becomes a chargeback.",
+      head: "Early dispute alert: DSP-0221",
+      rows: [
+        { k: "10:07", v: "Alert on a $89.00 order" },
+        { k: "10:07", v: "Refunded to the customer" },
+      ],
+      result: "No chargeback",
+    },
+    {
+      art: "stores",
+      node: { time: "09:41:04", label: "Logged" },
+      title: "Every store, one CRM",
+      body: "All your brands and their payouts in one place.",
+      head: "All brands: payouts, last 30 days",
+      rows: [
+        { k: "Nordvia Supplements", v: "$48,220" },
+        { k: "Nordvia Digital", v: "$31,905" },
+        { k: "Nordvia Subscriptions", v: "$52,610" },
+      ],
+      result: "Total $132,735",
+    },
   ],
 };
 
-export const forBrands: Omit<FeaturePanelProps, "title"> & { title: string } = {
-  title: "We’ll issue the *accounts you need.*",
-  description: "We underwrite in-house, so getting a new account doesn’t stall your checkout.",
-  items: [
-    { label: "Multiple live accounts", meta: "Run several MIDs side by side", icon: "layers" },
-    { label: "Underwriting in-house", meta: "No outside approvals to wait on", icon: "shield" },
-    { label: "Dispute alerts", meta: "Refund before it’s a chargeback", icon: "bell" },
-    { label: "One CRM", meta: "Every provider on one screen", icon: "dashboard" },
-  ],
-  ctaHref: "#book",
-  chip: false,
-};
-
+/* Still stop 4: the providers, drawn as lines feeding into the route. */
 export const providers = {
-  eyebrow: "Providers",
-  title: "Connect the providers *you already use.*",
+  title: "Connect the providers you already use.",
+  items: ["Visa and Mastercard acquirers", "PayPal", "Your processor"],
 };
 
-export const industries: { eyebrow: string; title: string; items: IndustryCardsProps["items"] } = {
-  eyebrow: "Industries",
-  title: "Made for brands *banks call risky.*",
+/* Stop 5, Underwritten: a new account is issued in-house and joins the route as a live branch. */
+export const forBrands = {
+  title: "We’ll issue the accounts you need.",
+  description: "We underwrite in-house, so getting a new account doesn’t stall your checkout.",
+  node: { time: "09:52", label: "Underwritten" },
+  split: { time: "09:52", label: "US-04 issued" },
+  account: { id: "US-04", before: "Pending", after: "Live · 20%" },
+  items: [
+    { label: "Multiple live accounts", meta: "Run several MIDs side by side" },
+    { label: "Underwriting in-house", meta: "No outside approvals to wait on" },
+    { label: "Dispute alerts", meta: "Refund before it’s a chargeback" },
+    { label: "One CRM", meta: "Every provider on one screen" },
+  ],
+  log: [
+    { at: "us04", time: "09:52", text: "Approved in-house" },
+    { at: "join", time: "09:52", text: "Joins routing at 20%" },
+  ] satisfies LogLine[],
+  alt: "Illustration: a new account, US-04, branches off the route, goes live and joins it again.",
+};
+
+/* Stop 6, Settled: the payout the order lands in. */
+export const settled = {
+  title: "The payout lands.",
+  blurb: "Four days after US-01 closed, order #4821 is paid out with the rest.",
+  rows: [
+    { date: "Jul 14", what: "Payout P-0714", to: "Nordvia Group LLC", amount: "$148,220.00", before: "Pending", after: "Paid" },
+    { date: "", what: "Includes #4821", to: "Visa debit ·· 4242", amount: "$129.00", before: "", after: "" },
+  ],
+  note: "Illustrative data",
+};
+
+export const industries = {
+  title: "Made for brands banks call risky.",
   // Industry list is a working assumption: confirm with Vertlo before launch.
   items: [
-    { art: "supplements", title: "Supplements", body: "Monthly reorders keep flowing when one account tightens up." },
-    { art: "subscriptions", title: "Subscriptions", body: "A failed renewal is retried on another account." },
-    { art: "digital", title: "Digital goods", body: "Payments go through on whichever account is live." },
+    { title: "Supplements", body: "Monthly reorders keep flowing when one account tightens up." },
+    { title: "Subscriptions", body: "A failed renewal is retried on another account." },
+    { title: "Digital goods", body: "Payments go through on whichever account is live." },
   ],
 };
 
-// Placeholders: replace with real merchant quotes (with permission) before launch.
+export const trust = { heading: "Trusted by high-risk brands" };
+// Placeholders: replace with real customer logos (with permission) before launch.
+export const logos = ["LOGO 01", "LOGO 02", "LOGO 03", "LOGO 04", "LOGO 05", "LOGO 06"];
+
 /** Which illustrative chart plays beside a quote. */
 export type MerchantStory = "closed" | "hours" | "newMid";
 /** A merchant quote with its result: `value` is the number, `label` says what it measures. */
 export type MerchantQuote = { story: MerchantStory; value: string; label: string; quote: string; name: string; business: string };
 
 // Placeholders: replace with real, approved quotes and numbers before launch. Never ship invented ones.
-export const testimonials: { eyebrow: string; title: string; items: MerchantQuote[] } = {
-  eyebrow: "Merchants",
-  title: "Merchants who *kept selling.*",
+export const testimonials: { title: string; items: MerchantQuote[] } = {
+  title: "Merchants who kept selling.",
   items: [
     {
       story: "closed",
@@ -255,7 +291,7 @@ export const testimonials: { eyebrow: string; title: string; items: MerchantQuot
 };
 
 export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string } = {
-  title: "What merchants ask *before the call.*",
+  title: "What merchants ask before the call.",
   blurb: "Ask us anything else on a call.",
   items: [
     {
@@ -277,22 +313,12 @@ export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string } = {
   ],
 };
 
+/* Where the line ends: the one CTA, framed as the start of the route for the visitor's own orders. */
 export const cta = {
-  title: "Put every account *in one CRM.*",
+  title: "Put your orders on this route.",
   blurb: "A 30-minute call. We map your providers and accounts, and show you the portal with your numbers.",
   points: ["Multiple live accounts", "Failover in seconds", "Underwriting in-house"],
-  /** The closing call is drawn as a cheque; these fill its printed fields. */
-  cheque: {
-    issuer: "Vertlo Merchant Services",
-    no: "000126",
-    date: "Valid on any weekday",
-    payLabel: "Pay to the order of",
-    payee: "Your checkout, every account in one CRM",
-    amount: "30 min",
-    signLabel: "Authorised signature",
-    micr: "⑆ 0026 0126 ⑆ 30 ⑈ 000126",
-    stamp: "Approved",
-  },
+  next: { id: "#0001", label: "Your first order" },
 };
 
 export const footer = {
@@ -302,10 +328,10 @@ export const footer = {
       title: "Product",
       links: [
         { label: "Routing", href: "#how" },
-        { label: "Failover", href: "#how" },
-        { label: "Dispute alerts", href: "#how" },
-        { label: "Underwriting", href: "#book" },
-        { label: "Portal", href: "#top" },
+        { label: "Failover", href: "#paused" },
+        { label: "Dispute alerts", href: "#approved" },
+        { label: "Underwriting", href: "#underwriting" },
+        { label: "Portal", href: "#portal" },
       ],
     },
     {
