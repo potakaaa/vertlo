@@ -823,7 +823,7 @@ function ProviderFlow(p) {
     outP.map(function (d, i) { return h(Beam, { key: "bo" + i, d: d, dur: 2.6, delay: .9 + i * .45, w: 2.6, color: "#0b1410" }); }),
     pills.map(function (q, i) {
       var dashed = q[4].charAt(0) === "+";
-      return h("g", { key: "p" + i }, h("rect", { x: q[0], y: q[1], width: q[2], height: q[3], rx: q[3] / 2, fill: "#ffffff", stroke: "#e3e9e5", strokeDasharray: dashed ? "4 4" : "none", style: { filter: "drop-shadow(0 8px 18px rgba(11,20,16,.08))" } }),
+      return h("g", { key: "p" + i }, /* site: square-cut, hairline, no drop shadow (the paper look) */ h("rect", { x: q[0], y: q[1], width: q[2], height: q[3], rx: 4, fill: "#f7f9f6", stroke: "rgba(31,59,43,.28)", strokeDasharray: dashed ? "4 4" : "none" }),
         h("text", { x: q[0] + q[2] / 2, y: q[1] + q[3] / 2 + 4.5, textAnchor: "middle", fill: dashed ? "#4a5750" : "#0b1410", fontSize: v ? 11 : 12.5, fontWeight: 600, letterSpacing: ".08em" }, q[4].toUpperCase()));
     }),
     h(Ripple, { cx: cx0, cy: cy0, r: S * .9, n: 2, dur: 4, color: "rgba(11,20,16,.25)" }),
@@ -834,7 +834,7 @@ function ProviderFlow(p) {
       h("rect", { className: "vt-breathe", x: -15, y: -15, width: 30, height: 30, rx: 5, fill: G }),
       h("rect", { x: -6, y: -6, width: 12, height: 12, rx: 2, fill: "none", stroke: "#0b1410", strokeWidth: 2.4 })),
     cards.map(function (q, i) {
-      return h("g", { key: "c" + i }, h("rect", { x: q[0], y: q[1], width: q[2], height: q[3], rx: 16, fill: "#ffffff", stroke: "#e3e9e5", style: { filter: "drop-shadow(0 8px 18px rgba(11,20,16,.08))" } }),
+      return h("g", { key: "c" + i }, h("rect", { x: q[0], y: q[1], width: q[2], height: q[3], rx: 4, fill: "#f7f9f6", stroke: "rgba(31,59,43,.28)" }),
         h("circle", { className: "vt-ping", cx: q[0] + 20, cy: q[1] + q[3] / 2, r: 5, fill: "none", stroke: G, style: { animationDuration: "2.6s", animationDelay: (.9 + i * .45 + 1.6) + "s" } }),
         h("circle", { cx: q[0] + 20, cy: q[1] + q[3] / 2, r: 4, fill: G }),
         h("text", { x: q[0] + (v ? 32 : 34), y: q[1] + q[3] / 2 + 4.5, fill: "#0b1410", fontSize: v ? 10.5 : 13, fontFamily: "var(--font-mono)" }, v ? q[4].replace("Your ", "") : q[4]));

@@ -1,24 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Instrument_Serif, Inter, Inter_Tight } from "next/font/google";
+import { Newsreader, Public_Sans } from "next/font/google";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 
-const interTight = Inter_Tight({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "800", "900"],
-  variable: "--font-inter-tight",
-  display: "swap",
-});
-const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-inter", display: "swap" });
-/* the italic serif for accent words in headings (Sociora-style two-font headlines) */
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-instrument-serif",
-  display: "swap",
-});
-const geistMono = Geist_Mono({ subsets: ["latin"], weight: ["500"], variable: "--font-geist-mono", display: "swap" });
+/* A trade paper's two faces: Newsreader, a news serif with optical sizes, sets the nameplate, the
+   headlines and the running copy (roman only: no italic accents); Public Sans sets the paper's
+   furniture: flags, kickers, captions, tables, and the product UI inside the figures. */
+const newsreader = Newsreader({ subsets: ["latin"], style: ["normal"], axes: ["opsz"], variable: "--font-newsreader", display: "swap" });
+const publicSans = Public_Sans({ subsets: ["latin"], variable: "--font-public-sans", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Vertlo — The payment CRM for high-risk ecommerce",
@@ -38,9 +27,15 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+/* Set before first paint so the ink-in starting states (press.css) never flash the printed page first. */
+const INK_SCRIPT = "document.documentElement.classList.add('pr-js')";
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${interTight.variable} ${inter.variable} ${instrumentSerif.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${newsreader.variable} ${publicSans.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: INK_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   );
