@@ -24,24 +24,6 @@ export const masthead = {
   nameplate: "Vertlo",
   edition: "Vol. 1 · No. 1",
   motto: "For merchants banks call risky",
-  /** Right ear: what the paper covers. */
-  ear: "Payments · Routing · Underwriting",
-};
-
-/** The market strip under the masthead: the demo account's routing, set like a prices table. */
-export const markets: {
-  label: string;
-  note: string;
-  rows: { id: string; share: string; approval: string; move: "up" | "down" | "new" | "paused" }[];
-} = {
-  label: "Routing desk",
-  note: "Illustrative",
-  rows: [
-    { id: "US-03", share: "42%", approval: "92.9%", move: "up" },
-    { id: "UK-02", share: "38%", approval: "91.8%", move: "down" },
-    { id: "US-04", share: "20%", approval: "93.4%", move: "new" },
-    { id: "US-01", share: "0%", approval: "Paused", move: "paused" },
-  ],
 };
 
 /** The lead story: headline, one line, three numbered points, the call. */
@@ -57,16 +39,18 @@ export const hero = {
 /** Exhibit A: the notice merchants dread, struck through, and the reroute that followed. A composite, not a real processor's letter. */
 export const notice = {
   label: "Exhibit A",
-  caption: "Composite example. Names and times are illustrative.",
-  from: "Merchant Risk <risk@acquirer.example>",
+  caption: "The notice, and the portal three minutes later. Composite example; names and times are illustrative.",
+  sender: "Merchant Risk",
+  address: "risk@acquirer.example",
   date: "Fri 10 Jul, 09:38",
   subject: "Your merchant account has been terminated",
   body: [
     "Following a review of MID ending 4471, we have ended our processing relationship, effective immediately.",
     "Remaining funds will be held in reserve for 180 days.",
   ],
+  signoff: "Risk Operations",
   reroute: {
-    from: "Vertlo · Routing",
+    from: "Vertlo",
     time: "09:41",
     message: "MID US-01 paused. Traffic rerouted to UK-02 and US-03.",
   },

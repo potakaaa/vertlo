@@ -12,7 +12,6 @@ import {
   Fig,
   Flag,
   Headline,
-  Markets,
   Masthead,
   Notice,
   PullQuote,
@@ -29,34 +28,40 @@ import {
 
 export function Front() {
   return (
-    <>
-      <Masthead
-        nameplate={c.masthead.nameplate}
-        edition={c.masthead.edition}
-        motto={c.masthead.motto}
-        tagline={c.footer.tagline}
-        links={c.navLinks}
-      />
-      <Markets {...c.markets} />
-    </>
+    <Masthead
+      nameplate={c.masthead.nameplate}
+      edition={c.masthead.edition}
+      motto={c.masthead.motto}
+      links={c.navLinks}
+    />
   );
 }
 
-/* The lead story: headline and deck, three numbered points and the call; Exhibit A (the termination
-   email, struck through, and the reroute) in the right-hand column. */
+/* The lead story: the headline across the page, one sentence to a line; under a hairline, the deck,
+   three numbered points and the call beside Exhibit A (the termination email, struck through, with
+   the reroute landing on it). */
 export function Hero() {
+  const lines = c.hero.headline.split(/(?<=\.)\s+/);
   return (
     <section className="lp-wrap pr-lead" aria-labelledby="lead-t">
-      <div className="pr-lead-story">
-        <Headline as="h1" id="lead-t" kicker={c.hero.kicker} title={c.hero.headline} deck={c.hero.deck} />
-        <ol className="pr-lead-points">
-          {c.hero.points.map((p) => (
-            <li key={p}>{p}</li>
-          ))}
-        </ol>
-        <BookCall size="lg" />
-      </div>
-      <div className="pr-lead-side">
+      <p className="pr-kicker">{c.hero.kicker}</p>
+      <h1 className="pr-h1" id="lead-t">
+        {lines.map((l, i) => (
+          <span key={i} className="pr-h1-line">
+            {l}{" "}
+          </span>
+        ))}
+      </h1>
+      <div className="pr-lead-row">
+        <div className="pr-lead-story">
+          <p className="pr-deck">{c.hero.deck}</p>
+          <ol className="pr-lead-points">
+            {c.hero.points.map((p) => (
+              <li key={p}>{p}</li>
+            ))}
+          </ol>
+          <BookCall size="lg" />
+        </div>
         <Notice {...c.notice} />
       </div>
     </section>
@@ -152,37 +157,35 @@ export function WhatYouGet() {
   );
 }
 
-/* Underwriting: headline and the four points as a ruled list, and the portal's underwriting queue
-   beside it as Figure 4. */
+/* Underwriting: headline beside the four points as a ruled 2 × 2, then the portal's underwriting queue
+   and MIDs side by side on a dark screen as Figure 4. */
 export function ForBrands() {
   const u = c.forBrands;
   return (
     <section className="lp-wrap pr-sec" id="underwriting" aria-labelledby="uw-t">
       <Flag>{u.eyebrow}</Flag>
       <div className="pr-uw">
-        <div className="pr-uw-story">
-          <Headline id="uw-t" title={u.title} deck={u.deck} />
-          <ul className="pr-points">
-            {u.items.map((it) =>
-              typeof it === "string" ? null : (
-                <li key={it.label}>
-                  <Icon name={it.icon ?? "layers"} size={20} />
-                  <span>
-                    <b>{it.label}</b>
-                    {it.meta}
-                  </span>
-                </li>
-              ),
-            )}
-          </ul>
-        </div>
-        <Fig label="Figure 4" caption={u.figure} className="pr-uw-fig">
-          <div className="pr-slices">
-            <CrmSlice kind="underwriting" decorative />
-            <CrmSlice kind="mids" decorative />
-          </div>
-        </Fig>
+        <Headline id="uw-t" title={u.title} deck={u.deck} />
+        <ul className="pr-points">
+          {u.items.map((it) =>
+            typeof it === "string" ? null : (
+              <li key={it.label}>
+                <Icon name={it.icon ?? "layers"} size={20} />
+                <span>
+                  <b>{it.label}</b>
+                  {it.meta}
+                </span>
+              </li>
+            ),
+          )}
+        </ul>
       </div>
+      <Fig label="Figure 4" caption={u.figure}>
+        <div className="pr-slices">
+          <CrmSlice kind="underwriting" decorative />
+          <CrmSlice kind="mids" decorative />
+        </div>
+      </Fig>
     </section>
   );
 }
@@ -195,7 +198,12 @@ export function Industries() {
         <Headline id="mk-t" title={c.industries.title} />
       </div>
       <IndustryCards items={c.industries.items} className="pr-briefs" />
-      <Fig label={c.providers.label} caption={`${c.providers.title} ${c.providers.caption}`} credit="Diagram" className="pr-pf">
+      <Fig
+        label={c.providers.label}
+        caption={`${c.providers.title} ${c.providers.caption}`}
+        credit="Diagram"
+        className="pr-pf"
+      >
         <div className="lp-pf-d">
           <ProviderFlow />
         </div>

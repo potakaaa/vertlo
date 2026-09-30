@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { LinkItem } from "@/components/vertlo";
+import { Notification, type LinkItem } from "@/components/vertlo";
 
 /* The broadsheet's pieces: the page is set as a trade paper for high-risk merchants, so it opens on a
    masthead, sections open on a flag and a rule, figures and tables carry numbered captions, and the
@@ -41,13 +41,24 @@ type MastheadProps = {
   nameplate: string;
   edition: string;
   motto: string;
-  tagline: string;
   links: LinkItem[];
 };
 
-/** The front page's masthead: ears, the nameplate, the edition line with the dateline, the section index.
-    Once it scrolls away a slim running head takes over at the top: nameplate, sections, the call. */
-export function Masthead({ nameplate, edition, motto, tagline, links }: MastheadProps) {
+/** Login and the call, as they sit at the end of the section index (and in the phone ears). */
+function MastActs() {
+  return (
+    <span className="pr-mast-acts">
+      <a className="pr-mast-login" href="#book">
+        Login
+      </a>
+      <BookCall size="sm" />
+    </span>
+  );
+}
+
+/** The front page's masthead: the edition line and dateline, the nameplate, then one double rule and the
+    section index with the call. Once it scrolls away a slim running head takes over at the top. */
+export function Masthead({ nameplate, edition, motto, links }: MastheadProps) {
   const indexRef = useRef<HTMLElement>(null);
   const [pinned, setPinned] = useState(false);
   const [open, setOpen] = useState(false);
@@ -77,25 +88,19 @@ export function Masthead({ nameplate, edition, motto, tagline, links }: Masthead
       <header className="pr-mast" id="top">
         <div className="lp-wrap">
           <div className="pr-mast-ears">
-            <span className="pr-mast-tag">{tagline}</span>
-            <span className="pr-mast-acts">
-              <a className="pr-mast-login" href="#book">
-                Login
-              </a>
-              <BookCall size="sm" />
+            <span>
+              {edition} <span className="pr-mast-dot">·</span> {motto}
             </span>
+            <Dateline />
+          </div>
+          <div className="pr-mast-mtop">
+            <MastActs />
           </div>
           <p className="pr-nameplate">
             <a href="#top" aria-label={`${nameplate} home`}>
               {nameplate}
             </a>
           </p>
-          <div className="pr-mast-line">
-            <span>
-              {edition} <span className="pr-mast-dot">·</span> {motto}
-            </span>
-            <Dateline />
-          </div>
           <nav className="pr-index" aria-label="Sections" ref={indexRef}>
             <ul>
               {links.map((l) => (
@@ -104,6 +109,7 @@ export function Masthead({ nameplate, edition, motto, tagline, links }: Masthead
                 </li>
               ))}
             </ul>
+            <MastActs />
           </nav>
         </div>
       </header>
@@ -149,38 +155,6 @@ export function Masthead({ nameplate, edition, motto, tagline, links }: Masthead
         </ul>
       </div>
     </>
-  );
-}
-
-/** The market strip under the masthead: rows of the demo account's routing, like a prices table. */
-export function Markets({
-  label,
-  note,
-  rows,
-}: {
-  label: string;
-  note: string;
-  rows: { id: string; share: string; approval: string; move: "up" | "down" | "new" | "paused" }[];
-}) {
-  const mark = { up: "▲", down: "▼", new: "New", paused: "Paused" } as const;
-  return (
-    <aside className="lp-wrap pr-markets" aria-label={`${label}, ${note.toLowerCase()} data`}>
-      <p className="pr-markets-h">
-        {label} <span>{note}</span>
-      </p>
-      <ul>
-        {rows.map((r) => (
-          <li key={r.id} data-move={r.move}>
-            <b>{r.id}</b>
-            <span>{r.share} of volume</span>
-            <span className="pr-markets-v">
-              {r.move === "paused" ? null : r.approval}
-              <i>{mark[r.move]}</i>
-            </span>
-          </li>
-        ))}
-      </ul>
-    </aside>
   );
 }
 
@@ -256,49 +230,51 @@ export function Fig({
 type NoticeProps = {
   label: string;
   caption: string;
-  from: string;
+  sender: string;
+  address: string;
   date: string;
   subject: string;
   body: string[];
+  signoff: string;
   reroute: { from: string; time: string; message: string };
 };
 
-/** Exhibit A: a termination email, struck through in red as it scrolls in, and Vertlo's reroute notice under it. */
-export function Notice({ label, caption, from, date, subject, body, reroute }: NoticeProps) {
+/** Exhibit A: the termination email laid on the page and struck through in red as it scrolls in, with the
+    portal's reroute notification landing on top of it once the strike has crossed the letter. */
+export function Notice({ label, caption, sender, address, date, subject, body, signoff, reroute }: NoticeProps) {
   return (
     <figure className="pr-notice">
-      <p className="pr-notice-label">{label}</p>
-      <div className="pr-mail" data-ink="strike">
-        <dl className="pr-mail-head">
-          <div>
-            <dt>From</dt>
-            <dd>{from}</dd>
+      <div className="pr-exhibit">
+        <article className="pr-mail" data-ink="strike" aria-label={`Email: ${subject}`}>
+          <header className="pr-mail-top">
+            <span className="pr-mail-av" aria-hidden="true">
+              {sender.charAt(0)}
+            </span>
+            <span className="pr-mail-from">
+              <b>{sender}</b>
+              <span>{address}</span>
+            </span>
+            <time>{date}</time>
+          </header>
+          <p className="pr-mail-subject">
+            <span className="pr-strike">{subject}</span>
+          </p>
+          <div className="pr-mail-body">
+            {[...body, signoff].map((p, i) => (
+              <p key={i}>
+                <span
+                  className="pr-strike pr-strike--thin"
+                  style={{ "--d": `${0.55 + i * 0.25}s` } as React.CSSProperties}
+                >
+                  {p}
+                </span>
+              </p>
+            ))}
           </div>
-          <div>
-            <dt>Date</dt>
-            <dd>{date}</dd>
-          </div>
-        </dl>
-        <p className="pr-mail-subject">
-          <span className="pr-strike">{subject}</span>
-        </p>
-        <div className="pr-mail-body">
-          {body.map((p, i) => (
-            <p key={i}>
-              <span className="pr-strike pr-strike--thin" style={{ "--d": `${0.5 + i * 0.3}s` } as React.CSSProperties}>
-                {p}
-              </span>
-            </p>
-          ))}
+        </article>
+        <div className="pr-slip" data-ink="slip">
+          <Notification from={reroute.from} time={reroute.time} message={reroute.message} animate={false} />
         </div>
-      </div>
-      <div className="pr-reroute" data-ink="fig">
-        <p className="pr-reroute-h">
-          <span className="pr-signal" aria-hidden="true" />
-          {reroute.from}
-          <time>{reroute.time}</time>
-        </p>
-        <p className="pr-reroute-m">{reroute.message}</p>
       </div>
       <figcaption className="pr-cap">
         <b>{label}.</b> {caption}
@@ -437,7 +413,16 @@ export function Coupon({
   return (
     <div className="pr-coupon">
       <span className="pr-scissors" aria-hidden="true">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <circle cx="6" cy="6" r="3" />
           <circle cx="6" cy="18" r="3" />
           <path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12" />
