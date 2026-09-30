@@ -21,7 +21,6 @@ export const navLinks: LinkItem[] = [
 ];
 
 export const hero = {
-  eyebrow: "Payments for high-risk ecommerce",
   lead: "One account closes.",
   accent: "The rest keep",
   /** Flips after "keep"; the first word is the one screen readers and no-JS visitors get. */

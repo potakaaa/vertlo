@@ -6,7 +6,6 @@ import {
   Footer,
   IndustryCards,
   LogoStrip,
-  Pill,
   ProviderFlow,
   RotatingWord,
 } from "@/components/vertlo";
@@ -92,9 +91,6 @@ export function Hero() {
     <section className="lp-hero-band" id="top">
       <HeroGrid />
       <div className="lp-wrap lp-hero">
-        <Pill tone="green" className="lp-hero-eyebrow">
-          {c.hero.eyebrow}
-        </Pill>
         <h1 className="lp-h1">
           {c.hero.lead}
           <br className="lp-br" />{" "}

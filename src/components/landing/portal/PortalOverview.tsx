@@ -109,10 +109,7 @@ export function PortalOverview({ data }: { data: PortalData }) {
         </div>
 
         <div className="lpo-body">
-          <div className="lpo-head">
-            <div><div className="vtp-h">Overview</div><div className="vtp-sub">Your payment operation at a glance — all brands.</div></div>
-            <span className="lpo-live"><i />Live · updated just now</span>
-          </div>
+          <div className="vtp-h">Overview</div>
 
           <div className="lpo-kpis">
             {data.kpis.map((k, i) => (
