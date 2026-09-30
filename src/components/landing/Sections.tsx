@@ -16,8 +16,10 @@ import { Letter, Microprint, Sheet } from "@/components/landing/Paper";
    Layout classes are in app/landing.css (lp-*), the paper look in app/paper.css (pp-*). */
 
 /* Hero and product in one pinned section: the headline printed on a banknote, the portal on a laptop
-   below it. Scrolling zooms into the laptop until its screen fills the view, then runs the portal
-   tour (PortalTour, which fades `.lp-hero` out and back). */
+   below it. The note is an object: a medallion for a portrait, a windowed foil security thread, an
+   engraved "1" denomination (one account), a serial; it tilts a little under the cursor and catches
+   the light (PaperMotion). Scrolling zooms into the laptop until its screen fills the view, then runs
+   the portal tour (PortalTour, which fades `.lp-hero` out and back). */
 export function Hero() {
   return (
     <section className="lp-hero-band" id="top">
@@ -30,6 +32,10 @@ export function Hero() {
           {/* the note's portrait: a guilloché medallion around the Vertlo diamond */}
           <span className="pp-note-medallion" aria-hidden="true">
             <Diamond size={30} />
+          </span>
+          {/* the security thread: windowed foil with the issuer microprinted along it */}
+          <span className="pp-note-thread" aria-hidden="true">
+            <span>{"VERTLO ".repeat(24)}</span>
           </span>
           <div className="pp-note-copy">
             <p className="pp-note-micro" aria-hidden="true">
@@ -44,6 +50,11 @@ export function Hero() {
             </h1>
             <p className="lp-hero-sub">{c.hero.subhead}</p>
           </div>
+          {/* the denomination, engraved in the corner: one account */}
+          <span className="pp-note-numeral" aria-hidden="true">
+            1
+          </span>
+          <span className="pp-note-glare" aria-hidden="true" />
         </div>
         <div className="lp-hero-cta">
           <Button size="lg" href="#book">

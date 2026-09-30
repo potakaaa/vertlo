@@ -9,7 +9,10 @@ import { sheets as SHEETS } from "@/content/landing";
      normally, then stays), so the next one slides over it; measured here into --sheet-h.
    - arrival and cover: a sheet comes up with a slight turn and settles; as the next one covers it,
      it sinks back a little under a shadow.
-   - on load, the banknote is laid down and printed: the medallion inks in, then the headline.
+   - on load, the banknote is laid down and printed: the medallion inks in, the serial rolls into
+     place like a numbering machine, the headline and the engraved "1" print, the foil thread flashes.
+     Under a mouse, the note tilts a degree or two and catches the light (glare, and a sheen that
+     runs along the thread).
    - in the sheets: each letter types on (the termination's verdict is then struck through and
      Vertlo's note typed under it), and the cheque's signature writes itself.
    - a slim rail in the left margin shows which sheet you're on (wide screens only).
@@ -71,9 +74,57 @@ export function PaperMotion() {
           .fromTo(q(".pp-note-medallion"), { "--ink": "-20%", rotate: -24 }, { "--ink": "115%", rotate: 0, duration: 1.6, ease: "power2.inOut" }, 0.3)
           .from(q(".pp-note-serial"), { autoAlpha: 0, duration: 0.6 }, 0.6)
           .from(q(".pp-note-micro"), { clipPath: "inset(0 50% 0 50%)", duration: 0.9, ease: "power2.inOut" }, 0.6)
-          .from(q(".lp-h1, .lp-hero-sub"), { autoAlpha: 0, y: 18, stagger: 0.12, duration: 0.8 }, 0.55);
+          .from(q(".lp-h1, .lp-hero-sub"), { autoAlpha: 0, y: 18, stagger: 0.12, duration: 0.8 }, 0.55)
+          .from(q(".pp-note-numeral"), { autoAlpha: 0, y: 12, duration: 1, ease: "expo.out" }, 0.8)
+          .fromTo(note, { "--sheen": "-30%" }, { "--sheen": "130%", duration: 1.4, ease: "power2.inOut" }, 0.9);
         const cta = document.querySelector(".lp-hero-cta");
         if (cta) intro.fromTo(cta, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.7 }, 0.95);
+
+        /* the serial, rolled into place like a numbering machine: its digits spin, then settle left to right */
+        const serial = note.querySelector<HTMLElement>(".pp-note-serial");
+        if (serial) {
+          const final = serial.textContent ?? "";
+          const digits = final.replace(/\D/g, "").length;
+          const roll = { p: 0 };
+          intro.to(roll, {
+            p: 1, duration: 0.9, ease: "none",
+            onUpdate: () => {
+              const settled = Math.floor(roll.p * (digits + 1));
+              let d = 0;
+              serial.textContent = final.replace(/\d/g, (ch) => (d++ < settled ? ch : String(Math.floor(Math.random() * 10))));
+            },
+            onComplete: () => { serial.textContent = final; },
+          }, 0.6);
+        }
+      }
+
+      /* ── the note under a mouse: a slight tilt toward the cursor, a glare, the thread's sheen ── */
+      const hero = note?.parentElement;
+      let tiltRaf = 0;
+      const onMove = (e: PointerEvent) => {
+        if (!note || e.pointerType !== "mouse" || tiltRaf) return;
+        tiltRaf = requestAnimationFrame(() => {
+          tiltRaf = 0;
+          const r = note.getBoundingClientRect();
+          const x = Math.min(0.5, Math.max(-0.5, (e.clientX - r.left) / r.width - 0.5));
+          const y = Math.min(0.5, Math.max(-0.5, (e.clientY - r.top) / r.height - 0.5));
+          /* axis-angle, on the individual `rotate` property, so it never fights GSAP's transform */
+          note.style.setProperty("--tilt", `${-y.toFixed(3)} ${x.toFixed(3)} 0 ${(Math.hypot(x, y) * 3.2).toFixed(2)}deg`);
+          note.style.setProperty("--gx", `${((x + 0.5) * 100).toFixed(1)}%`);
+          note.style.setProperty("--gy", `${((y + 0.5) * 100).toFixed(1)}%`);
+          note.style.setProperty("--sheen", `${((y + 0.5) * 100).toFixed(1)}%`);
+          note.setAttribute("data-lit", "");
+        });
+      };
+      const onLeave = () => {
+        if (!note) return;
+        cancelAnimationFrame(tiltRaf); tiltRaf = 0;
+        note.style.removeProperty("--tilt");
+        note.removeAttribute("data-lit");
+      };
+      if (note && hero && !phone) {
+        hero.addEventListener("pointermove", onMove);
+        hero.addEventListener("pointerleave", onLeave);
       }
 
       /* ── the stack: arrive, settle, sink when covered ── */
@@ -123,6 +174,13 @@ export function PaperMotion() {
           gsap.from(amount, { clipPath: "inset(0 100% 0 0)", ease: "power2.inOut", scrollTrigger: { trigger: amount, start: "top 85%", end: "top 55%", scrub: 0.6 } });
         }
       }
+
+      return () => {
+        hero?.removeEventListener("pointermove", onMove);
+        hero?.removeEventListener("pointerleave", onLeave);
+        cancelAnimationFrame(tiltRaf);
+        onLeave();
+      };
     });
 
     /* the stack's heights settle after fonts and client-drawn art; re-measure the triggers once. The
