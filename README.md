@@ -95,6 +95,8 @@ Rules to keep:
 - No badge pills or eyebrow pills with status dots: say status in the content (a subtitle, a plain muted count, or the row value itself). No labels over section headings either; the heading carries the section.
 - One sans for every heading. `*words*` in content take the accent colour (`--accent-ink`), not a second font. No photos, glass or blur-in text: the page's texture is the routing grid (hero and closing call), the dot-matrix and pixel art, and mono running labels inside the scenes. The look lives in `app/mist.css`.
 - Placeholders (logo slots, merchant quotes) say so on the page until real ones replace them.
+- Headings are Familjen Grotesk 600 (the VERTLO wordmark stays Inter Tight 900); body is Inter. In short paragraphs, `**phrase**` sets the key phrase in full ink against the muted rest.
+- Every figure in the copy (failover time, new-account time, brands, processors, volume, uptime, countries…) comes from the `draft` object at the top of `src/content/landing.ts`. They are invented stand-ins: confirm or replace them before launch.
 - Use one green. Red marks paused, declined or over-limit states; amber marks "watch". Don't publish prices; the framing is reliability and approval rates.
 
 ## Responsive behaviour

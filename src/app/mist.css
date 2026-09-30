@@ -1,7 +1,7 @@
 /*
  * Mist: the site's look, layered over the design system (vertlo.css) and the page layout (landing.css)
- * so those stay regenerable. A misty off-white ground, forest-green actions, one sans for every heading
- * with accent words in moss, flat surfaces with hairlines. No photos, no glass, no labels over headings:
+ * so those stay regenerable. A misty off-white ground, forest-green actions, Familjen Grotesk for every
+ * heading with accent words in moss (Inter for body), flat surfaces with hairlines. No photos, no glass, no labels over headings:
  * the texture is the routing grid (hero, closing call), the dot-matrix and pixel art, and mono running
  * labels inside the scenes. The stealth side stays: two black bands, the dark portal. The bright green
  * is a signal colour only (live dots, packets, the black bands).
@@ -25,16 +25,23 @@ body { margin: 0; background: var(--mist); color: var(--ink); }
 .vt-bleed ::selection, .vtp ::selection { background: rgba(124,240,168,.3); color: #fff; }
 html { scrollbar-color: #a3aea7 var(--mist); }
 
-/* ── type: one sans, accents in colour ─────────────── */
-.lp-h1, .lp-h2, .vt-h2, .vt-title-xl, .vt-hero-t, .lp-flow-step h3 { font-weight: 500; text-transform: none; }
-.lp-h1 { font-size: var(--lp-h1); line-height: 1.04; letter-spacing: -.04em; }
-.lp-h2, .vt-h2 { font-size: var(--lp-h2); line-height: 1.06; letter-spacing: -.035em; text-wrap: balance; }
-.vt-feature .vt-title-xl { font-size: var(--lp-h2); line-height: 1.06; letter-spacing: -.035em; text-wrap: balance; }
-.lp-flow-step h3 { letter-spacing: -.025em; }
-.vt-fg-title, .vt-ic-title, .vt-pc-title { font-weight: 500; letter-spacing: -.025em; }
+/* ── type: Familjen Grotesk headings at 600, Inter body, accents in colour ── */
+.lp-h1, .lp-h2, .vt-h2, .vt-title-xl, .vt-hero-t, .lp-flow-step h3 { font-weight: 600; text-transform: none; }
+.lp-h1 { font-size: var(--lp-h1); line-height: 1.02; letter-spacing: -.035em; }
+.lp-h2, .vt-h2 { font-size: var(--lp-h2); line-height: 1.04; letter-spacing: -.03em; text-wrap: balance; }
+.vt-feature .vt-title-xl { font-size: var(--lp-h2); line-height: 1.04; letter-spacing: -.03em; text-wrap: balance; }
+.lp-flow-step h3 { letter-spacing: -.02em; }
+.vt-fg-title, .vt-ic-title, .vt-pc-title { font-weight: 600; letter-spacing: -.02em; }
+/* numbers and step digits in the headings face top out at its 700 */
+.vt-fg-big, .lp-flow-num { font-weight: 700; }
+/* the VERTLO wordmark keeps its own face */
+.vt-logo { font-family: var(--font-mark); }
 .lp-em { font-style: normal; color: var(--accent-ink); }
 .lp-accent { color: var(--accent-ink); }
 .vt-bleed .lp-em { color: #a8e6bf; }
+/* key phrases in short paragraphs: full ink against the muted rest, a half-step heavier */
+.lp-key { font-weight: 500; color: var(--ink); }
+.vt-bleed .lp-key { color: var(--on-stealth); }
 /* the rotating word keeps the design system's roll; it takes the accent colour, not the roll's own green */
 .lp-rot .vt-rot { color: inherit; }
 .vt-fg-title, .vt-ic-title, .vt-faq-q > span { text-wrap: balance; }
@@ -111,9 +118,18 @@ html { scrollbar-color: #a3aea7 var(--mist); }
 
 /* ── trusted-by row: placeholder slots until real logos ── */
 .lp-trust { padding-block: clamp(64px, 7vw, 104px) clamp(24px, 3vw, 40px); display: flex; flex-direction: column; align-items: center; gap: clamp(20px, 2.2vw, 32px); }
-.lp-trust-t { margin: 0; font: 500 clamp(24px, 2.2vw, 32px)/1.1 var(--font-display); letter-spacing: -.025em; text-align: center; text-wrap: balance; }
-.lp-logos { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
-.lp-logo { display: flex; align-items: center; justify-content: center; height: 72px; border-radius: 12px; border: 1px dashed rgba(11,20,16,.2); font: 500 14px/1 var(--font-sans); color: var(--ink-faint); }
+.lp-trust-t { margin: 0; font: 600 clamp(24px, 2.2vw, 32px)/1.1 var(--font-display); letter-spacing: -.02em; text-align: center; text-wrap: balance; }
+.lp-logos { --rule: 1px dashed rgba(11,20,16,.16); list-style: none; margin: 0; padding: 0; width: 100%; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-block: var(--rule); }
+/* a ruled wall of cells, like the feature grid and industry columns: rules between cells, none at the ends */
+.lp-logo { display: flex; align-items: center; justify-content: center; height: 88px; border-left: var(--rule); font: 500 14px/1 var(--font-sans); color: var(--ink-faint); }
+.lp-logo:first-child { border-left: 0; }
+/* scale figures: the next row of the same ruled grid, sharing the logo wall's bottom rule */
+.lp-trust .lp-logos + .lp-figures { margin-top: calc(clamp(20px, 2.2vw, 32px) * -1); }
+.lp-figures { --rule: 1px dashed rgba(11,20,16,.16); margin: 0; width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: var(--rule); }
+.lp-figure { display: flex; flex-direction: column-reverse; align-items: center; gap: 6px; padding: clamp(24px, 2.6vw, 36px) 16px; border-left: var(--rule); text-align: center; }
+.lp-figure:first-child { border-left: 0; }
+.lp-figure dd { margin: 0; font: 600 clamp(32px, 3vw, 44px)/1 var(--font-display); letter-spacing: -.03em; color: var(--ink); }
+.lp-figure dt { font-size: 14px; line-height: 1.4; color: var(--ink-muted); text-wrap: balance; }
 
 /* ── sections on mist ──────────────────────────────── */
 .lp-head--split > .lp-h2 { max-width: 860px; }
@@ -137,6 +153,8 @@ html { scrollbar-color: #a3aea7 var(--mist); }
 .lp-brands .vt-fp-visual { display: flex; flex-direction: column; justify-content: center; gap: 16px; min-height: 0; overflow: visible; }
 .lp-brands .vt-fp-visual .vt-fp-slice { position: relative; left: auto; right: auto; top: auto; min-width: 0; margin: 0 12% 0 0; }
 .lp-brands .vt-fp-visual .vt-fp-slice--2 { margin: 0 0 0 12%; }
+/* feature-grid cards: the text under each title reserves two lines, so the artwork in a row starts on one line */
+@media (min-width: 721px) { .vt-fg-body { min-height: 3em; } }
 /* red as small text on the white feature-grid cards */
 .vt-fg-red { color: var(--red-ink); }
 
@@ -163,8 +181,16 @@ html { scrollbar-color: #a3aea7 var(--mist); }
   .lp-tour[data-tour] .vt-stage-cap b { color: var(--ink-faint); }
   .lp-laptop-lid { padding: 6px; border-radius: 18px; }
   .lp-laptop-cam, .lp-laptop-base { display: none; }
-  .lp-logos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  .lp-logo { height: 56px; font-size: 13px; }
+  .lp-logos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lp-logo { height: 64px; font-size: 13px; }
+  .lp-logo:nth-child(3n + 1) { border-left: 0; }
+  .lp-logo:nth-child(n + 4) { border-top: var(--rule); }
+  /* figures stack: number left, label right, one ruled row each */
+  .lp-figures { grid-template-columns: 1fr; }
+  .lp-figure { flex-direction: row-reverse; justify-content: space-between; align-items: baseline; gap: 16px; padding: 18px var(--lp-x); border-left: 0; text-align: right; }
+  .lp-figure + .lp-figure { border-top: var(--rule); }
+  .lp-figure dd { font-size: 30px; }
+  .lp-figure dt { max-width: 22ch; font-size: 13px; }
   .lp-trust .lp-note { padding-inline: var(--lp-x); text-align: center; }
   .lp-cta { --cell: 40px; margin-inline: 12px; }
   .lp-cta-in { padding-inline: 20px; }

@@ -32,7 +32,8 @@
 
 /* Fonts come from next/font (see layout.tsx); tokens.css names them by family, so point the tokens at the loaded fonts. */
 :root {
-  --font-display: var(--font-inter-tight), "Inter Tight", "Archivo", system-ui, sans-serif;
+  --font-display: var(--font-familjen), "Familjen Grotesk", system-ui, sans-serif;
+  --font-mark: var(--font-inter-tight), "Inter Tight", system-ui, sans-serif; /* the VERTLO wordmark */
   --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
 }

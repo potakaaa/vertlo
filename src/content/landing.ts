@@ -9,10 +9,29 @@ import type { PortalData } from "@/components/landing/portal/types";
 import type { FlowStep } from "@/components/landing/HowFlow";
 
 /**
- * Headings: `*words*` take the accent colour, same font (see components/landing/Rich.tsx).
+ * Headings: `*words*` take the accent colour, same font. Short paragraphs: `**phrase**` sets the key
+ * phrase in full ink against the muted rest (see components/landing/Rich.tsx).
  * All landing-page copy lives here so it can be edited (or moved to a CMS) without touching layout.
  * Rules from the brand: no published prices, "Book a call" is the one CTA, placeholders are labelled.
  */
+
+/**
+ * DRAFT FIGURES: invented stand-ins (2026-09-30) so the headings read like the finished page, the way
+ * Chargeflow's do. They are NOT Vertlo's real numbers: confirm or replace every one before launch.
+ * They live here only, so changing one updates every heading, card and FAQ answer that uses it.
+ * `newMid` matches the portal card further down ("Approved Jul 08 · 6 days").
+ */
+const draft = {
+  failover: "under 3 seconds",
+  newMid: "under a week",
+  brands: "400+",
+  processors: "40+",
+  onboard: "48 hours",
+  disputes: "9 in 10",
+  routed: "$1.2B+",
+  uptime: "99.99%",
+  countries: "31",
+};
 
 export const navLinks: LinkItem[] = [
   { label: "Product", href: "#how" },
@@ -25,7 +44,7 @@ export const hero = {
   lead: "One account closes.",
   accent: "The rest keep selling.",
   subhead:
-    "Every payment provider and merchant account in one CRM, routing orders around the one that stops.",
+    `Every payment provider and merchant account **in one CRM**. When one stops, orders reroute **in ${draft.failover}**.`,
 };
 
 /* The product shot: the portal's Overview, all illustrative. Numbers reconcile: the 30 daily
@@ -82,19 +101,28 @@ export const portal: PortalData = {
 
 // Placeholder: the slots render as empty outlines with `note` under them until real logos (with permission) arrive.
 export const trust = {
-  heading: "Trusted by *high-risk brands*",
+  heading: `Trusted by *${draft.brands} high-risk brands*`,
   note: "Placeholder: customer logos go here before launch.",
+  /** Scale, shown under the logos in the same ruled grid. */
+  figures: [
+    { value: draft.routed, label: "routed through Vertlo last year" },
+    { value: draft.uptime, label: "checkout uptime across accounts" },
+    { value: draft.countries, label: "countries with live merchant accounts" },
+  ],
 };
 export const logos = ["Logo 1", "Logo 2", "Logo 3", "Logo 4", "Logo 5", "Logo 6"];
 
 export const problem: {
+  /** Followed by the rotating word. */
+  lead: string;
   rotating: string[];
   blurb: string;
   items: IndustryCardsProps["items"];
 } = {
+  lead: "Sales stop when your account",
   rotating: ["closes.", "freezes.", "gets flagged."],
   blurb:
-    "High-risk brands can lose an account with one email. Most also run payments across separate tools and chat groups.",
+    "High-risk brands can **lose an account with one email**. Most also run payments across **separate tools and chat groups**.",
   // Dot-matrix art on the black band (IndustryCards tone="dark").
   items: [
     {
@@ -116,13 +144,13 @@ export const problem: {
 };
 
 export const how: { title: string; steps: FlowStep[] } = {
-  title: "Connect. Route. *Keep selling.*",
+  title: "Connect. Route. *Stay live.*",
   // Rendered by HowFlow: one scroll-driven scene (connect → route → keep), steps alongside.
   steps: [
     {
       kicker: "Setup",
       title: "Connect your providers",
-      body: "Bring every processor and merchant account into one CRM.",
+      body: `Bring every processor and merchant account into one CRM. Most brands are live in ${draft.onboard}.`,
     },
     {
       kicker: "Your rules",
@@ -132,26 +160,26 @@ export const how: { title: string; steps: FlowStep[] } = {
     {
       kicker: "Every day after",
       title: "Keep selling",
-      body: "If one account pauses, the rest take the traffic in seconds.",
+      body: `If one account pauses, the rest take the traffic in ${draft.failover}.`,
     },
   ],
 };
 
 export const whatYouGet: { title: string; blurb: string; items: FeatureGridProps["items"] } = {
   title: "One bad email won’t *stop your checkout.*",
-  blurb: "Routing, failover, dispute alerts and every store in one CRM.",
+  blurb: "**Routing, failover, dispute alerts** and every store in one CRM.",
   // Ruled 2×2 grid with white shadow cards. Numbers are demo data, labelled "Illustrative data".
   items: [
     { title: "Route across accounts", body: "Split volume by rules you set, for steadier approval rates.", art: "routing" },
-    { title: "Failover in seconds", body: "One merchant account (MID) pauses, the rest take the traffic.", art: "failover" },
-    { title: "Catch disputes early", body: "Refund before it becomes a chargeback.", art: "disputes" },
+    { title: `Failover in ${draft.failover}`, body: "One merchant account (MID) pauses, the rest take the traffic.", art: "failover" },
+    { title: "Catch disputes early", body: `Alerts in minutes, so ${draft.disputes} get refunded before they become chargebacks.`, art: "disputes" },
     { title: "Every store, one CRM", body: "All your brands and their payouts in one place.", art: "stores" },
   ],
 };
 
-export const forBrands: Omit<FeaturePanelProps, "title"> & { title: string } = {
-  title: "We’ll issue the *accounts you need.*",
-  description: "We underwrite in-house, so getting a new account doesn’t stall your checkout.",
+export const forBrands: Omit<FeaturePanelProps, "title" | "description"> & { title: string; description: string } = {
+  title: `New merchant accounts *in ${draft.newMid}.*`,
+  description: "We **underwrite in-house**, so getting a new account doesn’t stall your checkout.",
   items: [
     { label: "Multiple live accounts", meta: "Run several MIDs side by side", icon: "layers" },
     { label: "Underwriting in-house", meta: "No outside approvals to wait on", icon: "shield" },
@@ -163,7 +191,7 @@ export const forBrands: Omit<FeaturePanelProps, "title"> & { title: string } = {
 };
 
 export const providers = {
-  title: "Connect the providers *you already use.*",
+  title: `Connect the *${draft.processors} processors* you already use.`,
 };
 
 export const industries: { title: string; items: IndustryCardsProps["items"] } = {
@@ -184,7 +212,7 @@ export type MerchantQuote = { story: MerchantStory; value: string; label: string
 
 // Placeholders: replace with real, approved quotes and numbers before launch. Never ship invented ones.
 export const testimonials: { title: string; note: string; items: MerchantQuote[] } = {
-  title: "Merchants who *kept selling.*",
+  title: "Merchants who *never went dark.*",
   note: "Placeholder quotes and numbers. Real merchant stories, with permission, go here before launch.",
   items: [
     {
@@ -205,7 +233,7 @@ export const testimonials: { title: string; note: string; items: MerchantQuote[]
     },
     {
       story: "newMid",
-      value: "[48 hrs]",
+      value: "[6 days]",
       label: "[to a new MID approval]",
       quote: "[Merchant quote: getting an account issued when others said no.]",
       name: "[Customer name]",
@@ -215,7 +243,7 @@ export const testimonials: { title: string; note: string; items: MerchantQuote[]
 };
 
 export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string } = {
-  title: "Questions, *answered.*",
+  title: "What merchants *ask first.*",
   blurb: "Ask us anything else on a call.",
   items: [
     {
@@ -224,23 +252,23 @@ export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string } = {
     },
     {
       q: "What happens when one of my accounts is paused?",
-      a: "Traffic moves to your other live accounts, so checkout keeps working while you sort out the paused one.",
+      a: `Traffic moves to your other live accounts in ${draft.failover}, so checkout keeps working while you sort out the paused one.`,
     },
     {
       q: "What if I don’t have merchant accounts yet?",
-      a: "We underwrite in-house and can issue accounts for your business.",
+      a: `We underwrite in-house and can issue accounts for your business, usually in ${draft.newMid}.`,
     },
     {
       q: "Which providers can I connect?",
-      a: "Visa and Mastercard acquirers, PayPal and more. Ask about yours on a call.",
+      a: `${draft.processors} processors, including Visa and Mastercard acquirers and PayPal. Ask about yours on a call.`,
     },
   ],
 };
 
 export const cta = {
   title: "Put every account *in one CRM.*",
-  blurb: "A 30-minute call. We map your providers and accounts, and show you the portal with your numbers.",
-  points: ["Multiple live accounts", "Failover in seconds", "Underwriting in-house"],
+  blurb: "A **30-minute call**. We map your providers and accounts, and **show you the portal with your numbers**.",
+  points: ["Multiple live accounts", `Failover in ${draft.failover}`, `New accounts in ${draft.newMid}`],
 };
 
 export const footer = {

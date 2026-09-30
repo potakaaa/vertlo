@@ -24,7 +24,7 @@ export interface HeroProps { variant?: 'white'|'stealth'; eyebrow?: string; titl
 export interface LineArtCardProps { title: string; lines?: number; body?: string; tag?: string; icon?: IconName; slice?: CrmSliceKind; figure?: FigureKind; inputs?: PillInputProps[] }
 export interface PlanCardProps { featured?: boolean; figure?: FigureKind; tag: string; title: string; value: string; label?: string; cta?: string; footnote?: string; description?: string; icon?: IconName }
 export interface StatCardProps { name: Node; value: number; decimals?: number; prefix?: string; unit?: string; label: string; tag?: string; illustrative?: boolean }
-export interface FeaturePanelProps { ctaHref?: string; tag?: string; /* site: rich headings */ title: Node; description?: string; items: (string | { icon?: IconName; label: string; meta?: string })[]; slice?: CrmSliceKind; /** site: false hides the floating chip */ chip?: string | false; cta?: string; art?: Node }
+export interface FeaturePanelProps { ctaHref?: string; tag?: string; /* site: rich headings */ title: Node; /* site: rich description */ description?: Node; items: (string | { icon?: IconName; label: string; meta?: string })[]; slice?: CrmSliceKind; /** site: false hides the floating chip */ chip?: string | false; cta?: string; art?: Node }
 export interface ProviderFlowProps { providers?: string[]; accounts?: string[]; layout?: 'horizontal'|'vertical' }
 export interface NotificationProps { from?: string; time?: string; message: string; status?: { tone?: 'ok'|'paused'; label: string }; animate?: boolean; delay?: number }
 export interface NotificationStackProps { items: NotificationProps[] }

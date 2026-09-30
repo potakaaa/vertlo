@@ -14,7 +14,7 @@ import { HowFlow } from "@/components/landing/HowFlow";
 import { MerchantStories } from "@/components/landing/MerchantStories";
 import { FeatureGridMotion } from "@/components/landing/FeatureGridMotion";
 import { PortalTour } from "@/components/landing/PortalTour";
-import { rich } from "@/components/landing/Rich";
+import { keyed, rich } from "@/components/landing/Rich";
 
 /* One responsive page on a misty off-white ground. Headings are one sans; `*words*` in content take the
    accent colour (Rich.tsx). No labels over headings, no photos: the page's own texture is the routing grid
@@ -118,7 +118,7 @@ export function Hero() {
           <span className="lp-h1-line">{c.hero.lead}</span>{" "}
           <span className="lp-h1-line lp-accent">{c.hero.accent}</span>
         </h1>
-        <p className="lp-hero-sub">{c.hero.subhead}</p>
+        <p className="lp-hero-sub">{keyed(c.hero.subhead)}</p>
         <div className="lp-hero-cta">
           <Button size="lg" href="#book">
             Book a call
@@ -149,6 +149,14 @@ export function Trust() {
           </li>
         ))}
       </ul>
+      <dl className="lp-figures">
+        {c.trust.figures.map((f) => (
+          <div key={f.label} className="lp-figure">
+            <dt>{f.label}</dt>
+            <dd>{f.value}</dd>
+          </div>
+        ))}
+      </dl>
       <p className="lp-note">{c.trust.note}</p>
     </section>
   );
@@ -161,13 +169,13 @@ export function Problem() {
         <div className="lp-head lp-head--split">
           <div className="lp-head-main">
             <h2 className="lp-h2">
-              Keep selling when your account{" "}
+              {c.problem.lead}{" "}
               <em className="lp-em lp-rot">
                 <RotatingWord words={c.problem.rotating} />
               </em>
             </h2>
           </div>
-          <p className="lp-lede">{c.problem.blurb}</p>
+          <p className="lp-lede">{keyed(c.problem.blurb)}</p>
         </div>
         <IndustryCards tone="dark" items={c.problem.items} />
       </div>
@@ -191,7 +199,7 @@ export function WhatYouGet() {
     <section className="lp-wrap lp-sec lp-wyg">
       <div className="lp-head lp-head--center">
         <h2 className="lp-h2">{rich(c.whatYouGet.title)}</h2>
-        <p className="lp-blurb">{c.whatYouGet.blurb}</p>
+        <p className="lp-blurb">{keyed(c.whatYouGet.blurb)}</p>
       </div>
       <FeatureGridMotion items={c.whatYouGet.items} />
     </section>
@@ -202,7 +210,7 @@ export function ForBrands() {
   return (
     <section className="vt-bleed lp-bleed lp-brands">
       <div className="lp-wrap">
-        <FeaturePanel {...c.forBrands} title={rich(c.forBrands.title)} />
+        <FeaturePanel {...c.forBrands} title={rich(c.forBrands.title)} description={keyed(c.forBrands.description)} />
       </div>
     </section>
   );
@@ -268,7 +276,7 @@ export function FinalCTA() {
     <section className="lp-cta" id="book">
       <div className="lp-wrap lp-cta-in">
         <h2 className="lp-h2">{rich(c.cta.title)}</h2>
-        <p className="lp-blurb">{c.cta.blurb}</p>
+        <p className="lp-blurb">{keyed(c.cta.blurb)}</p>
         <Button size="lg" href="#book">
           Book a call
         </Button>
