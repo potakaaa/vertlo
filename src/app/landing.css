@@ -14,7 +14,6 @@
 .lp-wrap { width: 100%; max-width: 1440px; margin-inline: auto; padding-inline: var(--lp-x); box-sizing: border-box; }
 section[id], div[id] { scroll-margin-top: 72px; }
 .lp-stage { display: flex; flex-direction: column; }
-.lp-wyg { padding-bottom: var(--lp-y); }
 
 /* ── how it works / providers / industries ──────────── */
 /* HowFlow: steps left, sticky scene right. --p (0–1) is the scrubbed scroll progress, set from JS. */
@@ -124,19 +123,9 @@ section[id], div[id] { scroll-margin-top: 72px; }
 .lp-tour[data-tour] .vt-stage-cap b { font-weight: 500; color: var(--on-stealth-faint); font-variant-numeric: tabular-nums; }
 @media (max-width: 720px) { .lp-tour[data-tour] .vt-stage-tilt { transform: none; } .lp-tour[data-tour] .vt-stage { padding-bottom: 62px; } .lp-tour[data-tour] .vt-stage-caps { top: auto; bottom: 14px; height: 34px; } .lp-tour[data-tour] .vt-stage-cap { height: 34px; font-size: 11px; } }
 
-/* status as content, not badges (site: changes in lib.tsx): slice subtitles, feature-grid counts */
+/* status as content, not badges (site: changes in lib.tsx): slice subtitles */
 .vts-sub { display: block; margin-top: 3px; font-size: 12px; font-weight: 400; color: var(--on-stealth-faint); }
-.vt-fg-count { font-size: 12px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
 
-/* FeatureGridMotion: GSAP drives the cards while a cell plays, so drop their hover transition then */
-.lp-fg-motion .vt-fg-cell[data-anim="run"] .vt-fg-card { transition: none; }
-.lp-fg-motion .vt-fg-tn { transition: color .4s ease-out, text-decoration-color .4s ease-out; }
-/* counted and flipped values: equal-width digits so nothing shifts while they change */
-.lp-fg-motion .vt-fg-big { font-variant-numeric: tabular-nums; }
-/* failover: after the incident, the alert rings keep pinging outwards */
-.lp-fg-motion .vt-fg-cell[data-anim="done"] .vt-fg-artwrap svg circle { transform-box: fill-box; transform-origin: center; animation: lp-fg-ring 2.4s ease-out infinite; }
-.lp-fg-motion .vt-fg-cell[data-anim="done"] .vt-fg-artwrap svg circle + circle { animation-delay: .45s; }
-@keyframes lp-fg-ring { 0% { transform: scale(.5); opacity: 1; } 75%, 100% { transform: scale(1.35); opacity: 0; } }
 .lp-ms { --ms-ease: cubic-bezier(.2,0,0,1); border-block: 1px solid var(--rule); }
 .lp-ms-stage { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
 .lp-ms-chart { padding: 28px 28px 28px 0; border-right: 1px solid var(--rule-soft); display: grid; align-items: center; }
@@ -250,7 +239,6 @@ section[id], div[id] { scroll-margin-top: 72px; }
   .lp-ms-tab { padding: 18px 16px 16px; min-height: 56px; }
   .lp-ms-track { left: 16px; right: 16px; }
   .lp-ms-tab-t { display: none; }
-  .lp-wyg .vt-fg { margin-inline: calc(var(--lp-x) * -1); }
   .lp-pf-d { display: none; }
   .lp-pf-m { display: block; }
   /* HowFlow: the scene sticks under the header, steps scroll beneath it */
@@ -266,5 +254,4 @@ section[id], div[id] { scroll-margin-top: 72px; }
 
 @media (prefers-reduced-motion: reduce) {
   .lp-flow-copy, .lp-flow-num::before { transition: none; }
-  .lp-fg-motion .vt-fg-artwrap svg circle { animation: none !important; }
 }

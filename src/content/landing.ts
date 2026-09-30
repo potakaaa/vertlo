@@ -1,4 +1,4 @@
-import type { FAQProps, FeatureGridProps, FeaturePanelProps, IndustryCardsProps, LinkItem } from "@/components/vertlo";
+import type { FAQProps, FeaturePanelProps, IndustryCardsProps, LinkItem } from "@/components/vertlo";
 import type { PortalData } from "@/components/landing/portal/types";
 import type { FlowStep } from "@/components/landing/HowFlow";
 
@@ -11,14 +11,27 @@ import type { FlowStep } from "@/components/landing/HowFlow";
  * line under it, and let the figures carry the rest.
  */
 
-/** The masthead's section index. The labels are the section flags down the page. */
-export const navLinks: LinkItem[] = [
-  { label: "Routing", href: "#how" },
-  { label: "Underwriting", href: "#underwriting" },
-  { label: "Markets", href: "#industries" },
-  { label: "Merchants", href: "#reviews" },
-  { label: "Q&A", href: "#questions" },
-];
+/** The edition: the site is a paper you turn page by page. The front section (A) and back section (B)
+    turn sideways; the centre spread in between scrolls down. `id` is each page's anchor. */
+export const edition: { pages: { id: string; no: string; section: string; line: string }[]; turn: string; centre: string } = {
+  pages: [
+    { id: "front", no: "A1", section: "Front page", line: "One account closes. The rest keep selling." },
+    { id: "risk", no: "A2", section: "Risk", line: "Three ways a high-risk checkout stops" },
+    { id: "routing", no: "A3", section: "Routing", line: "One account pauses. The rest take the traffic." },
+    { id: "underwriting", no: "A4", section: "Underwriting", line: "We’ll issue the accounts you need" },
+    { id: "centre", no: "C", section: "Centre spread", line: "The portal, opened up" },
+    { id: "markets", no: "B1", section: "Markets", line: "Made for brands banks call risky" },
+    { id: "numbers", no: "B2", section: "The numbers", line: "The month, in numbers" },
+    { id: "letters", no: "B3", section: "Letters", line: "Merchants who kept selling" },
+    { id: "questions", no: "B4", section: "Q&A", line: "What merchants ask before the call" },
+    { id: "classifieds", no: "B5", section: "Classifieds", line: "Book a call" },
+  ],
+  turn: "Scroll to turn the page",
+  centre: "The paper opens: the product, at full size.",
+};
+
+/** The front page's "Inside" index and the running head's contents. */
+export const navLinks: LinkItem[] = edition.pages.map((p) => ({ label: p.section, href: `#${p.id}` }));
 
 export const masthead = {
   nameplate: "Vertlo",
@@ -26,14 +39,11 @@ export const masthead = {
   motto: "For merchants banks call risky",
 };
 
-/** The lead story: headline, one line, three numbered points, the call. */
+/** A1's lead story: headline, one line, the call (beside Exhibit A). */
 export const hero = {
   kicker: "High-risk payments",
   headline: "One account closes. The rest keep selling.",
   deck: "Every merchant account you run, in one CRM. Orders route around the one that gets paused.",
-  points: ["Every provider and MID on one screen", "Orders routed around a paused account", "New MIDs underwritten in-house"],
-  /** Pulled from the page's own copy, as a paper does. Not a customer quote. */
-  pull: "If one account pauses, the rest take the traffic in seconds.",
 };
 
 /** Exhibit A: the notice merchants dread, struck through, and the reroute that followed. A composite, not a real processor's letter. */
@@ -178,6 +188,40 @@ export const figure2 = {
   caption: "Processors in, volume split across MIDs, and a paused MID's share moved to the rest.",
 };
 
+/** A3: the routing board. The morning US-01 is paused, its share drains to 0 and the live MIDs take it.
+    Shares before are illustrative; after matches the portal's routing split (42 / 38 / 20). */
+export const routing = {
+  title: "One account pauses. The rest take the traffic.",
+  deck: "When a processor pauses a MID, Vertlo takes it out of routing and splits its share across the accounts still live.",
+  board: {
+    title: "Routing",
+    merchant: "Nordvia Group LLC",
+    live: "Checkout live",
+    from: "09:40",
+    to: "09:41",
+    orders: "Orders per minute",
+    note: "Illustrative data",
+    rows: [
+      { id: "US-01", provider: "Processor A", before: 30, after: 0 },
+      { id: "US-03", provider: "Processor C", before: 28, after: 42 },
+      { id: "UK-02", provider: "Processor B", before: 26, after: 38 },
+      { id: "US-04", provider: "Processor A", before: 16, after: 20 },
+    ],
+  },
+};
+
+/** B2: the month on the demo account, counted up, from the portal's own figures. */
+export const numbers = {
+  title: "The month, in numbers.",
+  deck: "One account paused mid-month. Thirty days on the demo account, from the portal.",
+  figures: [
+    { to: 1.84, prefix: "$", suffix: "M", decimals: 2, label: "Gross volume", note: "+12.4% on the prior 30 days" },
+    { to: 92.6, prefix: "", suffix: "%", decimals: 1, label: "Approval rate", note: "No dip the day US-01 paused" },
+    { to: 0.62, prefix: "", suffix: "%", decimals: 2, label: "Chargeback ratio", note: "Limit 1.0%" },
+    { to: 3, prefix: "", suffix: " of 4", decimals: 0, label: "MIDs live", note: "US-01 paused, rerouted" },
+  ],
+};
+
 /** Table 1: the demo account's month, from the same data as the portal. Illustrative, and labelled so. */
 export const table = {
   label: "Table 1",
@@ -192,19 +236,6 @@ export const table = {
     ["US-01", "0%", "—", "Paused, rerouted"],
   ],
   foot: ["All", "100%", "92.6%", "$1.84M volume"],
-};
-
-export const whatYouGet: { eyebrow: string; title: string; blurb: string; items: FeatureGridProps["items"] } = {
-  eyebrow: "The portal",
-  title: "One bad email won’t stop your checkout.",
-  blurb: "Routing, failover, dispute alerts and every store in one CRM.",
-  // Ruled 2×2 grid of product cards. Numbers are demo data, labelled "Illustrative data".
-  items: [
-    { title: "Route across accounts", body: "Split volume by rules you set, for steadier approval rates.", art: "routing" },
-    { title: "Failover in seconds", body: "One MID pauses, the rest take the traffic.", art: "failover" },
-    { title: "Catch disputes early", body: "Refund before it becomes a chargeback.", art: "disputes" },
-    { title: "Every store, one CRM", body: "All your brands and their payouts in one place.", art: "stores" },
-  ],
 };
 
 export const forBrands: Pick<FeaturePanelProps, "items"> & { eyebrow: string; title: string; deck: string; figure: string } = {

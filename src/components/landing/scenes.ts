@@ -1,0 +1,110 @@
+"use client";
+
+import { gsap } from "@/lib/motion";
+
+/* Each page's scene: a GSAP timeline built from the page's own markup, which Edition either scrubs
+   inside the page-turn timeline (desktop) or ties to the page's scroll (phones), or jumps to the end
+   (reduced motion). The markup is always in its final state, so without JS the paper reads complete;
+   every scene tweens from a starting state to that final state with fromTo. Scenes are named by the
+   page's `data-scene`; every page also prints its engravings in from the top. */
+
+type Tl = gsap.core.Timeline;
+type Build = (page: HTMLElement, tl: Tl) => void;
+
+const all = <T extends Element = HTMLElement>(root: ParentNode, sel: string) => [...root.querySelectorAll<T>(sel)];
+
+/** Rows of things set down one after another. */
+function setDown(tl: Tl, items: Element[], at = 0.1) {
+  if (items.length) tl.fromTo(items, { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out", stagger: 0.14 }, at);
+}
+
+/** A number counting from `from` to its final figure (read from data-to on a Count). */
+function count(tl: Tl, el: HTMLElement, at: number, duration = 1, from = 0) {
+  const to = Number(el.dataset.to), dec = Number(el.dataset.decimals) || 0;
+  const fmt = (v: number) =>
+    `${el.dataset.prefix ?? ""}${v.toLocaleString("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec })}${el.dataset.suffix ?? ""}`;
+  const o = { v: from };
+  tl.fromTo(o, { v: from }, { v: to, duration, ease: "power2.out", onUpdate: () => void (el.textContent = fmt(o.v)) }, at);
+}
+
+const SCENES: Record<string, Build> = {
+  /* dot-matrix briefs set down one by one */
+  briefs(page, tl) {
+    setDown(tl, all(page, ".vt-ic-card"));
+  },
+
+  /* A3: the minute US-01 is paused. The clock ticks over 09:41; US-01's share drains and is struck
+     out; the live MIDs take it; orders per minute keep drawing flat; the notification lands. */
+  reroute(page, tl) {
+    const board = page.querySelector<HTMLElement>(".pr-board");
+    if (!board) return;
+    const clock = board.querySelector<HTMLElement>(".pr-board-clock");
+    const at = 0.55; // the moment of the pause
+    if (clock) {
+      const [h, m] = (clock.dataset.from ?? "09:40").split(":").map(Number);
+      const o = { s: 44 };
+      const fmt = (s: number) => {
+        const t = h * 3600 + m * 60 + Math.floor(s);
+        const p2 = (n: number) => String(n).padStart(2, "0");
+        return `${p2(Math.floor(t / 3600))}:${p2(Math.floor(t / 60) % 60)}:${p2(t % 60)}`;
+      };
+      tl.fromTo(o, { s: 44 }, { s: 67, duration: 1.6, ease: "none", onUpdate: () => void (clock.textContent = fmt(o.s)) }, 0);
+    }
+    all(board, ".pr-board-row").forEach((row, i) => {
+      const before = Number(row.dataset.before), after = Number(row.dataset.after);
+      const bar = row.querySelector(".pr-board-bar i"), pct = row.querySelector<HTMLElement>(".pr-board-pct");
+      tl.fromTo(row, { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: 0.35, ease: "power2.out" }, 0.05 + i * 0.06);
+      tl.fromTo(bar, { scaleX: before / 50 }, { scaleX: after / 50, duration: 0.7, ease: "power2.inOut" }, after ? at + 0.2 : at);
+      if (pct) {
+        const o = { v: before };
+        tl.fromTo(o, { v: before }, { v: after, duration: 0.7, ease: "power2.inOut", onUpdate: () => void (pct.textContent = `${Math.round(o.v)}%`) }, after ? at + 0.2 : at);
+      }
+      if (!after) {
+        tl.fromTo(row.querySelector(".pr-strike"), { backgroundSize: "0% 1.5px" }, { backgroundSize: "100% 1.5px", duration: 0.35, ease: "power1.inOut" }, at + 0.1);
+        tl.fromTo(row.querySelector('[data-s="live"]'), { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.15 }, at + 0.1);
+        tl.fromTo(row.querySelector('[data-s="paused"]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, at + 0.2);
+        tl.fromTo(row, { "--row-dim": 0 }, { "--row-dim": 1, duration: 0.3 }, at + 0.2);
+      }
+    });
+    tl.fromTo(board.querySelector(".pr-board-orders path"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.6, ease: "none" }, 0);
+    tl.fromTo(board.querySelector(".pr-board-note"), { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, at + 0.75);
+  },
+
+  /* A4: the application's steps tick through; the new MID joins the accounts */
+  underwriting(page, tl) {
+    setDown(tl, all(page, ".pr-points li"), 0);
+    const rows = all(page, ".vts-row");
+    if (rows.length) tl.fromTo(rows, { autoAlpha: 0.15, x: -10 }, { autoAlpha: 1, x: 0, duration: 0.35, ease: "power2.out", stagger: 0.09 }, 0.35);
+  },
+
+  /* B2: the month's figures count up; Table 1's rows print in */
+  numbers(page, tl) {
+    all(page, ".pr-count").forEach((el, i) => count(tl, el, 0.1 + i * 0.12, 1.1));
+    const rows = all(page, ".pr-table tbody tr, .pr-table tfoot tr");
+    if (rows.length) tl.fromTo(rows, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out", stagger: 0.08 }, 0.5);
+  },
+
+  /* B4: the questions set down */
+  qa(page, tl) {
+    setDown(tl, all(page, ".pr-qa-item"), 0.05);
+  },
+
+  /* B5: the scissors run along the cut line, then the coupon lifts off the page */
+  classifieds(page, tl) {
+    const coupon = page.querySelector<HTMLElement>(".pr-coupon");
+    const scissors = page.querySelector<HTMLElement>(".pr-scissors");
+    if (!coupon || !scissors) return;
+    tl.fromTo(scissors, { x: 0 }, { x: () => coupon.offsetWidth - scissors.offsetWidth - 2 * scissors.offsetLeft, duration: 1.1, ease: "power1.inOut" }, 0.05);
+    tl.fromTo(coupon, { rotate: 0, y: 0, "--lift": 0 }, { rotate: -1.2, y: -8, "--lift": 1, duration: 0.45, ease: "power2.out" }, 1.1);
+  },
+};
+
+/** The page's scene (its engravings printing in, plus its named scene), or null if it has none. */
+export function sceneFor(page: HTMLElement): Tl | null {
+  const tl = gsap.timeline();
+  const art = all(page, ".pr-engraving img");
+  if (art.length) tl.fromTo(art, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9, ease: "power1.inOut", stagger: 0.15 }, 0);
+  const build = SCENES[page.dataset.scene ?? ""];
+  if (build) build(page, tl);
+  return tl.duration() ? tl : null;
+}

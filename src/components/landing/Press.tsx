@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Notification, type LinkItem } from "@/components/vertlo";
 
-/* The broadsheet's pieces: the page is set as a trade paper for high-risk merchants, so it opens on a
-   masthead, sections open on a flag and a rule, figures and tables carry numbered captions, and the
-   closing call is a coupon. Copy stays short: headlines and one line; the figures carry the rest.
-   Styles in app/press.css (pr-*). Motion is print-like and small: rules draw in, the strike-through
-   inks across, figures ink in (InkIn below); with reduced motion everything is simply printed. */
+/* The paper's printed pieces: the front page's masthead and index, the running head that follows the
+   open page, headlines, numbered figures and tables, Exhibit A, the Q&A column, the clip-out coupon and
+   the colophon. The page-turning edition that holds them is Edition.tsx; the scroll scenes are
+   scenes.ts. Styles in app/press.css (pr-*). Outside the scenes, motion is print-like: the strike inks
+   across, figures ink in (InkIn below); with reduced motion everything is simply printed. */
 
 /* ── masthead and running head ────────────────────── */
 
@@ -37,44 +37,38 @@ export function BookCall({ size = "md", className }: { size?: "sm" | "md" | "lg"
   );
 }
 
-type MastheadProps = {
-  nameplate: string;
-  edition: string;
-  motto: string;
-  links: LinkItem[];
-};
+type Folio = { id: string; no: string; section: string; line: string };
 
-/** Login and the call, as they sit at the end of the section index (and in the phone ears). */
-function MastActs() {
+/** The front page's masthead: the edition line and dateline over the nameplate, closed by a double rule. */
+export function FrontMast({ nameplate, edition, motto }: { nameplate: string; edition: string; motto: string }) {
   return (
-    <span className="pr-mast-acts">
-      <a className="pr-mast-login" href="#book">
-        Login
-      </a>
-      <BookCall size="sm" />
-    </span>
+    <header className="pr-mast">
+      <div className="pr-mast-ears">
+        <span>
+          {edition} <span className="pr-mast-dot">·</span> {motto}
+        </span>
+        <Dateline />
+      </div>
+      <p className="pr-nameplate">{nameplate}</p>
+    </header>
   );
 }
 
-/** The front page's masthead: the edition line and dateline, the nameplate, then one double rule and the
-    section index with the call. Once it scrolls away a slim running head takes over at the top. */
-export function Masthead({ nameplate, edition, motto, links }: MastheadProps) {
-  const indexRef = useRef<HTMLElement>(null);
-  const [pinned, setPinned] = useState(false);
+/** The running head, fixed over every page: the nameplate, the open page's folio, the page strip (every
+    page by number, the open one marked), the contents on smaller screens, and the call. It follows the
+    `press:page` events the edition sends as pages open. */
+export function RunningHead({ nameplate, pages }: { nameplate: string; pages: Folio[] }) {
+  const [cur, setCur] = useState(pages[0]);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const el = indexRef.current;
-    if (!el) return;
-    // The running head shows once the section index has scrolled above the top edge.
-    const io = new IntersectionObserver(([e]) => setPinned(!e.isIntersecting && e.boundingClientRect.top < 0));
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!pinned) setOpen(false);
-  }, [pinned]);
+    const onPage = (e: Event) => {
+      const id = (e as CustomEvent<{ id: string }>).detail.id;
+      setCur((c) => pages.find((p) => p.id === id) ?? c);
+    };
+    window.addEventListener("press:page", onPage);
+    return () => window.removeEventListener("press:page", onPage);
+  }, [pages]);
 
   useEffect(() => {
     if (!open) return;
@@ -84,92 +78,66 @@ export function Masthead({ nameplate, edition, motto, links }: MastheadProps) {
   }, [open]);
 
   return (
-    <>
-      <header className="pr-mast" id="top">
-        <div className="lp-wrap">
-          <div className="pr-mast-ears">
-            <span>
-              {edition} <span className="pr-mast-dot">·</span> {motto}
-            </span>
-            <Dateline />
-          </div>
-          <div className="pr-mast-mtop">
-            <MastActs />
-          </div>
-          <p className="pr-nameplate">
-            <a href="#top" aria-label={`${nameplate} home`}>
-              {nameplate}
-            </a>
-          </p>
-          <nav className="pr-index" aria-label="Sections" ref={indexRef}>
-            <ul>
-              {links.map((l) => (
-                <li key={l.href}>
-                  <a href={l.href}>{l.label}</a>
-                </li>
-              ))}
-            </ul>
-            <MastActs />
-          </nav>
-        </div>
-      </header>
-
-      <div className="pr-run" data-show={pinned || undefined} aria-hidden={!pinned}>
-        <div className="lp-wrap pr-run-in">
-          <a className="pr-run-name" href="#top" tabIndex={pinned ? undefined : -1}>
-            {nameplate}
-          </a>
-          <ul className="pr-run-links">
-            {links.map((l) => (
-              <li key={l.href}>
-                <a href={l.href} tabIndex={pinned ? undefined : -1}>
-                  {l.label}
+    <header className="pr-run">
+      <div className="lp-wrap pr-run-in">
+        <a className="pr-run-name" href={`#${pages[0].id}`}>
+          {nameplate}
+        </a>
+        <span className="pr-run-folio" aria-live="polite">
+          <b>{cur.no}</b> {cur.section}
+        </span>
+        <nav className="pr-run-pages" aria-label="Pages">
+          <ol>
+            {pages.map((p) => (
+              <li key={p.id}>
+                <a href={`#${p.id}`} aria-current={p.id === cur.id ? "page" : undefined} title={`${p.no} · ${p.section}`}>
+                  {p.no}
                 </a>
               </li>
             ))}
-          </ul>
-          <span className="pr-run-end">
-            <button
-              type="button"
-              className="pr-run-menu"
-              aria-expanded={open}
-              aria-controls="pr-run-list"
-              tabIndex={pinned ? undefined : -1}
-              onClick={() => setOpen((v) => !v)}
-            >
-              Sections
-            </button>
-            <a className="pr-btn pr-btn--sm" href="#book" tabIndex={pinned ? undefined : -1}>
-              Book a call
-            </a>
-          </span>
-        </div>
-        <ul id="pr-run-list" className="pr-run-list" data-open={open || undefined}>
-          {links.map((l) => (
-            <li key={l.href}>
-              <a href={l.href} onClick={() => setOpen(false)} tabIndex={open ? undefined : -1}>
-                {l.label}
-              </a>
-            </li>
-          ))}
-        </ul>
+          </ol>
+        </nav>
+        <span className="pr-run-end">
+          <button type="button" className="pr-run-menu" aria-expanded={open} aria-controls="pr-run-list" onClick={() => setOpen((v) => !v)}>
+            Contents
+          </button>
+          <BookCall size="sm" />
+        </span>
       </div>
-    </>
+      <ol id="pr-run-list" className="pr-run-list" data-open={open || undefined}>
+        {pages.map((p) => (
+          <li key={p.id}>
+            <a href={`#${p.id}`} onClick={() => setOpen(false)} tabIndex={open ? undefined : -1} aria-current={p.id === cur.id ? "page" : undefined}>
+              <b>{p.no}</b>
+              <span>{p.section}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </header>
+  );
+}
+
+/** The front page's index: what's inside, by page number. */
+export function Inside({ pages }: { pages: Folio[] }) {
+  return (
+    <nav className="pr-inside" aria-label="Inside this edition">
+      <p className="pr-label">Inside</p>
+      <ol>
+        {pages.map((p) => (
+          <li key={p.id}>
+            <a href={`#${p.id}`}>
+              <b>{p.no}</b>
+              <span>{p.section}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
   );
 }
 
 /* ── section furniture ────────────────────────────── */
-
-/** A section's flag: its name on a heavy rule, as a paper marks its sections. The rule draws in. */
-export function Flag({ children, aside }: { children: ReactNode; aside?: ReactNode }) {
-  return (
-    <div className="pr-flag">
-      <span className="pr-flag-rule" data-ink="rule" aria-hidden="true" />
-      <span className="pr-flag-label">{children}</span>
-      {aside ? <span className="pr-flag-aside">{aside}</span> : null}
-    </div>
-  );
-}
 
 /** A story's headline block: kicker, headline, deck. `as` sets the heading level. */
 export function Headline({
@@ -355,19 +323,6 @@ export function DataTable({
         {footnote ? <>¹ {footnote} </> : null}
         Source: {note}
       </p>
-    </figure>
-  );
-}
-
-/** A pull quote set beside a table: the same head and heavy rule as the table's caption, so the rules line up.
-    A line lifted from the page's own copy, never a customer quote. */
-export function PullQuote({ label, source, children }: { label: string; source: string; children: ReactNode }) {
-  return (
-    <figure className="pr-pull">
-      <figcaption className="pr-table-cap">
-        <b>{label}.</b> {source}
-      </figcaption>
-      <blockquote>{children}</blockquote>
     </figure>
   );
 }
