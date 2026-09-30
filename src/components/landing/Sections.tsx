@@ -1,25 +1,26 @@
 import {
   Button,
-  CTABand,
+  Diamond,
   FAQ,
   FeaturePanel,
   Footer,
   IndustryCards,
-  LogoStrip,
-  Pill,
   ProviderFlow,
   RotatingWord,
 } from "@/components/vertlo";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import * as c from "@/content/landing";
 import { FlipWords } from "@/components/landing/FlipWords";
 import { HowFlow } from "@/components/landing/HowFlow";
 import { MerchantStories } from "@/components/landing/MerchantStories";
 import { FeatureGridMotion } from "@/components/landing/FeatureGridMotion";
 import { PortalTour } from "@/components/landing/PortalTour";
+import { rich } from "@/components/landing/Rich";
 
-/* One responsive page matching the approved canvas. White sections alternate with full-bleed
-   black bands (`vt-bleed`: the section itself is the black backdrop, components sit straight on it).
+/* One responsive page on a misty off-white ground. Headings pair the sans with an italic serif
+   (`*words*` in content, see Rich.tsx); every section opens with a small badge. Two full-bleed black
+   bands stay for the stealth side (`vt-bleed`: the section itself is the backdrop). Backgrounds are
+   generated photos (public/images/bg) under a dot screen.
    Every section is a server component; the interactive bits live inside the design-system
    components (client). Layout classes are in app/landing.css (lp-*). */
 
@@ -87,22 +88,34 @@ function HeroGrid() {
   );
 }
 
+/** The small section badge: a dotted diamond and a label. */
+export function Badge({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <span className={className ? `lp-badge ${className}` : "lp-badge"}>
+      <i aria-hidden="true" />
+      {children}
+    </span>
+  );
+}
+
+/* Hero and product in one pinned section: misty hills behind, the portal on a laptop. Scrolling
+   zooms into the laptop until its screen fills the view, then runs the portal tour (PortalTour). */
 export function Hero() {
   return (
     <section className="lp-hero-band" id="top">
+      <div className="lp-hero-bg" aria-hidden="true" />
       <HeroGrid />
       <div className="lp-wrap lp-hero">
-        <Pill tone="green" className="lp-hero-eyebrow">
-          {c.hero.eyebrow}
-        </Pill>
+        <Badge className="lp-hero-eyebrow">{c.hero.eyebrow}</Badge>
         <h1 className="lp-h1">
           {c.hero.lead}
           <br className="lp-br" />{" "}
-          <span className="lp-accent">
-            {c.hero.accent}{" "}
-            <span className="lp-nowrap">
-              <FlipWords words={c.hero.flip} />.
-            </span>
+          {c.hero.accent}{" "}
+          <span className="lp-nowrap">
+            <em className="lp-serif lp-accent">
+              <FlipWords words={c.hero.flip} />
+            </em>
+            .
           </span>
         </h1>
         <p className="lp-hero-sub">{c.hero.subhead}</p>
@@ -115,16 +128,8 @@ export function Hero() {
           </Button>
         </div>
       </div>
-    </section>
-  );
-}
-
-/** The product, on a full-bleed black band right under the hero. */
-export function ProductBand() {
-  return (
-    <section className="vt-bleed lp-bleed lp-bleed--stage">
       <div className="lp-wrap lp-stage">
-        <PortalTour data={c.portal} clipH={640} clipHMobile={860} />
+        <PortalTour data={c.portal} clipH={760} clipHMobile={860} />
         <span className="lp-illus">Illustrative data</span>
       </div>
     </section>
@@ -133,8 +138,18 @@ export function ProductBand() {
 
 export function Trust() {
   return (
-    <section className="lp-wrap lp-trust">
-      <LogoStrip heading="Trusted by high-risk brands" logos={c.logos} />
+    <section className="lp-wrap lp-trust" aria-labelledby="trust-t">
+      <h2 className="lp-trust-t" id="trust-t">
+        {rich(c.trust.heading)}
+      </h2>
+      <ul className="lp-logos">
+        {c.logos.map((l) => (
+          <li key={l} className="lp-logo">
+            <Diamond size={9} outline />
+            {l}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -145,9 +160,12 @@ export function Problem() {
       <div className="lp-wrap lp-sec lp-sec--flush">
         <div className="lp-head lp-head--split">
           <div className="lp-head-main">
-            <span className="vt-eyebrow lp-eyebrow">{c.problem.eyebrow}</span>
+            <Badge>{c.problem.eyebrow}</Badge>
             <h2 className="lp-h2">
-              Keep selling when your account <RotatingWord words={c.problem.rotating} />
+              Keep selling when your account{" "}
+              <em className="lp-serif">
+                <RotatingWord words={c.problem.rotating} />
+              </em>
             </h2>
           </div>
           <p className="lp-lede lp-on-dark-muted">{c.problem.blurb}</p>
@@ -162,8 +180,8 @@ export function How() {
   return (
     <section className="lp-wrap lp-sec" id="how">
       <div className="lp-head lp-head--center">
-        <span className="vt-eyebrow lp-eyebrow">{c.how.eyebrow}</span>
-        <h2 className="lp-h2">{c.how.title}</h2>
+        <Badge>{c.how.eyebrow}</Badge>
+        <h2 className="lp-h2">{rich(c.how.title)}</h2>
       </div>
       <HowFlow steps={c.how.steps} />
     </section>
@@ -174,8 +192,8 @@ export function WhatYouGet() {
   return (
     <section className="lp-wrap lp-sec lp-wyg">
       <div className="lp-head lp-head--center">
-        <span className="vt-eyebrow lp-eyebrow">{c.whatYouGet.eyebrow}</span>
-        <h2 className="lp-h2">{c.whatYouGet.title}</h2>
+        <Badge>{c.whatYouGet.eyebrow}</Badge>
+        <h2 className="lp-h2">{rich(c.whatYouGet.title)}</h2>
         <p className="lp-blurb">{c.whatYouGet.blurb}</p>
       </div>
       <FeatureGridMotion items={c.whatYouGet.items} />
@@ -185,9 +203,9 @@ export function WhatYouGet() {
 
 export function ForBrands() {
   return (
-    <section className="vt-bleed lp-bleed">
+    <section className="vt-bleed lp-bleed lp-velvet">
       <div className="lp-wrap">
-        <FeaturePanel {...c.forBrands} />
+        <FeaturePanel {...c.forBrands} title={rich(c.forBrands.title)} />
       </div>
     </section>
   );
@@ -197,8 +215,8 @@ export function Providers() {
   return (
     <section className="lp-wrap lp-sec">
       <div className="lp-head lp-head--center">
-        <span className="vt-eyebrow lp-eyebrow">{c.providers.eyebrow}</span>
-        <h2 className="lp-h2">{c.providers.title}</h2>
+        <Badge>{c.providers.eyebrow}</Badge>
+        <h2 className="lp-h2">{rich(c.providers.title)}</h2>
       </div>
       <div className="lp-pf-d">
         <ProviderFlow />
@@ -215,8 +233,8 @@ export function Industries() {
     <section className="lp-wrap lp-sec lp-industries" id="industries">
       <div className="lp-head lp-head--split lp-head--end">
         <div className="lp-head-main">
-          <span className="vt-eyebrow lp-eyebrow">{c.industries.eyebrow}</span>
-          <h2 className="lp-h2">{c.industries.title}</h2>
+          <Badge>{c.industries.eyebrow}</Badge>
+          <h2 className="lp-h2">{rich(c.industries.title)}</h2>
         </div>
         <div className="lp-hide-m">
           <Button variant="text" href="#book">
@@ -234,8 +252,8 @@ export function Testimonials() {
     <section className="lp-band lp-band--dots" id="reviews">
       <div className="lp-wrap lp-sec">
         <div className="lp-head">
-          <span className="vt-eyebrow lp-eyebrow">{c.testimonials.eyebrow}</span>
-          <h2 className="lp-h2">{c.testimonials.title}</h2>
+          <Badge>{c.testimonials.eyebrow}</Badge>
+          <h2 className="lp-h2">{rich(c.testimonials.title)}</h2>
         </div>
         <MerchantStories items={c.testimonials.items} />
       </div>
@@ -246,17 +264,32 @@ export function Testimonials() {
 export function FAQSection() {
   return (
     <section className="lp-wrap lp-sec">
-      <FAQ blurb={c.faq.blurb} items={c.faq.items} ctaHref="#book" />
+      <FAQ title={rich(c.faq.title)} blurb={c.faq.blurb} items={c.faq.items} ctaHref="#book" />
     </section>
   );
 }
 
+/* The closing call: centred on white, rolling hills under a dot screen along the bottom. */
 export function FinalCTA() {
   return (
-    <section className="vt-bleed lp-bleed lp-bleed--cta" id="book">
-      <div className="lp-wrap">
-        <CTABand title={c.cta.title} points={c.cta.points} ctaHref="#book" />
+    <section className="lp-cta" id="book">
+      <div className="lp-wrap lp-cta-in">
+        <Badge>{c.cta.eyebrow}</Badge>
+        <h2 className="lp-h2">{rich(c.cta.title)}</h2>
+        <p className="lp-blurb">{c.cta.blurb}</p>
+        <Button size="lg" href="#book">
+          Book a call
+        </Button>
+        <ul className="lp-cta-points">
+          {c.cta.points.map((p) => (
+            <li key={p}>
+              <Diamond size={7} />
+              {p}
+            </li>
+          ))}
+        </ul>
       </div>
+      <div className="lp-cta-hills" aria-hidden="true" />
     </section>
   );
 }

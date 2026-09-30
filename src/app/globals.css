@@ -10,6 +10,7 @@
 @import "../styles/tokens.css";
 @import "../styles/vertlo.css";
 @import "./landing.css";
+@import "./mist.css";
 
 /* Tokens exposed to Tailwind (bg-ink, text-green-deep, rounded-panel, md:… = phones vs. up) */
 @theme inline {

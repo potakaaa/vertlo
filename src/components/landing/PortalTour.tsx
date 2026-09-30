@@ -6,12 +6,13 @@ import { Notification } from "@/components/vertlo";
 import { PortalOverview } from "@/components/landing/portal/PortalOverview";
 import { PORTAL_W, PORTAL_H, PORTAL_REGIONS, type PortalData } from "@/components/landing/portal/types";
 
-/* The product band: the portal on a tilted stage, toured by scroll. The band pins; scrolling
-   moves the camera (.vt-cam, inside the tilted screen) from the full portal to the KPIs, the
-   volume and routing charts, Attention required and Payment health, then back out. Each stop
-   shows its caption; the tilt flattens while zoomed (--tour-rx, so the pointer only steers the
-   sideways lean). Same stage markup (vt-stage-*) as the design system's PortalStage, with the
-   site's own Overview inside. Reduced motion: no pin, no zoom. */
+/* The product: the portal on a laptop under the hero copy, toured by scroll. The hero pins;
+   on desktop scrolling first zooms into the laptop (the copy lifts away, the lid flattens and the
+   screen grows to fill the view), then moves the camera (.vt-cam, inside the screen) from the full
+   portal to the KPIs, the volume and routing charts, Attention required and Payment health, and
+   back out, and the laptop settles back under the copy before the hero unpins. Each stop shows its caption. On phones only the stage pins (centred, clear of the header) and the camera tour runs.
+   Same stage markup (vt-stage-*) as the design system's PortalStage, with a laptop lid and base
+   around the screen and the site's own Overview inside. Reduced motion: no pin, no zoom. */
 
 type Props = { data: PortalData; clipH?: number; clipHMobile?: number };
 type Cam = { x: number; y: number; scale: number };
@@ -19,6 +20,13 @@ type Cam = { x: number; y: number; scale: number };
 /* the design system's stage staggers its three notification slots by class (vt-stage-pop--a/b/c) */
 const POP_SLOTS = ["a", "b", "c"] as const;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+
+/** Layout offset of `el` inside `anc` (ignores transforms, so it holds mid-zoom); `anc` must be positioned. */
+function offsetIn(el: HTMLElement, anc: HTMLElement) {
+  let x = 0, y = 0, n: HTMLElement | null = el;
+  while (n && n !== anc) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent as HTMLElement | null; }
+  return { x, y };
+}
 
 /** Scales the 1240-wide portal to its container; shows `clip` px of its height (all of it on phones by default). */
 function Fit({ clipH, clipHMobile, children }: { clipH: number; clipHMobile: number; children: React.ReactNode }) {
@@ -71,6 +79,22 @@ export function PortalTour({ data, clipH = 640, clipHMobile = PORTAL_H }: Props)
         root.setAttribute("data-tour", "");
         const caps = [...root.querySelectorAll<HTMLElement>(".vt-stage-cap")];
         const pops = root.querySelector(".vt-stage-pops");
+        const copy = section.querySelector<HTMLElement>(".lp-hero");
+        const base = root.querySelector<HTMLElement>(".lp-laptop-base");
+
+        /* desktop zoom-in: scale and move the whole laptop (origin top-left) so the screen sits
+           centred in the viewport, as large as fits; measured flat, which is where the zoom ends */
+        const zoom = () => {
+          const s0 = offsetIn(screen, root), r0 = offsetIn(root, section);
+          const sw = screen.offsetWidth, sh = screen.offsetHeight;
+          const vw = document.documentElement.clientWidth, vh = window.innerHeight;
+          const scale = Math.min((vw * 0.94) / sw, (vh * 0.86) / sh);
+          return {
+            scale,
+            x: vw / 2 - r0.x - (s0.x + sw / 2) * scale,
+            y: vh * 0.52 - r0.y - (s0.y + sh / 2) * scale,
+          };
+        };
 
         /* camera for a stop, from layout offsets (unaffected by the tilt or the current zoom);
            the portal is laid out at PORTAL_W and scaled to the camera's width */
@@ -98,31 +122,43 @@ export function PortalTour({ data, clipH = 640, clipHMobile = PORTAL_H }: Props)
         gsap.set(caps, { autoAlpha: 0, y: 10 });
         const tl = gsap.timeline({
           defaults: { ease: "sine.inOut" },
-          scrollTrigger: {
-            trigger: section,
-            start: phone ? "top top+=64" : "center center",
-            end: phone ? "+=1900" : "+=2800",
-            pin: true,
-            scrub: 1,
-            invalidateOnRefresh: true,
-          },
+          scrollTrigger: phone
+            ? { trigger: root, start: "center center+=24", end: "+=1900", pin: root.parentElement, scrub: 1, invalidateOnRefresh: true }
+            : { trigger: section, start: "top top", end: "+=4600", pin: true, scrub: 1, invalidateOnRefresh: true },
         });
         if (pops) tl.to(pops, { autoAlpha: 0, duration: 0.3 }, 0.1);
-        if (!phone) tl.fromTo(stage, { "--tour-rx": "14deg" }, { "--tour-rx": "4deg", duration: 1.2 }, 0.1);
+        /* the zoom-in takes the first 1.6 of the timeline on desktop; the camera tour follows */
+        const lead = phone ? 0 : 1.6;
+        if (!phone) {
+          gsap.set(root, { transformOrigin: "0 0" });
+          tl.fromTo(stage, { "--tour-rx": "14deg" }, { "--tour-rx": "0deg", duration: 1.4, ease: "power2.inOut" }, 0.1);
+          tl.to(root, { x: () => zoom().x, y: () => zoom().y, scale: () => zoom().scale, duration: 1.5, ease: "power2.inOut" }, 0.1);
+          if (copy) tl.to(copy, { autoAlpha: 0, y: -80, duration: 0.9, ease: "power1.in" }, 0.1);
+          if (base) tl.to(base, { autoAlpha: 0, duration: 0.6 }, 0.9);
+        }
         stops.forEach((_, i) => {
-          const at = 0.3 + i * 2;
+          const at = lead + 0.3 + i * 2;
           tl.to(cam, { x: () => camFor(i).x, y: () => camFor(i).y, scale: () => camFor(i).scale, duration: 1.2 }, at);
           if (i) tl.to(caps[i - 1], { autoAlpha: 0, y: -8, duration: 0.3, ease: "power2.out" }, at);
           if (caps[i]) tl.to(caps[i], { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out" }, at + 0.75);
         });
-        const out = 0.3 + stops.length * 2;
+        const out = lead + 0.3 + stops.length * 2;
         tl.to(cam, { x: 0, y: 0, scale: 1, duration: 1.2 }, out);
         if (caps.at(-1)) tl.to(caps.at(-1)!, { autoAlpha: 0, y: -8, duration: 0.3, ease: "power2.out" }, out);
-        if (!phone) tl.to(stage, { "--tour-rx": "14deg", duration: 1.2 }, out);
-        if (pops) tl.to(pops, { autoAlpha: 1, duration: 0.3 }, out + 0.8);
-        tl.to({}, { duration: 0.3 }); // a beat on the full view before the band unpins
+        /* desktop: zoom back out to the laptop under the copy, so the hero leaves as it arrived */
+        if (!phone) {
+          tl.to(root, { x: 0, y: 0, scale: 1, duration: 1.5, ease: "power2.inOut" }, out + 0.4);
+          tl.to(stage, { "--tour-rx": "14deg", duration: 1.4, ease: "power2.inOut" }, out + 0.5);
+          if (base) tl.to(base, { autoAlpha: 1, duration: 0.6 }, out + 0.6);
+          if (copy) tl.to(copy, { autoAlpha: 1, y: 0, duration: 0.9, ease: "power1.out" }, out + 1);
+        }
+        if (pops) tl.to(pops, { autoAlpha: 1, duration: 0.3 }, out + (phone ? 0.8 : 1.6));
+        tl.to({}, { duration: 0.3 }); // a beat on the full view before the hero unpins
 
-        return () => root.removeAttribute("data-tour");
+        return () => {
+          root.removeAttribute("data-tour");
+          gsap.set([root, copy, base].filter(Boolean), { clearProps: "all" });
+        };
       },
     );
     return () => { io.disconnect(); mm.revert(); };
@@ -144,12 +180,16 @@ export function PortalTour({ data, clipH = 640, clipHMobile = PORTAL_H }: Props)
     <div ref={rootRef} className="lp-tour">
       <div className="vt-stage" onPointerMove={move} onPointerLeave={leave}>
         <div className="vt-stage-tilt">
-          <div className="vt-stage-screen">
-            <div className="vt-cam">
-              <Fit clipH={clipH} clipHMobile={clipHMobile}><PortalOverview data={data} /></Fit>
+          <div className="lp-laptop-lid">
+            <span className="lp-laptop-cam" aria-hidden="true" />
+            <div className="vt-stage-screen">
+              <div className="vt-cam">
+                <Fit clipH={clipH} clipHMobile={clipHMobile}><PortalOverview data={data} /></Fit>
+              </div>
             </div>
           </div>
         </div>
+        <div className="lp-laptop-base" aria-hidden="true"><i /></div>
         <div className="vt-stage-caps" aria-hidden="true">
           {data.tour.map((t, i) => <span key={t.region} className={`vt-stage-cap vt-stage-cap--${i + 1}`}><i />{t.caption}</span>)}
         </div>

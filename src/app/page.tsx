@@ -7,7 +7,6 @@ import {
   Hero,
   How,
   Industries,
-  ProductBand,
   Problem,
   Providers,
   SiteFooter,
@@ -23,7 +22,6 @@ export default function Home() {
       <SiteHeader />
       <main>
         <Hero />
-        <ProductBand />
         <Trust />
         <Problem />
         <How />
