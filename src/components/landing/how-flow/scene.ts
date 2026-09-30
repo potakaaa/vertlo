@@ -1,7 +1,7 @@
 /* The How it works scene: a 64 × 48 grid of 8px pixel cells, as pure data plus one canvas
    painter. scene(p) lays out what is on screen at scroll progress p (0 → 1): providers connect
-   into Vertlo (step 1), Vertlo splits volume across MIDs (step 2), MID 2 pauses and the rest take
-   its traffic (step 3). tk is the ambient packet tick; the focus rect dims what the active step
+   into Vertlo (step 1), Vertlo splits volume across MIDs (step 2), US-01 pauses and the rest take
+   its traffic (step 3). The MIDs carry the same names as the letter, portal and statement. tk is the ambient packet tick; the focus rect dims what the active step
    is not about. No React, no GSAP: HowFlow owns sizing, scheduling and scroll. */
 
 /* ── scene grid: 64 × 48 cells of 8px ── */
@@ -13,6 +13,8 @@ const HUB = [25, 23] as const;
 const SOURCES = ["VISA", "MC", "PAYPAL"];
 const SHARE_ROUTE = [42, 38, 20];
 const SHARE_REROUTE = [61, 0, 39];
+/* the accounts, named as everywhere else on the page: US-01 is the one the processor pauses */
+const MIDS = ["US-03", "US-01", "UK-02"];
 const BAR = 18; // bar cells = 100%
 
 type Cell = [number, number];
@@ -112,7 +114,7 @@ function scene(p: number, tk: number, live: boolean) {
   if (ot > 0) { const shown = partial(OUT_LANE, ot); put(shown, "w", 0.16); if (ot < 1) drawHead(shown); }
   const grow = easeOut(seg(p, 0.52, 0.63));
 
-  /* 03 keep: MID 2 pauses, its share moves to MID 1 and MID 3, orders keep going through */
+  /* 03 keep: US-01 pauses, its share moves to US-03 and UK-02, orders keep going through */
   const pause = seg(p, 0.69, 0.72);
   const reroute = easeInOut(seg(p, 0.73, 0.86));
   const blink = live ? tk % 4 < 2 : true;
@@ -130,7 +132,7 @@ function scene(p: number, tk: number, live: boolean) {
     if (mt <= 0) return;
     put(partial(MID_BOXES[i], mt), paused ? "r" : "w", paused ? (blink ? 0.9 : 0.4) : 0.55);
     P.push([42, my, paused ? "r" : "g", mt * (paused && !blink ? 0.4 : 1)]);
-    T.push([46 * S, (my - 1) * S + 4, "MID " + (i + 1), "w", 0.8 * mt, "left"]);
+    T.push([46 * S, (my - 1) * S + 4, MIDS[i], "w", 0.8 * mt, "left"]);
     T.push([46 * S + 46, (my - 1) * S + 4, paused ? "PAUSED" : "LIVE", paused ? "r" : "g", 0.95 * mt, "left"]);
     if (grow > 0) T.push([W - 2, (my - 1) * S + 4, Math.round(share) + "%", paused ? "r" : "w", 0.9 * Math.max(grow, 0.3), "right"]);
     const filled = Math.round((share / 100) * BAR);

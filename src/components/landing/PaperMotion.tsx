@@ -9,13 +9,14 @@ import { sheets as SHEETS } from "@/content/landing";
      normally, then stays), so the next one slides over it; measured here into --sheet-h.
    - arrival and cover: a sheet comes up with a slight turn and settles; as the next one covers it,
      it sinks back a little under a shadow.
-   - on load, the banknote is laid down and printed: vignette inked in, corners, headline.
-   - in the sheets: the termination letter types on and its verdict is struck through, the schedule's
-     seal turns with the scroll, the engravings drift, the cheque's signature writes itself.
-   - a small index in the corner says which sheet you're on.
+   - on load, the banknote is laid down and printed: the medallion inks in, then the headline.
+   - in the sheets: each letter types on (the termination's verdict is then struck through and
+     Vertlo's note typed under it), and the cheque's signature writes itself.
+   - a slim rail in the left margin shows which sheet you're on (wide screens only).
    Reduced motion: the stack still stacks (it's layout), nothing else moves. */
 
 type Current = { n: number; title: string } | null;
+const pad = (n: number) => String(n).padStart(2, "0");
 
 export function PaperMotion() {
   const [current, setCurrent] = useState<Current>(null);
@@ -30,6 +31,15 @@ export function PaperMotion() {
     measure();
     const ro = new ResizeObserver(measure);
     sheets.forEach((s) => ro.observe(s));
+
+    /* ScrollTrigger measures every trigger from the page's layout. A sheet that is stuck on screen
+       would be measured where it sits, not where it belongs, so let the stack go for the length of
+       each refresh (html[data-measure-flow], paper.css). Refresh is synchronous: nothing paints between. */
+    const root = document.documentElement;
+    const letGo = () => root.setAttribute("data-measure-flow", "");
+    const settle = () => root.removeAttribute("data-measure-flow");
+    ScrollTrigger.addEventListener("refreshInit", letGo);
+    ScrollTrigger.addEventListener("refresh", settle);
 
     /* the index: the last sheet whose top has passed the middle of the screen */
     let raf = 0;
@@ -58,9 +68,8 @@ export function PaperMotion() {
         const intro = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.1 });
         intro
           .fromTo(note, { y: 40, rotate: -1, scale: 0.985, autoAlpha: 0 }, { y: 0, rotate: 0, scale: 1, autoAlpha: 1, duration: 1.2, ease: "expo.out" })
-          .fromTo(q(".pp-note-vignette"), { "--ink": "-20%" }, { "--ink": "115%", duration: 1.6, ease: "power2.inOut" }, 0.35)
-          .from(q(".pp-note-seal"), { rotate: -120, autoAlpha: 0, duration: 1.6, ease: "expo.out" }, 0.4)
-          .from(q(".pp-note-corner"), { autoAlpha: 0, y: 8, stagger: 0.07, duration: 0.5 }, 0.55)
+          .fromTo(q(".pp-note-medallion"), { "--ink": "-20%", rotate: -24 }, { "--ink": "115%", rotate: 0, duration: 1.6, ease: "power2.inOut" }, 0.3)
+          .from(q(".pp-note-serial"), { autoAlpha: 0, duration: 0.6 }, 0.6)
           .from(q(".pp-note-micro"), { clipPath: "inset(0 50% 0 50%)", duration: 0.9, ease: "power2.inOut" }, 0.6)
           .from(q(".lp-h1, .lp-hero-sub"), { autoAlpha: 0, y: 18, stagger: 0.12, duration: 0.8 }, 0.55);
         const cta = document.querySelector(".lp-hero-cta");
@@ -88,31 +97,19 @@ export function PaperMotion() {
         if (shade) cover.fromTo(shade, { autoAlpha: 0 }, { autoAlpha: 1, ease: "none" }, 0);
       });
 
-      /* ── sheet 1: the letter types on, the verdict is struck, the answer is stamped ── */
-      const letter = document.querySelector<HTMLElement>(".pp-letter");
-      if (letter) {
-        const lines = letter.querySelectorAll(".pp-letter-line");
+      /* ── the letters type on; the termination's verdict is struck, Vertlo's note typed under it ── */
+      document.querySelectorAll<HTMLElement>(".pp-letter").forEach((letter) => {
         const strikes = letter.querySelectorAll(".pp-letter-line del");
         const tl = gsap.timeline({ scrollTrigger: { trigger: letter, start: "top 80%", end: phone ? "bottom 70%" : "bottom 55%", scrub: 0.5 } });
         tl.from(letter.querySelectorAll(".pp-letter-head, .pp-letter-ref"), { autoAlpha: 0, y: 10, stagger: 0.1, duration: 0.3 })
-          .from(lines, { clipPath: "inset(0 100% 0 0)", stagger: 0.35, duration: 0.6, ease: "none" })
-          .from(letter.querySelector(".pp-letter-sign"), { autoAlpha: 0, duration: 0.2 })
-          .fromTo(strikes, { "--strike": "0%" }, { "--strike": "100%", stagger: 0.2, duration: 0.4, ease: "power1.inOut" })
-          .from(letter.querySelector(".pp-letter-reply"), { autoAlpha: 0, x: -14, duration: 0.3 });
-      }
-
-      /* ── sheet 3: the seal turns with the page ── */
-      const seal = document.querySelector(".pp-seal");
-      if (seal) {
-        gsap.fromTo(seal, { rotate: -40 }, { rotate: 50, ease: "none", scrollTrigger: { trigger: seal.closest(".pp-sheet"), start: "top bottom", end: "bottom top", scrub: true } });
-      }
-
-      /* ── engravings drift a little slower than the paper ── */
-      document.querySelectorAll<HTMLElement>(".pp-register-globe, .pp-approval-vault").forEach((el) => {
-        gsap.fromTo(el, { yPercent: 8 }, { yPercent: -8, ease: "none", scrollTrigger: { trigger: el.closest(".pp-sheet"), start: "top bottom", end: "bottom top", scrub: true } });
+          .from(letter.querySelectorAll(".pp-letter-line"), { clipPath: "inset(0 100% 0 0)", stagger: 0.35, duration: 0.6, ease: "none" })
+          .from(letter.querySelector(".pp-letter-sign"), { autoAlpha: 0, duration: 0.2 });
+        if (strikes.length) tl.fromTo(strikes, { "--strike": "0%" }, { "--strike": "100%", stagger: 0.2, duration: 0.4, ease: "power1.inOut" });
+        const note = letter.querySelector(".pp-letter-note");
+        if (note) tl.from(note, { clipPath: "inset(0 100% 0 0)", duration: 0.5, ease: "none" });
       });
 
-      /* ── sheet 7: the cheque is signed as it lands ── */
+      /* ── the cheque is signed as it lands ── */
       const sig = document.querySelector<SVGPathElement>(".pp-signature path");
       if (sig) {
         const len = sig.getTotalLength();
@@ -128,29 +125,30 @@ export function PaperMotion() {
       }
     });
 
-    /* the stack's heights settle after fonts and client-drawn art; re-measure the triggers once */
+    /* the stack's heights settle after fonts and client-drawn art; re-measure the triggers once. The
+       triggers above were created at whatever the scroll was (a reload can restore it mid-stack), and
+       this refresh measures them again with the stack let go. */
     document.fonts?.ready.then(() => { measure(); ScrollTrigger.refresh(); });
 
     return () => {
       mm.revert();
       ro.disconnect();
+      ScrollTrigger.removeEventListener("refreshInit", letGo);
+      ScrollTrigger.removeEventListener("refresh", settle);
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
   }, []);
 
-  const pad = (n: number) => String(n).padStart(2, "0");
   return (
-    <aside className="pp-index" data-on={current ? "" : undefined} aria-hidden="true">
+    <aside className="pp-index" data-on={current ? "" : undefined} aria-hidden="true" title={current?.title}>
+      <span className="pp-index-n">{pad(current?.n ?? 1)}</span>
       <span className="pp-index-stack">
         {SHEETS.map((_, k) => (
           <i key={k} data-on={current && k < current.n ? "" : undefined} />
         ))}
       </span>
-      <span className="pp-index-n">
-        Sheet {pad(current?.n ?? 1)} / {pad(SHEETS.length)}
-      </span>
-      <span className="pp-index-t">{current?.title}</span>
+      <span className="pp-index-n">{pad(SHEETS.length)}</span>
     </aside>
   );
 }

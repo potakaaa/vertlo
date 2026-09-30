@@ -1,8 +1,8 @@
 /*
  * Generates the security-paper artwork in public/images/paper: guilloché patterns like the ones printed
  * on banknotes and cheques, plus the ink grain for rubber stamps. Deterministic, so re-running it gives
- * the same files (scripts/ink-vignette.py inks the engraved vignettes separately). Colour is baked in (forest ink, or mint for the dark bands) because CSS can't recolour
- * an SVG used as a background.
+ * the same files. Colour is baked in (forest ink) because CSS can't recolour an SVG used as a
+ * background.
  *
  *   node scripts/paper-art.mjs
  *
@@ -17,7 +17,6 @@ const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "image
 mkdirSync(OUT, { recursive: true });
 
 const INK = "#1f3b2b";
-const MINT = "#a8e6bf";
 const TAU = Math.PI * 2;
 const f = (n) => +n.toFixed(1);
 
@@ -134,11 +133,8 @@ function grain(name) {
 }
 
 rosette(INK, "rosette.svg");
-rosette(MINT, "rosette-mint.svg");
 band(INK, "band.svg");
-band(MINT, "band-mint.svg");
 field(INK, "field.svg");
-field(MINT, "field-mint.svg");
 grain("grain.svg");
 fibre("fibre.svg");
 console.log("paper art written to", OUT);

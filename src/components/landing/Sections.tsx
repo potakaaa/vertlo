@@ -1,30 +1,19 @@
-import {
-  Button,
-  Diamond,
-  FAQ,
-  FeaturePanel,
-  Footer,
-  IndustryCards,
-  ProviderFlow,
-  RotatingWord,
-} from "@/components/vertlo";
+import { Button, Diamond, FAQ, Footer, IndustryCards } from "@/components/vertlo";
 import * as c from "@/content/landing";
-import { FlipWords } from "@/components/landing/FlipWords";
 import { HowFlow } from "@/components/landing/HowFlow";
 import { MerchantStories } from "@/components/landing/MerchantStories";
-import { FeatureGridMotion } from "@/components/landing/FeatureGridMotion";
 import { PortalTour } from "@/components/landing/PortalTour";
 import { rich } from "@/components/landing/Rich";
-import { Microprint, Sheet, Stamp } from "@/components/landing/Paper";
+import { Letter, Microprint, Sheet } from "@/components/landing/Paper";
 
 /* Concept A, security paper. The page is a desk (the misty green ground) with papers laid on it:
    a banknote with the headline, the laptop running the portal, then a stack of documents, one per
    section, each sliding up and settling on the one before (sticky sheets, see Paper.tsx; the scroll
-   motion is PaperMotion.tsx). Guilloché art and engraved vignettes are in public/images/paper
-   (scripts/paper-art.mjs; the vignettes are generated engravings). Accent words are set in the ink
-   colour (`*words*` in content, see Rich.tsx). Every section is a server component; the interactive
-   bits are client components. Layout classes are in app/landing.css (lp-*), the paper look in
-   app/paper.css (pp-*). */
+   motion is PaperMotion.tsx). Every sheet is a real document that says one thing: the termination
+   letter (the problem), the statement (how it works, then the day it matters), the approval letter
+   (underwriting), the register (who it's for), the questions, and the cheque (the call).
+   All art is drawn in code: guilloché from scripts/paper-art.mjs, the dot-matrix scenes, the diamond.
+   Layout classes are in app/landing.css (lp-*), the paper look in app/paper.css (pp-*). */
 
 /* Hero and product in one pinned section: the headline printed on a banknote, the portal on a laptop
    below it. Scrolling zooms into the laptop until its screen fills the view, then runs the portal
@@ -35,34 +24,26 @@ export function Hero() {
       <div className="pp-hero-bg" aria-hidden="true" />
       <div className="lp-wrap lp-hero">
         <div className="pp-note" data-note="">
-          <span className="pp-note-corner pp-note-corner--tl" aria-hidden="true">
+          <span className="pp-note-serial" aria-hidden="true">
             {c.hero.serial}
           </span>
-          <span className="pp-note-corner pp-note-corner--br" aria-hidden="true">
-            {c.hero.series}
+          {/* the note's portrait: a guilloché medallion around the Vertlo diamond */}
+          <span className="pp-note-medallion" aria-hidden="true">
+            <Diamond size={30} />
           </span>
-          <figure className="pp-note-vignette" aria-hidden="true" />
           <div className="pp-note-copy">
             <p className="pp-note-micro" aria-hidden="true">
-              <Microprint />
+              <Microprint text={c.hero.micro} />
             </p>
             <h1 className="lp-h1">
-              {c.hero.lead}{" "}
-              <Stamp tone="red" className="pp-hero-stamp">
-                {c.hero.stamp}
-              </Stamp>
-              <br className="lp-br" />{" "}
-              {c.hero.accent}{" "}
+              {c.hero.lead}
+              <br className="lp-br" /> {c.hero.accent}{" "}
               <span className="lp-nowrap">
-                <em className="pp-ink">
-                  <FlipWords words={c.hero.flip} />
-                </em>
-                .
+                <em className="pp-ink">{c.hero.word}</em>.
               </span>
             </h1>
             <p className="lp-hero-sub">{c.hero.subhead}</p>
           </div>
-          <span className="pp-note-seal" aria-hidden="true" />
         </div>
         <div className="lp-hero-cta">
           <Button size="lg" href="#book">
@@ -81,18 +62,14 @@ export function Hero() {
   );
 }
 
-export function Trust() {
+/* Under the laptop, before the stack: what it connects to, stated plainly. */
+export function WorksWith() {
   return (
-    <section className="lp-wrap lp-trust" aria-labelledby="trust-t">
-      <h2 className="lp-trust-t" id="trust-t">
-        {rich(c.trust.heading)}
-      </h2>
-      <ul className="lp-logos">
-        {c.logos.map((l) => (
-          <li key={l} className="lp-logo">
-            <Diamond size={9} outline />
-            {l}
-          </li>
+    <section className="lp-wrap pp-works" aria-label={c.worksWith.label}>
+      <p className="pp-works-k">{c.worksWith.label}</p>
+      <ul className="pp-works-list">
+        {c.worksWith.items.map((it) => (
+          <li key={it}>{it}</li>
         ))}
       </ul>
     </section>
@@ -100,148 +77,135 @@ export function Trust() {
 }
 
 /* Sheet 1, the problem: the termination letter every high-risk merchant dreads. Its lines type on as
-   the sheet arrives, the verdict is struck through, and Vertlo's answer is stamped over it. */
+   the sheet arrives, the verdict is struck through, and Vertlo's note is typed under it. */
 export function Notice() {
   const n = c.notice;
   return (
     <Sheet id="notice">
-      <div className="pp-notice">
-        <article className="pp-letter" aria-label={n.label}>
-          <header className="pp-letter-head">
-            <span>
-              <b>{n.from}</b>
-              {n.fromSub}
-            </span>
-            <span>{n.date}</span>
-          </header>
-          <p className="pp-letter-ref">{n.ref}</p>
-          {n.lines.map((l, i) => (
-            <p key={i} className="pp-letter-line">
-              {i > 0 ? <del>{l}</del> : l}
-            </p>
-          ))}
-          <p className="pp-letter-sign">{n.sign}</p>
-          <p className="pp-letter-reply">
-            <Diamond size={8} />
-            <span>{n.reply}</span>
-          </p>
-          <Stamp className="pp-letter-stamp">{n.stamp}</Stamp>
-          <span className="pp-illus">{n.label}</span>
-        </article>
-        <div className="pp-notice-copy">
-          <h2 className="lp-h2">
-            Keep selling when your account{" "}
-            <em className="pp-ink">
-              <RotatingWord words={c.problem.rotating} />
-            </em>
-          </h2>
-          <p className="lp-lede">{c.problem.blurb}</p>
+      <div className="pp-pair">
+        <Letter letter={n} tilt={-1.1} />
+        <div className="pp-pair-copy">
+          <h2 className="lp-h2">{n.title}</h2>
+          <p className="lp-lede">{n.blurb}</p>
+          <Button variant="text" href="#book">
+            Book a call
+          </Button>
         </div>
       </div>
-      <IndustryCards items={c.problem.items} />
     </Sheet>
   );
 }
 
-/* Sheet 2, how it works: a statement of account, the flow scrubbed by scroll (HowFlow). */
+/* Sheet 2, how it works: the scroll-scrubbed flow (HowFlow), then the day it matters written up as a
+   statement's line items. */
 export function Statement() {
   const p = c.portal;
+  const s = c.statement;
   return (
     <Sheet id="statement" anchor="how">
       <div className="pp-sheet-head">
-        <h2 className="lp-h2">{rich(c.how.title)}</h2>
+        <h2 className="lp-h2">{c.how.title}</h2>
         <dl className="pp-ledger-meta">
           <div>
             <dt>Account</dt>
             <dd>{p.merchant}</dd>
           </div>
           <div>
-            <dt>Period</dt>
+            <dt>Accounts</dt>
             <dd>
-              {p.period.from} – {p.period.to}
+              {p.routing.length} MIDs, {p.routing.filter((r) => r.state !== "paused").length} live
             </dd>
           </div>
           <div>
-            <dt>Accounts</dt>
-            <dd>{p.routing.length} MIDs · {p.routing.filter((r) => r.state !== "paused").length} live</dd>
+            <dt>Period</dt>
+            <dd>
+              {p.period.from} to {p.period.to}
+            </dd>
           </div>
         </dl>
       </div>
       <HowFlow steps={c.how.steps} />
+      <table className="pp-ledger">
+        <caption>
+          <span className="pp-ledger-t">{s.title}</span>
+          <span className="pp-illus">{s.label}</span>
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Time</th>
+            <th scope="col">Entry</th>
+            <th scope="col" className="pp-ledger-amt">
+              Result
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {s.entries.map((e) => (
+            <tr key={e.time} data-tone={e.tone}>
+              <td className="pp-ledger-time">{e.time}</td>
+              <td>
+                <b>{e.entry}</b>
+                <span>{e.detail}</span>
+              </td>
+              <td className="pp-ledger-amt">{e.amount}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </Sheet>
   );
 }
 
-/* Sheet 3, what you get and the providers it connects: a certificate-style schedule with a seal. */
-export function Schedule() {
-  return (
-    <Sheet id="schedule">
-      <span className="pp-seal" aria-hidden="true" />
-      <div className="pp-sheet-head pp-sheet-head--split">
-        <h2 className="lp-h2">{rich(c.whatYouGet.title)}</h2>
-        <p className="lp-lede">{c.whatYouGet.blurb}</p>
-      </div>
-      <div className="lp-wyg">
-        <FeatureGridMotion items={c.whatYouGet.items} />
-      </div>
-      <div className="pp-schedule-b">
-        <h3 className="pp-sub">
-          <span className="pp-sub-k">Schedule B</span>
-          {rich(c.providers.title)}
-        </h3>
-        <div className="lp-pf-d">
-          <ProviderFlow />
-        </div>
-        <div className="lp-pf-m">
-          <ProviderFlow layout="vertical" />
-        </div>
-      </div>
-    </Sheet>
-  );
-}
-
-/* Sheet 4, underwriting: the one dark document, a letter of approval with a vault engraving. */
+/* Sheet 3, underwriting: the letter that answers the termination, a new account approved. */
 export function Approval() {
+  const a = c.approval;
   return (
-    <Sheet id="approval" tone="dark">
-      <span className="pp-approval-vault" aria-hidden="true" />
-      <FeaturePanel {...c.forBrands} title={rich(c.forBrands.title)} />
+    <Sheet id="approval" anchor="underwriting">
+      <div className="pp-pair pp-pair--flip">
+        <div className="pp-pair-copy">
+          <h2 className="lp-h2">{a.title}</h2>
+          <p className="lp-lede">{a.blurb}</p>
+          <Button variant="text" href="#book">
+            Book a call
+          </Button>
+        </div>
+        <Letter letter={a} tilt={0.9} />
+      </div>
     </Sheet>
   );
 }
 
-/* Sheet 5, who it's for: the register of industries, then merchants' own accounts of it. */
+/* Sheet 4, who it's for: a register, one ruled row per industry with its dot-matrix drawing. The
+   merchant stories join it once real quotes are approved (testimonials.ready). */
 export function Register() {
   return (
     <Sheet id="register" anchor="industries">
-      <div className="pp-sheet-head pp-sheet-head--split pp-register-head">
-        <h2 className="lp-h2">{rich(c.industries.title)}</h2>
-        <span className="pp-register-globe" aria-hidden="true" />
+      <div className="pp-sheet-head">
+        <h2 className="lp-h2">{c.industries.title}</h2>
       </div>
-      <IndustryCards items={c.industries.items} />
-      <div className="pp-register-stories" id="reviews">
-        <h3 className="pp-sub">
-          <span className="pp-sub-k">{c.testimonials.eyebrow}</span>
-          {rich(c.testimonials.title)}
-        </h3>
-        <MerchantStories items={c.testimonials.items} />
-      </div>
+      <IndustryCards items={c.industries.items} className="pp-register" />
+      {c.testimonials.ready ? (
+        <div className="pp-register-stories" id="reviews">
+          <h3 className="pp-sub">{c.testimonials.title}</h3>
+          <MerchantStories items={c.testimonials.items} />
+        </div>
+      ) : null}
     </Sheet>
   );
 }
 
-/* Sheet 6, questions: the terms, kept short and plain. */
-export function Terms() {
+/* Sheet 5, questions: kept short and plain. */
+export function Questions() {
   return (
-    <Sheet id="terms">
+    <Sheet id="questions" anchor="questions">
       <FAQ title={rich(c.faq.title)} blurb={c.faq.blurb} items={c.faq.items} ctaHref="#book" />
     </Sheet>
   );
 }
 
-/* Sheet 7, the closing call: a cheque made out to the merchant's checkout, laid last on the stack.
-   Guilloché ground, serial, a pay line, a memo, the one CTA on the signature line (its signature
-   writes itself in as the cheque lands), and the approval stamped across. */
+/* Sheet 6, the closing call: a cheque made out to the merchant's checkout, laid last on the stack.
+   Guilloché ground, serial, a pay line, a memo, and the one CTA on the signature line (its signature
+   writes itself in as the cheque lands). */
 export function FinalCTA() {
   const { cheque } = c.cta;
   return (
@@ -283,7 +247,6 @@ export function FinalCTA() {
             </span>
             <span className="pp-cheque-k">{cheque.signLabel}</span>
           </div>
-          <Stamp className="pp-cheque-stamp">{cheque.stamp}</Stamp>
         </div>
         <p className="pp-cheque-micr" aria-hidden="true">
           {cheque.micr}
@@ -296,7 +259,7 @@ export function FinalCTA() {
 export function SiteFooter() {
   return (
     <div className="lp-wrap lp-footer" id="company">
-      <Footer tagline={c.footer.tagline} columns={c.footer.columns} />
+      <Footer tagline={c.footer.tagline} columns={c.footer.columns} legal={[]} />
     </div>
   );
 }

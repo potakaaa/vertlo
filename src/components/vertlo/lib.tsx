@@ -719,7 +719,7 @@ function Nav(p) {
     h(Logo, null),
     h("ul", { className: "vt-nav-links" }, links.map(function (l) { var it = typeof l === "string" ? { label: l, href: "#" } : l; return h("li", { key: it.label }, h("a", { href: it.href }, it.label)); })),
     h("div", { className: "vt-nav-end" },
-      h(Button, { variant: "text", href: p.loginHref || "#" }, p.loginLabel || "Login"),
+      /* site: loginHref={false} drops the link until there is a login to go to */ p.loginHref === false ? null : h(Button, { variant: "text", href: p.loginHref || "#" }, p.loginLabel || "Login"),
       h(Button, { size: "sm", href: p.ctaHref || "#" }, p.ctaLabel || "Book a call")));
 }
 
@@ -1300,7 +1300,7 @@ function Footer(p) {
   return h("footer", { className: "vt-footer" },
     h("div", { className: "vt-footer-top" },
       h("div", null, h(Logo, null), h("p", null, p.tagline)),
-      cols.map(function (c, i) { return h("div", { key: i }, h("h4", null, c.title), h("ul", null, c.links.map(function (l) { var it = typeof l === "string" ? { label: l, href: "#" } : l; return h("li", { key: it.label }, h("a", { href: it.href }, it.label)); }))); })),
+      cols.map(function (c, i) { return h("div", { key: i }, /* site: h3, so the page's heading levels don't skip */ h("h3", null, c.title), h("ul", null, c.links.map(function (l) { var it = typeof l === "string" ? { label: l, href: "#" } : l; return h("li", { key: it.label }, h("a", { href: it.href }, it.label)); }))); })),
     p.wordmark === false ? null : h("div", { className: "vt-footer-mark", "aria-hidden": true }, "VERTLO"),
     h("div", { className: "vt-footer-legal" }, h("span", null, "© " + (p.year || new Date().getFullYear()) + " Vertlo"), h("span", null, (p.legal || ["Privacy", "Terms"]).map(function (l) { return h("a", { key: l, href: "#" }, l); }))));
 }

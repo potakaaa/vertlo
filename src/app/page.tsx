@@ -6,12 +6,11 @@ import {
   FinalCTA,
   Hero,
   Notice,
+  Questions,
   Register,
-  Schedule,
   SiteFooter,
   Statement,
-  Terms,
-  Trust,
+  WorksWith,
 } from "@/components/landing/Sections";
 
 export default function Home() {
@@ -21,15 +20,14 @@ export default function Home() {
       <SiteHeader />
       <main>
         <Hero />
-        <Trust />
+        <WorksWith />
         {/* the stack of documents, one sheet per section (Concept A's structure) */}
         <div className="pp-stack">
           <Notice />
           <Statement />
-          <Schedule />
           <Approval />
           <Register />
-          <Terms />
+          <Questions />
           <FinalCTA />
         </div>
       </main>

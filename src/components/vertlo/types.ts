@@ -17,7 +17,7 @@ export interface DiamondStackProps { className?: string }
 export interface RoutingDiagramProps { label?: string }
 export interface CountUpProps { to: number; decimals?: number; prefix?: string; suffix?: string; duration?: number }
 export interface RotatingWordProps { words: string[]; interval?: number }
-export interface NavProps { tone?: 'light'|'stealth'; scrolled?: boolean; links?: (string | LinkItem)[]; loginHref?: string; ctaHref?: string; loginLabel?: string; ctaLabel?: string }
+export interface NavProps { tone?: 'light'|'stealth'; scrolled?: boolean; links?: (string | LinkItem)[]; loginHref?: string | false; ctaHref?: string; loginLabel?: string; ctaLabel?: string }
 export interface ModuleCardProps { title: string; tag?: string; tagTone?: PillProps['tone']; description?: string; art?: ModuleArtProps['kind']; slice?: CrmSliceKind; href?: string; minHeight?: number }
 export interface MegaMenuProps { items: ModuleCardProps[]; columns?: number }
 export interface HeroProps { variant?: 'white'|'stealth'; eyebrow?: string; title: Node; subhead?: string; primary?: string; secondary?: string; visual?: boolean; children?: Node }
