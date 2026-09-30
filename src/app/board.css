@@ -41,8 +41,10 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .lp-hero-sub, .lp-blurb, .lp-lede { color: var(--ink-muted); text-wrap: pretty; }
 .vt-bleed .lp-lede { color: var(--on-stealth-muted); }
 /* accent words: the same face in the brand green, not a second font */
-.bd-accent { font-style: normal; color: var(--green-deep); }
-.vt-bleed .bd-accent { color: var(--sig-ok); }
+/* accent words: a quiet second tone of the same ink, not a colour; green is kept for signals (lamps,
+   statuses, the day's line) so it always means something */
+.bd-accent { font-style: normal; color: #69776f; }
+.vt-bleed .bd-accent { color: rgba(238,241,232,.5); }
 .bd-accent .vt-rot { color: inherit; vertical-align: baseline; height: 1.1em; line-height: 1.1em; }
 .bd-accent .vt-rot > span { display: block; line-height: inherit; white-space: nowrap; }
 
@@ -70,7 +72,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
   --glass-sheen: transparent;
   --glass-rim-a: transparent;
   --glass-rim-b: transparent;
-  --glass-edge: var(--rule);
+  --glass-edge: transparent;
   --glass-shade: transparent;
   --glass-drop: none;
   --glass-inner: transparent;
@@ -78,7 +80,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
   --glass-lens-rim: transparent;
   --glass-hover: var(--forest);
 }
-.lp-header[data-scrolled] { --glass-bg: var(--mist); }
+.lp-header[data-scrolled] { --glass-bg: var(--mist); --glass-edge: var(--rule-soft); }
 .lp-header[data-tone="dark"] {
   --glass-bg: var(--board);
   --glass-edge: rgba(238,241,232,.18);
@@ -114,11 +116,11 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
   border-radius: 6px; background: var(--board); color: var(--flap-ink);
   box-shadow: inset 0 0 0 1px rgba(238,241,232,.06);
 }
-/* the hero board hangs: a steel bezel round the panel, two rods up to the ceiling */
-.bd-board--hero { position: relative; padding-bottom: 0; box-shadow: inset 0 0 0 1px rgba(238,241,232,.06), 0 0 0 3px #1c2b22, 0 0 0 4px #33443a, 0 28px 40px -28px rgba(15,27,20,.55); }
+/* the hero board hangs from two thin rods */
+.bd-board--hero { position: relative; padding-bottom: 0; box-shadow: inset 0 0 0 1px rgba(238,241,232,.06); }
 .bd-board--hero::before, .bd-board--hero::after {
-  content: ""; position: absolute; bottom: calc(100% + 4px); width: 4px; height: calc(var(--hang, 40px) - 18px); border-radius: 1px;
-  background: linear-gradient(90deg, #7d8581, #e3e7e4 45%, #8d9591);
+  content: ""; position: absolute; bottom: 100%; width: 1px; height: calc(var(--hang, 40px) - 14px);
+  background: var(--rule);
 }
 .bd-board--hero::before { left: 12%; }
 .bd-board--hero::after { right: 12%; }
@@ -128,8 +130,8 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .bd-ticker-run { display: flex; width: max-content; animation: bd-crawl 56s linear infinite; animation-play-state: paused; }
 .bd-board[data-live] .bd-ticker-run { animation-play-state: running; }
 .bd-ticker-set { display: flex; }
-.bd-ticker-item { display: inline-flex; align-items: center; gap: 10px; padding: 11px 26px; font: 500 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; color: rgba(238,241,232,.62); }
-.bd-ticker-item b { font-weight: 500; color: var(--flap-ink); font-variant-numeric: tabular-nums; }
+.bd-ticker-item { display: inline-flex; align-items: center; gap: 10px; padding: 11px 26px; font: 500 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; color: rgba(238,241,232,.45); }
+.bd-ticker-item b { font-weight: 500; color: rgba(238,241,232,.78); font-variant-numeric: tabular-nums; }
 .bd-ticker-item .bd-lamp { width: 7px; height: 7px; }
 @keyframes bd-crawl { to { transform: translateX(-50%); } }
 .bd-board-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--board-rule); }
@@ -202,27 +204,26 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 }
 
 /* ── wayfinding signs over the sections ────────────── */
-.bd-sign { display: flex; align-items: center; gap: 16px; margin: 0; perspective: 700px; }
-.bd-sign-rule { flex: 1; min-width: 24px; height: 1px; background: var(--rule); }
-.bd-sign-status { display: inline-flex; align-items: center; gap: 8px; font: 600 13px/1 var(--font-display); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; }
-.bd-sign-status::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: currentColor; }
+.bd-sign { display: flex; align-items: center; gap: 16px; margin: 0; }
+.bd-sign-rule { flex: 1; min-width: 24px; height: 1px; background: var(--rule-soft); transform-origin: 0 50%; }
+.bd-sign-status { display: inline-flex; align-items: center; gap: 8px; font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; }
+.bd-sign-status::before { content: ""; width: 6px; height: 6px; border-radius: 1px; background: currentColor; }
 .bd-sign-status[data-tone="ok"] { color: var(--green-deep); }
 .bd-sign-status[data-tone="bad"] { color: var(--sig-bad); }
 .bd-sign-status[data-tone="new"]::before { animation: bd-blink 1s steps(1, end) infinite; }
 .vt-bleed .bd-sign-status { color: var(--flap-ink); }
 .vt-bleed .bd-sign-status[data-tone="ok"] { color: var(--sig-ok); }
 .bd-sign-plate {
-  display: inline-flex; align-items: center; height: 40px; padding-right: 16px; border-radius: 3px;
-  background: var(--board); color: var(--flap-ink);
-  font: 600 16px/1 var(--font-display); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 10px; color: var(--ink);
+  font: 600 13px/1 var(--font-display); letter-spacing: .18em; text-transform: uppercase; white-space: nowrap;
 }
-.bd-sign-gate { display: inline-flex; align-items: center; gap: 7px; align-self: stretch; padding: 0 14px; border-right: 1px solid rgba(238,241,232,.16); font-size: 20px; letter-spacing: .02em; color: var(--sig-ok); font-variant-numeric: tabular-nums; }
-.bd-sign-picto { flex: none; width: 20px; height: 20px; margin: 0 10px 0 14px; }
-.bd-sign-arrow { flex: none; width: 18px; height: 18px; margin-left: 12px; }
-.bd-sign-plate > .bd-sign-gate + .bd-sign-label { margin-left: 14px; }
-.vt-bleed .bd-sign-plate { background: var(--flap-ink); color: var(--board); }
-.vt-bleed .bd-sign-gate { border-right-color: rgba(15,27,20,.16); color: var(--green-deep); }
-.vt-bleed .bd-sign-rule { background: rgba(238,241,232,.2); }
+.bd-sign-gate { margin-right: 6px; font: 500 13px/1 var(--font-mono); letter-spacing: .02em; color: var(--green-deep); font-variant-numeric: tabular-nums; }
+.bd-sign-picto { flex: none; width: 16px; height: 16px; color: var(--ink-muted); }
+.bd-sign-arrow { flex: none; width: 12px; height: 12px; color: var(--ink-faint); }
+.vt-bleed .bd-sign-plate { color: var(--flap-ink); }
+.vt-bleed .bd-sign-gate { color: var(--sig-ok); }
+.vt-bleed .bd-sign-picto, .vt-bleed .bd-sign-arrow { color: rgba(238,241,232,.5); }
+.vt-bleed .bd-sign-rule { background: rgba(238,241,232,.16); }
 .lp-head { gap: 16px; }
 @media (min-width: 961px) { .lp-head--split { align-items: flex-end; } }
 .lp-lede { max-width: 380px; }
@@ -385,8 +386,6 @@ main { overflow-x: clip; }
 .bd-stop > .bd-sign { margin-bottom: calc(var(--lp-gap) * -.4); }
 .bd-stop.vt-bleed { background: transparent; }
 .bd-stop--dark::before { content: ""; position: absolute; inset: 0 -100vw; z-index: -1; background: var(--board); }
-.bd-stop + .bd-stop:not(.bd-stop--dark)::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--rule-soft); }
-.bd-stop--dark + .bd-stop::after { display: none; }
 .bd-stop-head .lp-h2 { max-width: 16ch; }
 .bd-stop--portal { gap: clamp(24px, 3vw, 40px); }
 
@@ -542,10 +541,7 @@ main { overflow-x: clip; }
   .bd-board-title small, .bd-board-meta > span { display: none; }
   .bd-note { flex-direction: column; gap: 6px; }
   .bd-sign { gap: 12px; }
-  .bd-sign-plate { height: 36px; padding-right: 12px; font-size: 14px; }
-  .bd-sign-gate { gap: 5px; padding: 0 10px; font-size: 17px; }
-  .bd-sign-picto { width: 17px; height: 17px; margin: 0 8px 0 10px; }
-  .bd-sign-arrow { width: 15px; height: 15px; margin-left: 8px; }
+  .bd-sign-plate { gap: 8px; font-size: 12px; letter-spacing: .14em; }
   .lp-tour .vt-stage { padding: 0 0 56px; }
   /* the caption sits on the mist under the device here, so ink instead of the on-screen white */
   .lp-tour[data-tour] .vt-stage-cap { color: var(--ink); }
@@ -617,13 +613,13 @@ main { overflow-x: clip; }
   .vt-footer { padding-inline: var(--lp-x); }
 }
 
-/* the time painted on the wall behind a stop */
+/* the time outlined on the wall behind a stop */
 .bd-stop-wall {
   position: absolute; z-index: -1; top: clamp(20px, 3vw, 48px); right: -.03em; pointer-events: none; user-select: none;
-  font: 700 clamp(120px, 17vw, 280px)/.8 var(--font-display); letter-spacing: -.02em; white-space: nowrap; font-variant-numeric: tabular-nums;
-  color: rgba(31,59,43,.05);
+  font: 500 clamp(120px, 17vw, 280px)/.8 var(--font-display); letter-spacing: -.02em; white-space: nowrap; font-variant-numeric: tabular-nums;
+  color: transparent; -webkit-text-stroke: 1px rgba(31,59,43,.14);
 }
-.bd-stop--dark .bd-stop-wall { color: rgba(238,241,232,.04); }
+.bd-stop--dark .bd-stop-wall { -webkit-text-stroke-color: rgba(238,241,232,.1); }
 
 @media (prefers-reduced-motion: reduce) {
   .bd-ticker-run { animation: none; }

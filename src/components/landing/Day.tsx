@@ -22,8 +22,8 @@ const seg = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
 
 /* ── the day ───────────────────────────────────────── */
 
-/** The day's wrapper. Its motion is scoped to it: each stop's sign swings down on its top edge like a
-    hinged sign, each headline lifts in, and the painted wall times drift slower than the page. */
+/** The day's wrapper. Its motion is scoped to it and kept quiet: each stop's sign settles and draws its
+    rule out to the edge, each headline lifts in, and the wall times drift slower than the page. */
 export function DayRoot({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -32,8 +32,13 @@ export function DayRoot({ children }: { children: ReactNode }) {
     if (!root || prefersReducedMotion()) return;
     const ctx = gsap.context(() => {
       const once = (trigger: Element, start: string) => ({ trigger, start, once: true, refreshPriority: -1 });
-      gsap.utils.toArray<HTMLElement>(".bd-sign-plate").forEach((el) => {
-        gsap.from(el, { rotateX: -96, transformOrigin: "50% 0%", duration: 0.8, ease: "back.out(2.2)", scrollTrigger: once(el, "top 90%") });
+      gsap.utils.toArray<HTMLElement>(".bd-sign").forEach((el) => {
+        const [plate, rule, status] = Array.from(el.children);
+        gsap
+          .timeline({ scrollTrigger: once(el, "top 90%") })
+          .from(plate, { y: 8, autoAlpha: 0, duration: 0.5, ease: "power2.out" })
+          .from(rule, { scaleX: 0, duration: 0.9, ease: "power2.inOut" }, 0.1)
+          .from(status ?? [], { autoAlpha: 0, duration: 0.4, ease: "power1.out" }, 0.7);
       });
       gsap.utils.toArray<HTMLElement>(".bd-stop-head").forEach((el) => {
         gsap.from(el.children, { y: 26, autoAlpha: 0, duration: 0.7, stagger: 0.08, ease: "power3.out", scrollTrigger: once(el, "top 88%") });

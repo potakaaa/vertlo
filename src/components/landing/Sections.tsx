@@ -65,7 +65,7 @@ export function Trust() {
 
 type StopSign = { label: ReactNode; picto: PictoName; status?: BoardSeg };
 
-/** A stop on the day: its time on a sign and painted large on the wall behind it (like the platform
+/** A stop on the day: its time on a sign and outlined large on the wall behind it (like the platform
     numbers in a station hall), then the stop's content. The anchor id is the stop's id, which the
     rail links to and reads. */
 function Stop({ at, sign, dark, className, children }: { at: c.StopId; sign: StopSign; dark?: boolean; className?: string; children: ReactNode }) {
