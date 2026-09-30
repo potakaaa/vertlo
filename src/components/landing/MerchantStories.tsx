@@ -7,7 +7,7 @@ import type { MerchantQuote, MerchantStory } from "@/content/landing";
 /* Merchant stories: one quote at a time beside a line chart that draws what happened to that merchant's
    payments. Tabs advance on their own: the progress fill is a CSS animation and its `animationend` moves
    to the next story, so pausing (hover, focus, offscreen, background tab) is just `animation-play-state`.
-   Reduced motion: no auto-advance, charts appear drawn, text appears without the blur-in. */
+   Reduced motion: no auto-advance, charts appear drawn, text appears without the fade. */
 
 const STORY_MS = 7000;
 
@@ -39,7 +39,6 @@ export function MerchantStories({ items }: { items: MerchantQuote[] }) {
 
   const t = items[i];
   const running = auto && inView && !held;
-  const words = t.quote.split(" ");
 
   return (
     <div
@@ -60,13 +59,7 @@ export function MerchantStories({ items }: { items: MerchantQuote[] }) {
           <p className="lp-ms-metric">
             <span className="lp-ms-value">{t.value}</span> {t.label}
           </p>
-          <blockquote>
-            {words.map((w, k) => (
-              <span key={k} style={{ animationDelay: `${Math.min(k * 16, 420)}ms` }}>
-                {w}{" "}
-              </span>
-            ))}
-          </blockquote>
+          <blockquote>{t.quote}</blockquote>
           <figcaption>
             <span className="lp-ms-avatar" aria-hidden="true">
               {initials(t.name)}

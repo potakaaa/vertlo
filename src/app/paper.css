@@ -1,0 +1,491 @@
+/*
+ * Paper: the site's look, layered over the design system (vertlo.css) and the page layout (landing.css)
+ * so those stay regenerable. Concept A, security paper: the misty green ground is a desk, and everything
+ * on it is a financial paper printed in forest ink. The hero is a banknote whose portrait is a guilloché
+ * medallion around the Vertlo diamond; below the laptop, each section is a document in a stack (sticky
+ * sheets, moved by PaperMotion.tsx): the termination letter, the statement, the approval letter, the
+ * register, the questions, and the cheque. All art is drawn in code (scripts/paper-art.mjs and the
+ * dot-matrix scenes); nothing is generated imagery. Stamps for status, square-cut corners, hairlines.
+ * One typeface, Archivo, run expanded for headlines; IBM Plex Mono for serials, figures and typed letters.
+ */
+:root {
+  --mist: #eef1ee;
+  --paper: #f7f9f6;                    /* a lighter sheet laid on the mist */
+  --forest: #1f3b2b;
+  --forest-hover: #2a4c38;
+  --rule: rgba(31,59,43,.28);
+  --rule-soft: rgba(31,59,43,.14);
+  --stamp-red: #9a3a31;                /* a muted, printed red: serials and the struck verdict */
+  --accent-ink: #2f7a52;               /* the page's green ink: accent words, stamps, labels, the engravings (4.8:1 on paper) */
+  --ink-faint: #66736b;                /* readable small print: 4.6:1 on paper (the old #8a968f was 2.9:1) */
+  --border: var(--rule-soft);
+  --radius-panel: 8px;
+  --radius-card: 6px;
+  --radius-inner: 4px;
+  --shadow-card: none;
+  --lp-h1: clamp(32px, 4.2vw, 60px);
+  --lp-h2: clamp(28px, 3vw, 42px);
+}
+html { scrollbar-color: rgba(31,59,43,.35) var(--mist); }
+body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(--font-sans); }
+::selection { background: rgba(45,100,70,.22); color: inherit; }
+
+/* ── type: one face, wide for headlines, a clear scale ── */
+.lp-h1, .lp-h2, .vt-h2, .lp-flow-step h3, .vt-logo, .vt-footer-mark, .pp-ledger-t, .pp-sub { font-variation-settings: "wdth" 125; }
+.vt-ic-title, .vt-faq-q, .lpo-panel-h { font-variation-settings: "wdth" 110; }
+.lp-h1 { font-size: var(--lp-h1); font-weight: 500; line-height: 1.04; letter-spacing: .005em; text-transform: uppercase; text-wrap: balance; }
+.lp-h2, .vt-h2 { font-size: var(--lp-h2); font-weight: 500; line-height: 1.08; letter-spacing: -.015em; text-transform: none; text-wrap: balance; }
+.lp-flow-step h3 { font-size: clamp(22px, 2vw, 28px); font-weight: 500; letter-spacing: -.01em; }
+.vt-ic-title { font-size: clamp(20px, 1.7vw, 24px); font-weight: 500; letter-spacing: -.01em; text-wrap: balance; }
+.vt-faq-q { font-weight: 500; transition: color .15s ease-out; }
+.vt-faq-q:hover { color: var(--accent-ink); }
+.vt-faq-q > span { text-wrap: balance; }
+.lp-hero-sub, .lp-blurb, .lp-lede { color: var(--ink-muted); }
+.lp-lede, .lp-blurb, .lp-flow-step p, .vt-ic-body, .vt-faq-a p, .pp-letter-line { text-wrap: pretty; }
+.lp-lede { max-width: 42ch; font-size: clamp(16px, 1.2vw, 18px); }
+/* accent words: the same face in the brand's deep green, not a second font; used on two headings only */
+.pp-ink { font-style: normal; color: var(--accent-ink); }
+
+/* ── microprint ────────────────────────────────────── */
+.pp-micro {
+  display: block; min-width: 0; overflow: hidden; white-space: nowrap;
+  font: 500 7px/1 var(--font-mono); letter-spacing: .16em; color: var(--forest); opacity: .6;
+  -webkit-user-select: none; user-select: none;
+}
+
+/* ── rubber stamps ─────────────────────────────────── */
+.pp-stamp {
+  --ink-c: var(--accent-ink);
+  display: inline-block; vertical-align: middle; transform: rotate(-7deg);
+  -webkit-mask: url("/images/paper/grain.svg") 0 0 / 160px 160px; mask: url("/images/paper/grain.svg") 0 0 / 160px 160px;
+  -webkit-user-select: none; user-select: none; pointer-events: none;
+}
+.pp-stamp > span {
+  display: block; padding: .38em .7em .32em; border: .1em solid var(--ink-c); border-radius: .22em;
+  outline: .06em solid var(--ink-c); outline-offset: -.34em;
+  font: 800 1em/1 var(--font-display); font-variation-settings: "wdth" 125; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-c); white-space: nowrap; opacity: .62;
+}
+.pp-stamp--red { --ink-c: var(--stamp-red); }
+/* pressed in: drops from above the paper, lands a little heavy, settles */
+.pp-stamp[data-state="wait"] { opacity: 0; }
+.pp-stamp[data-state="in"] { animation: pp-press .42s cubic-bezier(.3,0,.2,1) both; }
+@keyframes pp-press {
+  0% { opacity: 0; transform: rotate(-12deg) scale(1.7); }
+  60% { opacity: 1; transform: rotate(-6deg) scale(.96); }
+  100% { opacity: 1; transform: rotate(-7deg) scale(1); }
+}
+
+/* ── buttons: forest ink, square-cut ───────────────── */
+.vt-btn { border-radius: 4px; text-transform: none; letter-spacing: 0; font-size: 15px; font-weight: 600; }
+/* buttons stay put under the cursor (the design system's magnetic pull is off) and press in at .96 */
+.vt-btn { transform: none; }
+.vt-btn:active { transform: scale(.96); }
+/* hover is a quick colour change, not a show: no rolling label, a short arrow swap */
+.vt-btn:hover .vt-roll { transform: none; }
+.vt-btn-ico > span { transition-duration: .25s; }
+.vt-btn--sm { font-size: 14px; }
+.vt-nav-links a, .lp-mmenu a { text-transform: none; letter-spacing: 0; font-size: 15px; }
+.vt-btn--primary { color: #fff; background: var(--forest); border-color: transparent; box-shadow: none; }
+/* buttons are links: keep the label colour past the global a:hover (globals.css) */
+.vt-btn--primary:hover { color: #fff; background: var(--forest-hover); box-shadow: none; }
+.vt-btn--primary .vt-btn-fill { background: radial-gradient(120px circle at var(--mx) var(--my), rgba(255,255,255,.12), transparent 70%); }
+/* the chip sits 8px inside a 4px-radius button, so a concentric corner is nearly square */
+.vt-btn--primary .vt-btn-chip { border-radius: 1px; background: rgba(255,255,255,.12); color: #fff; }
+.vt-btn--ghost { background: transparent; border-color: var(--rule); transition-property: transform, background-color, border-color, color; transition-duration: .15s; transition-timing-function: ease-out; transition-delay: 0s; }
+.vt-btn--ghost .vt-btn-fill { display: none; }
+.vt-btn--ghost:hover { color: #fff; background: var(--forest); border-color: var(--forest); box-shadow: none; }
+.vt-btn--ghost .vt-btn-ico { transition: color .15s ease-out; }
+.vt-btn--ghost:hover .vt-btn-ico { color: var(--mint); }
+/* every link on this page stays on the page, so its arrow points along the line, not out of it */
+.vt-btn-ico svg { rotate: 45deg; }
+.vt-btn-ico-b { transform: translateX(-120%); }
+.vt-btn:hover .vt-btn-ico-a { transform: translateX(120%); }
+.vt-btn--chip .vt-btn-ico-b { transform: translateX(-150%); }
+.vt-btn--chip:hover .vt-btn-ico-a { transform: translateX(150%); }
+/* inline text links ("Book a call" after the letters): a 44px hit area without moving the layout */
+.vt-btn--text { padding-block: 12px; margin-block: -8px; }
+/* the FAQ questions are `all: unset` buttons, which drops the global focus ring: put it back */
+.vt-faq-q:focus-visible { outline: 2px solid var(--green-deep); outline-offset: 4px; border-radius: 2px; }
+
+/* ── header: a printed strip, not glass ────────────── */
+.lp-header {
+  --glass-bg: rgba(238,241,238,.94);
+  --glass-sheen: transparent;
+  --glass-rim-a: transparent;
+  --glass-rim-b: transparent;
+  --glass-edge: var(--rule);
+  --glass-shade: transparent;
+  --glass-drop: none;
+  --glass-inner: transparent;
+  --glass-lens: rgba(31,59,43,.08);
+  --glass-lens-rim: transparent;
+  --glass-hover: var(--green-deep);
+}
+.lp-header[data-scrolled] { --glass-bg: rgba(238,241,238,.96); --glass-drop: 0 10px 24px -18px rgba(11,20,16,.3); }
+.lp-header { --compact: 1; }
+.lp-header .vt-nav-links a { display: inline-block; padding-block: 13px; margin-block: -13px; }
+.lp-header .vt-nav, .lp-mnav, .lp-mmenu { border-radius: 6px; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.lp-header .vt-nav-links { box-shadow: none; }
+.lp-header .vt-nav-links::before { border-radius: 3px; box-shadow: none; }
+.lp-burger { border-radius: 4px; box-shadow: inset 0 0 0 1px var(--glass-edge); }
+.lp-mmenu a { border-radius: 4px; }
+.vt-logo { font-weight: 800; font-size: 19px; letter-spacing: .02em; }
+
+/* ── hero: the headline printed on a banknote, engraved waves under the laptop ── */
+.lp-hero-band { --hdr: 88px; }
+.pp-hero-bg { position: absolute; inset: calc(var(--hdr) * -1) 0 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.pp-hero-bg::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 62%;
+  background: url("/images/paper/field.svg") center top / 480px auto; opacity: .14;
+  -webkit-mask-image: linear-gradient(transparent, #000 55%); mask-image: linear-gradient(transparent, #000 55%);
+}
+.lp-hero { padding-block: clamp(24px, 2.6vw, 40px) 0; }
+.lp-stage { position: relative; z-index: 1; margin-top: clamp(36px, 4vw, 56px); }
+
+/* the note: a medallion for a portrait, the headline beside it, inside a guilloché frame */
+.pp-note {
+  position: relative; isolation: isolate; box-sizing: border-box; width: 100%; max-width: 1200px;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: clamp(28px, 4.4vw, 72px);
+  padding: clamp(48px, 4.6vw, 72px) clamp(36px, 4.4vw, 72px);
+  border-radius: 8px; background: url("/images/paper/fibre.svg"), var(--paper);
+  box-shadow: 0 0 0 1px var(--rule), inset 0 0 0 9px var(--paper), inset 0 0 0 10px var(--rule-soft),
+    0 1px 2px rgba(20,40,28,.05), 0 40px 70px -48px rgba(20,40,28,.3);
+  text-align: left;
+}
+/* the frame: a guilloché strip on all four edges, the engraved field across the ground */
+.pp-note::before {
+  content: ""; position: absolute; inset: 14px; z-index: -1; pointer-events: none; opacity: .3;
+  background:
+    url("/images/paper/band.svg") 0 0 / 69px 20px repeat-x,
+    url("/images/paper/band.svg") 0 100% / 69px 20px repeat-x,
+    url("/images/paper/band-v.svg") 0 0 / 20px 69px repeat-y,
+    url("/images/paper/band-v.svg") 100% 0 / 20px 69px repeat-y;
+}
+.pp-note::after {
+  content: ""; position: absolute; inset: 36px; z-index: -2; pointer-events: none; opacity: .1;
+  background: url("/images/paper/field.svg") center / 480px auto;
+}
+.pp-note-serial {
+  position: absolute; z-index: 1; top: 8px; left: 40px; padding: 4px 8px; background: var(--paper);
+  font: 500 10.5px/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--stamp-red);
+}
+/* the portrait: a rosette with the Vertlo diamond on a clean cartouche, inked in from the left on load */
+.pp-note-medallion {
+  --ink: 115%;
+  position: relative; display: grid; place-items: center; width: clamp(140px, 15vw, 210px); aspect-ratio: 1;
+  color: var(--green);
+  -webkit-mask-image: linear-gradient(100deg, #000 var(--ink), transparent calc(var(--ink) + 18%));
+  mask-image: linear-gradient(100deg, #000 var(--ink), transparent calc(var(--ink) + 18%));
+}
+.pp-note-medallion::before, .pp-note-medallion::after { content: ""; position: absolute; border-radius: 50%; }
+.pp-note-medallion::after { inset: 0; background: url("/images/paper/rosette.svg") center / contain no-repeat; opacity: .8; }
+.pp-note-medallion::before { z-index: 1; inset: 31%; background: var(--paper); box-shadow: 0 0 0 1px var(--rule-soft), 0 0 0 5px var(--paper), 0 0 0 6px var(--rule-soft); }
+.pp-note-medallion svg { position: relative; z-index: 2; }
+.pp-note-copy { min-width: 0; justify-self: stretch; }
+/* sized so the two lines ("One account closes." / "The rest keep selling.") each fit on one line */
+.pp-note-copy .lp-h1 { margin: 0; font-size: clamp(30px, 3.35vw, 50px); }
+@media (min-width: 1100px) { .pp-note-copy .lp-h1 { text-wrap: nowrap; } }
+.pp-note-copy .lp-hero-sub { margin: clamp(16px, 1.4vw, 22px) 0 0; max-width: 52ch; font-size: clamp(16px, 1.2vw, 18px); text-wrap: pretty; }
+/* the microprint over the headline: the issuer's name, set large enough to read as words */
+.pp-note-micro { margin: 0 0 clamp(16px, 1.6vw, 24px); max-width: 520px; }
+.pp-note-micro .pp-micro { padding-block: 5px; border-block: 1px solid var(--rule-soft); font-size: 9px; letter-spacing: .22em; color: var(--accent-ink); opacity: .75; }
+.lp-hero-cta { margin-top: clamp(24px, 2.4vw, 34px); }
+/* the note is laid down by PaperMotion once scripts run (the `js` class, layout.tsx); a short fallback
+   shows it anyway, and without scripts it is never hidden */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-note], .js .lp-hero-cta { opacity: 0; animation: pp-show 0s 1.2s forwards; }
+}
+@keyframes pp-show { to { opacity: 1; } }
+
+/* laptop: a dark lid (bezel + camera notch) around the screen, an aluminium base below */
+.lp-tour { position: relative; max-width: 1160px; margin-inline: auto; width: 100%; }
+.lp-tour .vt-stage { background: transparent; overflow: visible; border-radius: 0; padding: 0 7.5% clamp(40px, 5vw, 72px); }
+.lp-tour[data-tour] .vt-stage-tilt { transform: perspective(2600px) rotateX(var(--tour-rx, 14deg)) !important; transform-origin: 50% 100%; }
+.lp-laptop-lid { position: relative; padding: 1.3% 1.3% 1.6%; border-radius: clamp(14px, 1.8vw, 24px) clamp(14px, 1.8vw, 24px) 6px 6px; background: #0b0d0c; box-shadow: 0 0 0 1.5px #4a504c, 0 0 0 3px #1a1d1b, 0 60px 90px -40px rgba(20,40,28,.55); }
+.lp-laptop-lid .vt-stage-screen { border-radius: clamp(6px, .8vw, 10px); box-shadow: none; }
+.lp-laptop-cam { position: absolute; z-index: 2; left: 50%; top: 0; width: 9%; height: clamp(8px, 1.3%, 16px); min-height: 10px; transform: translateX(-50%); border-radius: 0 0 8px 8px; background: #0b0d0c; }
+.lp-laptop-cam::after { content: ""; position: absolute; left: 50%; top: 35%; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: #1c2a22; box-shadow: inset 0 0 0 1px #2e3a33; }
+.lp-laptop-base { position: relative; z-index: 1; margin: 0 -7%; height: clamp(10px, 1.35vw, 19px); border-radius: 2px 2px 50% 50% / 2px 2px 100% 100%; background: linear-gradient(#f2f4f3 0%, #c9cdcb 38%, #9aa09d 100%); box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 28px 36px -16px rgba(11,20,16,.45); }
+.lp-laptop-base i { display: block; width: 15%; height: 45%; margin: 0 auto; border-radius: 0 0 10px 10px; background: linear-gradient(#a3a8a5, #c4c8c6); }
+/* desktop: the tour caption is a small solid label in the portal's top bar, so it never sits on a chart */
+@media (min-width: 721px) {
+  .lp-tour[data-tour] .vt-stage-caps { top: 3%; }
+  .lp-tour[data-tour] .vt-stage-cap {
+    right: 0; width: max-content; height: 32px; margin-inline: auto; padding: 0 14px;
+    border-radius: 4px; background: rgba(12,17,14,.94); box-shadow: 0 0 0 1px rgba(255,255,255,.12);
+  }
+}
+/* notifications float over the lower right of the screen, like cards laid on the hero */
+.lp-tour .vt-stage-pops { left: auto; right: 1%; bottom: 16%; width: min(400px, 36%); transform: none; }
+.lp-tour .vt-stage-label { display: none; }
+.lp-tour .vt-note { border-radius: 6px; }
+/* the portal's dimmed nav items: dim, but still readable (5.4:1 on the portal ground) */
+.vtp-nav--dim { color: #7f8c85; }
+
+/* ── works with: the providers, stated plainly between hairlines ── */
+.pp-works { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 12px 32px; padding-block: clamp(56px, 6vw, 96px) clamp(8px, 1.5vw, 24px); }
+.pp-works-k { margin: 0; font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); }
+.pp-works-list { display: flex; flex-wrap: wrap; justify-content: center; margin: 0; padding: 0; list-style: none; font: 500 clamp(16px, 1.3vw, 19px)/1.2 var(--font-display); font-variation-settings: "wdth" 112; color: var(--ink); }
+.pp-works-list li { padding: 4px 22px; }
+@media (min-width: 721px) { .pp-works-list li + li { border-left: 1px solid var(--rule-soft); } }
+
+/* ── the stack: one sheet per section ───────────────── */
+/* Sticky by the bottom edge (PaperMotion measures --sheet-h): a tall sheet scrolls normally, stays once
+   its bottom meets the viewport's, and the next sheet slides over it. The pile leaves together at the end. */
+/* clip, not hidden: sheets turn as they arrive and must not widen the page, and clip keeps sticky working */
+.pp-stack { position: relative; overflow-x: clip; padding-block: clamp(24px, 3vw, 48px) clamp(72px, 9vw, 128px); }
+.pp-sheet {
+  position: sticky; top: min(0px, calc(100vh - var(--sheet-h, 100vh)));
+  box-sizing: border-box; max-width: 1440px; margin-inline: auto; padding-inline: var(--lp-x);
+}
+.pp-sheet + .pp-sheet { margin-top: clamp(56px, 9vh, 110px); }
+/* in-page links measure targets with the stack let go (SmoothScroll.tsx) */
+html[data-measure-flow] .pp-sheet { position: relative; top: auto; }
+.pp-sheet-paper {
+  position: relative; isolation: isolate; box-sizing: border-box;
+  padding: clamp(22px, 2.6vw, 36px) clamp(20px, 4.4vw, 68px) clamp(48px, 5.6vw, 88px);
+  border-radius: 6px; background: url("/images/paper/fibre.svg"), var(--paper); color: var(--ink);
+  box-shadow: 0 0 0 1px rgba(31,59,43,.1), 0 -18px 40px -30px rgba(20,40,28,.22), 0 30px 60px -40px rgba(20,40,28,.28);
+}
+/* laid under the next sheet: a shadow that deepens as it's covered */
+.pp-sheet-shade { position: absolute; inset: 0; z-index: 20; border-radius: inherit; pointer-events: none; background: rgba(15,27,20,.18); opacity: 0; visibility: hidden; }
+.pp-sheet--bare .pp-sheet-paper { max-width: 1180px; margin-inline: auto; padding: 0; background: none; box-shadow: none; }
+
+/* the printed header every document carries: its title, the date it belongs to, its place in the stack */
+.pp-doc {
+  position: relative; display: flex; justify-content: space-between; align-items: center; gap: 18px;
+  padding-bottom: 30px; margin-bottom: clamp(28px, 3.4vw, 56px);
+}
+.pp-doc::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 14px; background: url("/images/paper/band.svg") left center / 48px 14px repeat-x; opacity: .55; pointer-events: none; }
+.pp-doc-title { font: 600 12px/1 var(--font-display); font-variation-settings: "wdth" 125; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-ink); white-space: nowrap; }
+.pp-doc-meta { display: flex; gap: 16px; font: 500 11px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; }
+.pp-doc-meta b { font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+.pp-sheet-head { display: flex; flex-direction: column; gap: 24px; margin-bottom: clamp(32px, 3.6vw, 56px); }
+.pp-sheet-head .lp-h2 { margin: 0; max-width: 20ch; }
+.pp-sub { margin: 0 0 clamp(24px, 3vw, 40px); font: 500 clamp(22px, 2vw, 28px)/1.15 var(--font-display); letter-spacing: -.01em; text-wrap: balance; }
+.pp-illus { font: 500 10.5px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); }
+
+/* a letter beside its heading: the termination (letter first) and the approval (letter second) */
+.pp-pair { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: center; gap: clamp(32px, 5.5vw, 96px); }
+.pp-pair--flip { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+.pp-pair-copy { display: grid; gap: 20px; justify-items: start; }
+.pp-pair-copy .lp-h2 { margin: 0; }
+
+/* the typed letter */
+.pp-letter {
+  position: relative; margin: 0 0 24px; padding: clamp(22px, 2.4vw, 34px) clamp(20px, 2.6vw, 36px);
+  background: #fcfdfb; transform: rotate(var(--tilt, -1deg));
+  box-shadow: 0 0 0 1px rgba(31,59,43,.12), 0 1px 1px rgba(20,40,28,.05), 0 22px 36px -26px rgba(20,40,28,.4);
+  font: 400 clamp(13px, 1vw, 14.5px)/1.7 var(--font-mono); color: var(--ink);
+}
+.pp-letter-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--rule-soft); font-size: 11px; line-height: 1.5; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.pp-letter-head b { display: block; font-weight: 500; color: var(--ink); }
+.pp-letter-ref { margin: 16px 0 12px; font-weight: 500; }
+.pp-letter-line { margin: 0 0 10px; }
+/* the strike: a red rule drawn across each line of the verdict (--strike runs 0 → 100%) */
+.pp-letter-line del {
+  color: inherit; text-decoration: none;
+  background: linear-gradient(var(--stamp-red), var(--stamp-red)) 0 62% / var(--strike, 100%) 2px no-repeat;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.pp-letter-sign { margin: 18px 0 0; color: var(--ink-muted); }
+/* Vertlo's answer, typed under the letter after a dashed rule, not a UI alert box */
+.pp-letter-note { display: flex; gap: 10px; align-items: baseline; margin: 20px 0 0; padding-top: 14px; border-top: 1px dashed var(--rule); color: var(--accent-ink); }
+.pp-letter-note b { font-weight: 500; }
+.pp-letter-note svg { flex: none; color: var(--green); transform: translateY(1px); }
+/* the stamp lands in the letterhead's empty right side, clear of the typed lines */
+.pp-letter-stamp { position: absolute; right: 18px; top: 58px; font-size: clamp(18px, 1.8vw, 24px); }
+.pp-letter .pp-illus { position: absolute; left: 0; top: calc(100% + 12px); }
+
+/* sheet 2 — statement: the account it covers, then the day's line items */
+.pp-ledger-meta { display: flex; flex-wrap: wrap; margin: 0; border-block: 1px solid var(--rule-soft); }
+.pp-ledger-meta div { padding: 12px 28px 12px 0; }
+.pp-ledger-meta div + div { padding-left: 24px; border-left: 1px solid var(--rule-soft); }
+.pp-ledger-meta dt { font: 500 10.5px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); }
+.pp-ledger-meta dd { margin: 6px 0 0; font: 500 15px/1.2 var(--font-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.pp-ledger { width: 100%; margin-top: clamp(56px, 6vw, 96px); border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.pp-ledger caption { caption-side: top; padding-bottom: 16px; text-align: left; }
+.pp-ledger caption > * { display: inline-block; vertical-align: baseline; }
+.pp-ledger-t { margin-right: 18px; font: 500 clamp(20px, 1.8vw, 26px)/1.2 var(--font-display); letter-spacing: -.01em; color: var(--ink); }
+.pp-ledger th { padding: 10px 24px 10px 0; border-block: 1px solid var(--rule); font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); text-align: left; }
+.pp-ledger td { padding: 18px 24px 18px 0; border-bottom: 1px solid var(--rule-soft); vertical-align: baseline; }
+.pp-ledger tbody tr:last-child td { border-bottom: 3px double var(--rule); }
+.pp-ledger-time { width: 88px; font: 500 14px/1.4 var(--font-mono); color: var(--ink-muted); }
+.pp-ledger td b { display: block; font-weight: 500; font-size: clamp(16px, 1.25vw, 18px); line-height: 1.3; }
+.pp-ledger td span { display: block; margin-top: 4px; font-size: 15px; line-height: 1.45; color: var(--ink-muted); }
+.pp-ledger .pp-ledger-amt { padding-right: 0; text-align: right; white-space: nowrap; }
+.pp-ledger td.pp-ledger-amt { font: 500 clamp(15px, 1.2vw, 17px)/1.3 var(--font-mono); }
+.pp-ledger tr[data-tone="warn"] .pp-ledger-time { color: var(--stamp-red); }
+.pp-ledger tr[data-tone="ok"] td.pp-ledger-amt { color: var(--accent-ink); }
+
+/* sheet 4 — register: one ruled row per industry, its dot-matrix drawing, its name, what keeps working */
+.vt-ic.pp-register { display: block; margin: 0; border-top: 1px solid var(--rule); }
+.pp-register .vt-ic-card { display: grid; grid-template-columns: clamp(150px, 16vw, 220px) minmax(0, 1fr); align-items: center; column-gap: clamp(24px, 4vw, 64px); padding: 6px 0; border-left: 0; border-bottom: 1px solid var(--rule-soft); }
+.pp-register .vt-ic-idx { display: none; }
+.pp-register .vt-ic-art { margin: 0; }
+.pp-register .vt-ic-text { display: grid; grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); align-items: baseline; gap: 32px; padding: 0; }
+.pp-register .vt-ic-body { margin: 0; max-width: 52ch; }
+.pp-register-stories { margin-top: clamp(64px, 7vw, 110px); scroll-margin-top: 96px; }
+.pp-sheet--register .lp-ms { background: #fbfcfa; }
+
+/* the index: a slim rail in the left margin, which sheet of the stack you're on (wide screens only) */
+.pp-index {
+  position: fixed; top: 50%; left: max(16px, calc((100vw - 1440px) / 2 + 24px)); z-index: 45;
+  display: none; flex-direction: column; align-items: center; gap: 10px;
+  font: 500 10px/1 var(--font-mono); letter-spacing: .08em; color: var(--ink-muted); font-variant-numeric: tabular-nums;
+  opacity: 0; transform: translate(-6px, -50%); transition: opacity .35s ease-out, transform .35s cubic-bezier(.2,0,0,1); pointer-events: none;
+}
+@media (min-width: 1200px) { .pp-index { display: flex; } }
+.pp-index[data-on] { opacity: 1; transform: translate(0, -50%); }
+.pp-index-stack { display: flex; flex-direction: column; gap: 4px; }
+.pp-index-stack i { width: 10px; height: 14px; border: 1px solid var(--rule); border-radius: 1px; transition: background-color .3s, border-color .3s; }
+.pp-index-stack i[data-on] { background: var(--accent-ink); border-color: var(--accent-ink); }
+
+/* ── sections on paper ─────────────────────────────── */
+.lp-flow { border-top: 0; }
+.lp-flow-num::before { background: var(--paper); }
+.vt-ic { border-top: 1px solid var(--rule); }
+.vt-ic-card { border-left-style: solid; border-left-color: var(--rule-soft); }
+.vt-faq-list { border-top-color: var(--rule); }
+.vt-faq-row { border-bottom-color: var(--rule-soft); }
+.vt-faq-side .vt-h2 { margin: 0; }
+.pp-sheet--questions .vt-faq-side { top: 120px; }
+
+/* ── merchants (shown once real quotes are approved) ── */
+.lp-ms { border-radius: 8px; background: var(--paper); box-shadow: 0 0 0 1px var(--rule-soft); }
+.lp-ms-chart { border-radius: 8px 0 0 0; background: transparent; }
+.lp-ms-win { border-radius: 6px; box-shadow: 0 0 0 1px var(--rule-soft); }
+.lp-ms-value { border-radius: 3px; }
+.lp-ms-tabs { border-top-style: solid; border-top-color: var(--rule-soft); }
+.lp-ms-tab + .lp-ms-tab { border-left-style: solid; border-left-color: var(--rule-soft); }
+.lp-ms-quote blockquote { font-weight: 400; }
+.lp-ms-avatar { border-radius: 4px; }
+@media (max-width: 960px) { .lp-ms-chart { border-radius: 8px 8px 0 0; } }
+
+/* ── the closing call: a cheque ────────────────────── */
+.pp-cheque {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: grid; gap: clamp(24px, 2.6vw, 36px); padding: clamp(28px, 3.6vw, 52px) clamp(22px, 4vw, 60px) clamp(20px, 2.4vw, 32px);
+  border-radius: 6px; background: var(--paper);
+  /* the double frame of a printed cheque */
+  box-shadow: 0 0 0 1px var(--rule), inset 0 0 0 7px var(--paper), inset 0 0 0 8px var(--rule-soft), 0 30px 60px -44px rgba(20,40,28,.3);
+}
+/* ground: engraved waves across the sheet, a rosette watermark on the right */
+.pp-cheque::before {
+  content: ""; position: absolute; inset: 8px; z-index: -1; pointer-events: none;
+  background: url("/images/paper/field.svg") center / 480px auto; opacity: .09;
+}
+.pp-cheque::after {
+  content: ""; position: absolute; z-index: -1; right: -140px; top: 50%; width: 620px; aspect-ratio: 1; translate: 0 -50%; pointer-events: none;
+  background: url("/images/paper/rosette.svg") center / contain no-repeat; opacity: .16;
+}
+.pp-cheque-top { position: relative; display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; padding-bottom: 36px; border-bottom: 1px solid var(--rule); }
+/* a guilloché border strip printed along the top rule */
+.pp-cheque-top::after { content: ""; position: absolute; left: 0; right: 0; bottom: 5px; height: 20px; background: url("/images/paper/band.svg") 0 0 / 69px 20px repeat-x; opacity: .4; }
+.pp-cheque-issuer { display: inline-flex; align-items: center; gap: 10px; font: 700 14px/1 var(--font-display); font-variation-settings: "wdth" 125; letter-spacing: .06em; text-transform: uppercase; color: var(--forest); }
+.pp-cheque-issuer svg { color: var(--green); }
+.pp-cheque-no { display: grid; gap: 6px; justify-items: end; font: 500 13px/1 var(--font-mono); letter-spacing: .08em; color: var(--stamp-red); font-variant-numeric: tabular-nums; }
+.pp-cheque-no span { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+.pp-cheque-body { display: grid; gap: 14px; max-width: 760px; }
+.pp-cheque-k { font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; }
+.pp-cheque-pay { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: end; gap: 16px; }
+.pp-cheque-line { padding: 0 4px 6px; border-bottom: 1px solid var(--forest); font: 500 clamp(16px, 1.5vw, 20px)/1.2 var(--font-sans); color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pp-cheque-amount { padding: 10px 16px; border: 1px solid var(--forest); border-radius: 3px; background: var(--paper); font: 600 18px/1 var(--font-mono); color: var(--forest); white-space: nowrap; box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px var(--rule-soft); }
+.pp-cheque-foot { position: relative; display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap; margin-top: 36px; }
+.pp-cheque-memo { margin: 0; display: flex; align-items: baseline; gap: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--rule); font-size: 14px; color: var(--ink-muted); }
+.pp-cheque-sign { display: grid; gap: 10px; justify-items: stretch; min-width: 260px; }
+/* the signature line: the signature is written in on it as the cheque lands (PaperMotion draws the stroke) */
+.pp-cheque-sigline { position: relative; display: block; height: 54px; border-bottom: 1px solid var(--forest); }
+.pp-signature { position: absolute; left: 50%; bottom: 3px; width: 230px; height: auto; translate: -50% 0; overflow: visible; pointer-events: none; }
+.pp-signature path { fill: none; stroke: #21304d; stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
+.pp-cheque-sign .pp-cheque-k { text-align: center; }
+.pp-cheque-micr { margin: 0; font: 400 14px/1 var(--font-mono); letter-spacing: .28em; color: var(--ink); opacity: .45; white-space: nowrap; overflow: hidden; }
+/* below this the memo and signature can't share a row: stack them */
+@media (max-width: 1000px) {
+  .pp-cheque-foot { flex-direction: column; align-items: stretch; gap: 28px; }
+  .pp-cheque-sign { width: 100%; min-width: 0; }
+}
+
+/* ── footer: the wordmark engraved, filled with the wave field ── */
+.vt-footer { border-top-color: var(--rule); }
+.vt-footer ul { gap: 2px; }
+.vt-footer a { display: inline-block; padding-block: 7px; }
+.vt-footer-mark {
+  font-weight: 800; letter-spacing: -.02em; opacity: 1; color: transparent;
+  background: url("/images/paper/field.svg") 0 0 / 240px auto; -webkit-background-clip: text; background-clip: text;
+  -webkit-text-stroke: 1px var(--rule);
+}
+/* the wide cut is ~5.1em across, so scale it to the footer's width with that measure (landing.css uses 3.65) */
+.vt-footer-mark { font-size: min(200px, 100cqw / 5.3); }
+
+/* ── phones ────────────────────────────────────────── */
+@media (max-width: 720px) {
+  /* the header stays full size here, so its button and menu keep 44px targets */
+  .lp-header { --lift: 0px; --compact: 1; }
+  .lp-mnav .vt-btn--sm { height: 44px; padding-inline: 14px; }
+  .lp-mnav .vt-logo { font-size: 16px; gap: 8px; }
+  .pp-note { grid-template-columns: minmax(0, 1fr); padding: 44px 22px 36px; gap: 20px; justify-items: start; }
+  .pp-note::before { inset: 10px; background-size: 52px 15px, 52px 15px, 15px 52px, 15px 52px; }
+  .pp-note::after { inset: 26px; }
+  .pp-note-medallion { width: 112px; }
+  .pp-note-serial { left: 22px; font-size: 10px; padding: 3px 6px; }
+  /* keep the two sentences on their own lines, each balanced */
+  .pp-note-copy .lp-h1 { font-size: clamp(24px, 7vw, 30px); }
+  .pp-note-copy .lp-br { display: inline; }
+  .pp-sheet + .pp-sheet { margin-top: 40px; }
+  .pp-sheet { padding-inline: 10px; }
+  .pp-sheet-paper { padding: 18px 18px 44px; }
+  .pp-doc { gap: 10px; }
+  .pp-doc-title { font-size: 11px; white-space: normal; }
+  .pp-doc-meta { flex-direction: column; align-items: flex-end; gap: 6px; font-size: 10px; }
+  .pp-pair, .pp-pair--flip { grid-template-columns: minmax(0, 1fr); }
+  .pp-pair > .pp-pair-copy { order: -1; }
+  .pp-letter { transform: rotate(calc(var(--tilt, -1deg) * .5)); }
+  /* the letter is too narrow for a stamp beside the letterhead: it lands under the typed lines */
+  .pp-letter-head { flex-direction: column; gap: 6px; }
+  .pp-letter-stamp { position: static; display: block; width: max-content; margin: 18px 0 0 auto; font-size: 16px; }
+  .pp-ledger-meta { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .pp-ledger-meta div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px 0; }
+  .pp-ledger-meta div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule-soft); }
+  .pp-ledger-meta dd { margin: 0; font-size: 13px; text-align: right; }
+  /* the ledger: time and result on one line, the entry below */
+  .pp-ledger thead { display: none; }
+  .pp-ledger tbody tr { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--rule-soft); }
+  .pp-ledger tbody tr:last-child { border-bottom: 3px double var(--rule); }
+  .pp-ledger td, .pp-ledger tbody tr:last-child td { padding: 0; border: 0; }
+  .pp-ledger td:nth-child(2) { grid-column: 1 / -1; grid-row: 2; margin-top: 8px; }
+  .pp-ledger-time { width: auto; }
+  .pp-ledger caption > * { display: block; }
+  .pp-ledger-t { margin: 0 0 8px; }
+  .pp-register .vt-ic-card { grid-template-columns: minmax(0, 1fr); padding: 8px 0 24px; }
+  .pp-register .vt-ic-art { width: 180px; }
+  .pp-register .vt-ic-text { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .pp-signature { width: 190px; }
+  .lp-tour .vt-stage { padding: 0 0 56px; }
+  /* the caption sits on the mist under the device here, so ink instead of the on-screen white */
+  .lp-tour[data-tour] .vt-stage-cap { color: var(--ink); }
+  .lp-tour[data-tour] .vt-stage-cap b { color: var(--ink-faint); }
+  .lp-laptop-lid { padding: 6px; border-radius: 18px; }
+  .lp-laptop-cam, .lp-laptop-base { display: none; }
+  .pp-works { flex-direction: column; align-items: center; gap: 14px; }
+  .pp-works-list { display: grid; grid-template-columns: repeat(2, auto); gap: 6px 0; }
+  .pp-works-list li { padding: 4px 14px; text-align: center; }
+  /* HowFlow's sticky scene sits on the statement's paper */
+  .lp-flow-stage { margin-inline: -18px; background: var(--paper); border-block-style: solid; border-color: var(--rule-soft); }
+  .lp-flow-stage.is-stuck { box-shadow: 0 -84px 0 var(--paper); }
+  .lp-flow-stage::after { background: linear-gradient(var(--paper), rgba(247,249,246,0)); }
+  .vt-ic-card, .vt-ic-card:first-child { border-top-style: solid; border-top-color: var(--rule-soft); }
+  .pp-register .vt-ic-card, .pp-register .vt-ic-card:first-child { border-top: 0; }
+  .pp-cheque-pay { grid-template-columns: minmax(0, 1fr) auto; }
+  .pp-cheque-pay > .pp-cheque-k { grid-column: 1 / -1; }
+  .pp-cheque-memo { flex-direction: column; gap: 8px; }
+  .pp-cheque-line { white-space: normal; }
+  .pp-cheque::after { width: 420px; right: -200px; }
+  .pp-cheque-micr { font-size: 12px; letter-spacing: .18em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-stamp[data-state] { opacity: 1; animation: none; }
+  .pp-index { transition: none; }
+}

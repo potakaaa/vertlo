@@ -5,54 +5,33 @@ import { Button, Logo, Nav } from "@/components/vertlo";
 import { navLinks } from "@/content/landing";
 
 /**
- * Sticky liquid-glass header: the design-system Nav on desktop, a compact pill with a working menu on phones.
- * The glass switches to its dark tone while it floats over a black `vt-bleed` band.
+ * Sticky header: the design-system Nav on desktop, a compact bar with a working menu on phones. It
+ * stays on screen (compact once scrolled) so "Book a call" is always one tap away. It switches to its
+ * dark tone while it floats over a dark `vt-bleed` band.
  */
-/** Below this scroll depth the header never hides. */
-const HIDE_AFTER = 160;
-/** Continuous downward travel before the header slides away. */
-const HIDE_TRAVEL = 24;
-/** Upward travel that brings it back: small, so any intent to reach the nav reveals it. */
-const SHOW_TRAVEL = 6;
 
 export function SiteHeader() {
   const headerRef = useRef<HTMLElement>(null);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [dark, setDark] = useState(false);
-  const [hidden, setHidden] = useState(false);
 
-  // Keep the latest menu state readable from the scroll listener without re-binding it.
-  const openRef = useRef(open);
-  openRef.current = open;
-
-  // Scroll: compact once off the top, slide away while reading down, return on any upward scroll.
-  // Tone: probe the resting centre of whichever nav is visible against the dark bands.
+  // Scroll: compact once off the top. Tone: probe the centre of whichever nav is visible against the dark bands.
   useEffect(() => {
     const header = headerRef.current;
     if (!header) return;
     const bands = Array.from(document.querySelectorAll<HTMLElement>(".vt-bleed"));
     let raf = 0;
-    let lastY = window.scrollY;
-    let travel = 0; // distance scrolled in the current direction; signed
 
     const update = () => {
       raf = 0;
-      const y = Math.max(0, window.scrollY);
-      const dy = y - lastY;
-      lastY = y;
-      if (dy !== 0) travel = Math.sign(dy) === Math.sign(travel) ? travel + dy : dy;
-
-      setScrolled(y > 8);
-      if (y < HIDE_AFTER || openRef.current || header.contains(document.activeElement)) setHidden(false);
-      else if (travel > HIDE_TRAVEL) setHidden(true);
-      else if (travel < -SHOW_TRAVEL) setHidden(false);
+      setScrolled(window.scrollY > 8);
 
       const nav = Array.from(header.querySelectorAll<HTMLElement>(".vt-nav, .lp-mnav")).find(
         (n) => n.offsetParent !== null,
       );
       if (!nav) return;
-      // offsetTop ignores the compact/hide transforms, so the tone is ready before the nav comes back.
+      // offsetTop ignores the compact transform, so the probe sits on the nav's resting centre.
       const probe = header.getBoundingClientRect().top + nav.offsetTop + nav.offsetHeight / 2;
       setDark(bands.some((b) => {
         const br = b.getBoundingClientRect();
@@ -62,17 +41,14 @@ export function SiteHeader() {
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
-    const reveal = () => setHidden(false);
 
     update();
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
-    header.addEventListener("focusin", reveal);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
-      header.removeEventListener("focusin", reveal);
     };
   }, []);
 
@@ -124,12 +100,11 @@ export function SiteHeader() {
       ref={headerRef}
       className="lp-header"
       data-scrolled={scrolled || undefined}
-      data-hidden={hidden || undefined}
       data-tone={dark ? "dark" : "light"}
     >
       <div className="lp-wrap lp-header-in">
         <div className="lp-nav-d">
-          <Nav links={navLinks} scrolled={scrolled} loginHref="#book" ctaHref="#book" />
+          <Nav links={navLinks} scrolled={scrolled} loginHref={false} ctaHref="#book" />
         </div>
 
         <div className="lp-nav-m">
@@ -185,11 +160,6 @@ export function SiteHeader() {
                 </a>
               </li>
             ))}
-            <li>
-              <a href="#book" onClick={() => setOpen(false)}>
-                Login
-              </a>
-            </li>
           </ul>
         </div>
       </div>

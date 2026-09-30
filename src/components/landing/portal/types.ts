@@ -7,6 +7,10 @@ export const PORTAL_W = 1240, PORTAL_H = 860;
 export const PORTAL_REGIONS = {
   kpis: ".lpo-kpis",
   volume: ".lpo-rowb",
+  /* the routing split panel alone: narrow enough that the camera properly pushes in */
+  routing: ".lpo-routing",
+  /* health and attention together: wide, so the camera pulls back out after the routing close-up */
+  lower: ".lpo-rowc",
   attention: ".lpo-attn",
   health: ".lpo-health",
 } as const;

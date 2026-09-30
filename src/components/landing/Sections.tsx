@@ -1,123 +1,50 @@
-import {
-  Button,
-  Diamond,
-  FAQ,
-  FeaturePanel,
-  Footer,
-  IndustryCards,
-  ProviderFlow,
-  RotatingWord,
-} from "@/components/vertlo";
-import type { CSSProperties, ReactNode } from "react";
+import { Button, Diamond, FAQ, Footer, IndustryCards } from "@/components/vertlo";
 import * as c from "@/content/landing";
-import { FlipWords } from "@/components/landing/FlipWords";
 import { HowFlow } from "@/components/landing/HowFlow";
 import { MerchantStories } from "@/components/landing/MerchantStories";
-import { FeatureGridMotion } from "@/components/landing/FeatureGridMotion";
 import { PortalTour } from "@/components/landing/PortalTour";
 import { rich } from "@/components/landing/Rich";
+import { Letter, Microprint, Sheet } from "@/components/landing/Paper";
 
-/* One responsive page on a misty off-white ground. Headings pair the sans with an italic serif
-   (`*words*` in content, see Rich.tsx); every section opens with a small badge. Two full-bleed black
-   bands stay for the stealth side (`vt-bleed`: the section itself is the backdrop). Backgrounds are
-   generated photos (public/images/bg) under a dot screen.
-   Every section is a server component; the interactive bits live inside the design-system
-   components (client). Layout classes are in app/landing.css (lp-*). */
+/* Concept A, security paper. The page is a desk (the misty green ground) with papers laid on it:
+   a banknote with the headline, the laptop running the portal, then a stack of documents, one per
+   section, each sliding up and settling on the one before (sticky sheets, see Paper.tsx; the scroll
+   motion is PaperMotion.tsx). Every sheet is a real document that says one thing: the termination
+   letter (the problem), the statement (how it works, then the day it matters), the approval letter
+   (underwriting), the register (who it's for), the questions, and the cheque (the call).
+   All art is drawn in code: guilloché from scripts/paper-art.mjs, the dot-matrix scenes, the diamond.
+   Layout classes are in app/landing.css (lp-*), the paper look in app/paper.css (pp-*). */
 
-/* Hero backdrop: a hairline routing grid. Diamonds are merchant accounts sitting on grid intersections;
-   green packets run the lines into them and each one lights up on arrival. One account is paused (red)
-   and gets no traffic. Coordinates are grid cells from the centre line (col) and the top of the grid (row),
-   which starts behind the sticky header so the glass nav frosts it. Pure CSS, decorative. */
-type GridNode = { col: number; row: number; state?: "paused" | "idle"; on?: "d" | "m" };
-type GridRoute = { axis: "x" | "y"; at: number; from: number; to: number; dur: number; delay: number; on?: "d" | "m" };
-
-const GRID_NODES: GridNode[] = [
-  { col: -10, row: 4, on: "d" },
-  { col: 9, row: 3, on: "d" },
-  { col: -8, row: 10, on: "d" },
-  { col: 10, row: 9, on: "d" },
-  { col: -11, row: 7, state: "paused", on: "d" },
-  { col: 7, row: 11, state: "idle", on: "d" },
-  { col: -6, row: 1, state: "idle", on: "d" },
-];
-// A route that ends on a node feeds it; the node's flash shares the route's timing.
-const GRID_ROUTES: GridRoute[] = [
-  { axis: "y", at: -10, from: 0, to: 4, dur: 7, delay: 0.6, on: "d" },
-  { axis: "x", at: 3, from: 15, to: 9, dur: 8, delay: 2.2, on: "d" },
-  { axis: "x", at: 10, from: -15, to: -8, dur: 7.5, delay: 4, on: "d" },
-  { axis: "y", at: 10, from: 13, to: 9, dur: 6.5, delay: 1.4, on: "d" },
-  // Phones: no room for accounts, so two packets pass each other on the line under the nav.
-  { axis: "x", at: 2, from: -7, to: 7, dur: 7, delay: 0.6, on: "m" },
-  { axis: "x", at: 2, from: 7, to: -7, dur: 7, delay: 4.1, on: "m" },
-];
-
-type Vars = CSSProperties & Record<`--${string}`, string | number>;
-
-function HeroGrid() {
-  const timing = (n: GridNode) =>
-    GRID_ROUTES.find((r) => r.on === n.on && r.to === (r.axis === "x" ? n.col : n.row) && r.at === (r.axis === "x" ? n.row : n.col));
-  return (
-    <div className="lp-grid-bg" aria-hidden="true">
-      {GRID_ROUTES.map((r, i) => {
-        const [lo, hi] = [Math.min(r.from, r.to), Math.max(r.from, r.to)];
-        const style: Vars = {
-          "--a": lo,
-          "--len": hi - lo,
-          "--at": r.at,
-          "--dur": `${r.dur}s`,
-          "--delay": `${r.delay}s`,
-        };
-        return (
-          <span
-            key={i}
-            className="lp-route"
-            data-axis={r.axis}
-            data-rev={r.to < r.from || undefined}
-            data-on={r.on}
-            style={style}
-          />
-        );
-      })}
-      {GRID_NODES.map((n, i) => {
-        const t = timing(n);
-        const style: Vars = { "--c": n.col, "--r": n.row };
-        if (t) Object.assign(style, { "--dur": `${t.dur}s`, "--delay": `${t.delay}s` });
-        return <span key={i} className="lp-node" data-state={n.state ?? (t ? "live" : "idle")} data-on={n.on} style={style} />;
-      })}
-    </div>
-  );
-}
-
-/** The small section badge: a dotted diamond and a label. */
-export function Badge({ children, className }: { children: ReactNode; className?: string }) {
-  return (
-    <span className={className ? `lp-badge ${className}` : "lp-badge"}>
-      <i aria-hidden="true" />
-      {children}
-    </span>
-  );
-}
-
-/* Hero and product in one pinned section: misty hills behind, the portal on a laptop. Scrolling
-   zooms into the laptop until its screen fills the view, then runs the portal tour (PortalTour). */
+/* Hero and product in one pinned section: the headline printed on a banknote, the portal on a laptop
+   below it. Scrolling zooms into the laptop until its screen fills the view, then runs the portal
+   tour (PortalTour, which fades `.lp-hero` out and back). */
 export function Hero() {
   return (
     <section className="lp-hero-band" id="top">
-      <div className="lp-hero-bg" aria-hidden="true" />
-      <HeroGrid />
+      <div className="pp-hero-bg" aria-hidden="true" />
       <div className="lp-wrap lp-hero">
-        <h1 className="lp-h1">
-          {c.hero.lead}
-          <br className="lp-br" />{" "}
-          {c.hero.accent}{" "}
-          <span className="lp-nowrap">
-            <em className="lp-serif lp-accent">
-              <FlipWords words={c.hero.flip} />
-            </em>
-            .
+        <div className="pp-note" data-note="">
+          <span className="pp-note-serial" aria-hidden="true">
+            {c.hero.serial}
           </span>
-        </h1>
-        <p className="lp-hero-sub">{c.hero.subhead}</p>
+          {/* the note's portrait: a guilloché medallion around the Vertlo diamond */}
+          <span className="pp-note-medallion" aria-hidden="true">
+            <Diamond size={30} />
+          </span>
+          <div className="pp-note-copy">
+            <p className="pp-note-micro" aria-hidden="true">
+              <Microprint text={c.hero.micro} />
+            </p>
+            <h1 className="lp-h1">
+              {c.hero.lead}
+              <br className="lp-br" /> {c.hero.accent}{" "}
+              <span className="lp-nowrap">
+                <em className="pp-ink">{c.hero.word}</em>.
+              </span>
+            </h1>
+            <p className="lp-hero-sub">{c.hero.subhead}</p>
+          </div>
+        </div>
         <div className="lp-hero-cta">
           <Button size="lg" href="#book">
             Book a call
@@ -135,168 +62,204 @@ export function Hero() {
   );
 }
 
-export function Trust() {
+/* Under the laptop, before the stack: what it connects to, stated plainly. */
+export function WorksWith() {
   return (
-    <section className="lp-wrap lp-trust" aria-labelledby="trust-t">
-      <h2 className="lp-trust-t" id="trust-t">
-        {rich(c.trust.heading)}
-      </h2>
-      <ul className="lp-logos">
-        {c.logos.map((l) => (
-          <li key={l} className="lp-logo">
-            <Diamond size={9} outline />
-            {l}
-          </li>
+    <section className="lp-wrap pp-works" aria-label={c.worksWith.label}>
+      <p className="pp-works-k">{c.worksWith.label}</p>
+      <ul className="pp-works-list">
+        {c.worksWith.items.map((it) => (
+          <li key={it}>{it}</li>
         ))}
       </ul>
     </section>
   );
 }
 
-export function Problem() {
+/* Sheet 1, the problem: the termination letter every high-risk merchant dreads. Its lines type on as
+   the sheet arrives, the verdict is struck through, and Vertlo's note is typed under it. */
+export function Notice() {
+  const n = c.notice;
   return (
-    <section className="vt-bleed lp-bleed">
-      <div className="lp-wrap lp-sec lp-sec--flush">
-        <div className="lp-head lp-head--split">
-          <div className="lp-head-main">
-            <Badge>{c.problem.eyebrow}</Badge>
-            <h2 className="lp-h2">
-              Keep selling when your account{" "}
-              <em className="lp-serif">
-                <RotatingWord words={c.problem.rotating} />
-              </em>
-            </h2>
-          </div>
-          <p className="lp-lede lp-on-dark-muted">{c.problem.blurb}</p>
-        </div>
-        <IndustryCards tone="dark" items={c.problem.items} />
-      </div>
-    </section>
-  );
-}
-
-export function How() {
-  return (
-    <section className="lp-wrap lp-sec" id="how">
-      <div className="lp-head lp-head--center">
-        <Badge>{c.how.eyebrow}</Badge>
-        <h2 className="lp-h2">{rich(c.how.title)}</h2>
-      </div>
-      <HowFlow steps={c.how.steps} />
-    </section>
-  );
-}
-
-export function WhatYouGet() {
-  return (
-    <section className="lp-wrap lp-sec lp-wyg">
-      <div className="lp-head lp-head--center">
-        <Badge>{c.whatYouGet.eyebrow}</Badge>
-        <h2 className="lp-h2">{rich(c.whatYouGet.title)}</h2>
-        <p className="lp-blurb">{c.whatYouGet.blurb}</p>
-      </div>
-      <FeatureGridMotion items={c.whatYouGet.items} />
-    </section>
-  );
-}
-
-export function ForBrands() {
-  return (
-    <section className="vt-bleed lp-bleed lp-velvet">
-      <div className="lp-wrap">
-        <FeaturePanel {...c.forBrands} title={rich(c.forBrands.title)} />
-      </div>
-    </section>
-  );
-}
-
-export function Providers() {
-  return (
-    <section className="lp-wrap lp-sec">
-      <div className="lp-head lp-head--center">
-        <Badge>{c.providers.eyebrow}</Badge>
-        <h2 className="lp-h2">{rich(c.providers.title)}</h2>
-      </div>
-      <div className="lp-pf-d">
-        <ProviderFlow />
-      </div>
-      <div className="lp-pf-m">
-        <ProviderFlow layout="vertical" />
-      </div>
-    </section>
-  );
-}
-
-export function Industries() {
-  return (
-    <section className="lp-wrap lp-sec lp-industries" id="industries">
-      <div className="lp-head lp-head--split lp-head--end">
-        <div className="lp-head-main">
-          <Badge>{c.industries.eyebrow}</Badge>
-          <h2 className="lp-h2">{rich(c.industries.title)}</h2>
-        </div>
-        <div className="lp-hide-m">
+    <Sheet id="notice">
+      <div className="pp-pair">
+        <Letter letter={n} tilt={-1.1} />
+        <div className="pp-pair-copy">
+          <h2 className="lp-h2">{n.title}</h2>
+          <p className="lp-lede">{n.blurb}</p>
           <Button variant="text" href="#book">
-            All industries
+            Book a call
           </Button>
         </div>
       </div>
-      <IndustryCards items={c.industries.items} />
-    </section>
+    </Sheet>
   );
 }
 
-export function Testimonials() {
+/* Sheet 2, how it works: the scroll-scrubbed flow (HowFlow), then the day it matters written up as a
+   statement's line items. */
+export function Statement() {
+  const p = c.portal;
+  const s = c.statement;
   return (
-    <section className="lp-band lp-band--dots" id="reviews">
-      <div className="lp-wrap lp-sec">
-        <div className="lp-head">
-          <Badge>{c.testimonials.eyebrow}</Badge>
-          <h2 className="lp-h2">{rich(c.testimonials.title)}</h2>
-        </div>
-        <MerchantStories items={c.testimonials.items} />
+    <Sheet id="statement" anchor="how">
+      <div className="pp-sheet-head">
+        <h2 className="lp-h2">{c.how.title}</h2>
+        <dl className="pp-ledger-meta">
+          <div>
+            <dt>Account</dt>
+            <dd>{p.merchant}</dd>
+          </div>
+          <div>
+            <dt>Accounts</dt>
+            <dd>
+              {p.routing.length} MIDs, {p.routing.filter((r) => r.state !== "paused").length} live
+            </dd>
+          </div>
+          <div>
+            <dt>Period</dt>
+            <dd>
+              {p.period.from} to {p.period.to}
+            </dd>
+          </div>
+        </dl>
       </div>
-    </section>
-  );
-}
-
-export function FAQSection() {
-  return (
-    <section className="lp-wrap lp-sec">
-      <FAQ title={rich(c.faq.title)} blurb={c.faq.blurb} items={c.faq.items} ctaHref="#book" />
-    </section>
-  );
-}
-
-/* The closing call: centred on white, rolling hills under a dot screen along the bottom. */
-export function FinalCTA() {
-  return (
-    <section className="lp-cta" id="book">
-      <div className="lp-wrap lp-cta-in">
-        <Badge>{c.cta.eyebrow}</Badge>
-        <h2 className="lp-h2">{rich(c.cta.title)}</h2>
-        <p className="lp-blurb">{c.cta.blurb}</p>
-        <Button size="lg" href="#book">
-          Book a call
-        </Button>
-        <ul className="lp-cta-points">
-          {c.cta.points.map((p) => (
-            <li key={p}>
-              <Diamond size={7} />
-              {p}
-            </li>
+      <HowFlow steps={c.how.steps} />
+      <table className="pp-ledger">
+        <caption>
+          <span className="pp-ledger-t">{s.title}</span>
+          <span className="pp-illus">{s.label}</span>
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Time</th>
+            <th scope="col">Entry</th>
+            <th scope="col" className="pp-ledger-amt">
+              Result
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {s.entries.map((e) => (
+            <tr key={e.time} data-tone={e.tone}>
+              <td className="pp-ledger-time">{e.time}</td>
+              <td>
+                <b>{e.entry}</b>
+                <span>{e.detail}</span>
+              </td>
+              <td className="pp-ledger-amt">{e.amount}</td>
+            </tr>
           ))}
-        </ul>
+        </tbody>
+      </table>
+    </Sheet>
+  );
+}
+
+/* Sheet 3, underwriting: the letter that answers the termination, a new account approved. */
+export function Approval() {
+  const a = c.approval;
+  return (
+    <Sheet id="approval" anchor="underwriting">
+      <div className="pp-pair pp-pair--flip">
+        <div className="pp-pair-copy">
+          <h2 className="lp-h2">{a.title}</h2>
+          <p className="lp-lede">{a.blurb}</p>
+          <Button variant="text" href="#book">
+            Book a call
+          </Button>
+        </div>
+        <Letter letter={a} tilt={0.9} />
       </div>
-      <div className="lp-cta-hills" aria-hidden="true" />
-    </section>
+    </Sheet>
+  );
+}
+
+/* Sheet 4, who it's for: a register, one ruled row per industry with its dot-matrix drawing. The
+   merchant stories join it once real quotes are approved (testimonials.ready). */
+export function Register() {
+  return (
+    <Sheet id="register" anchor="industries">
+      <div className="pp-sheet-head">
+        <h2 className="lp-h2">{c.industries.title}</h2>
+      </div>
+      <IndustryCards items={c.industries.items} className="pp-register" />
+      {c.testimonials.ready ? (
+        <div className="pp-register-stories" id="reviews">
+          <h3 className="pp-sub">{c.testimonials.title}</h3>
+          <MerchantStories items={c.testimonials.items} />
+        </div>
+      ) : null}
+    </Sheet>
+  );
+}
+
+/* Sheet 5, questions: kept short and plain. */
+export function Questions() {
+  return (
+    <Sheet id="questions" anchor="questions">
+      <FAQ title={rich(c.faq.title)} blurb={c.faq.blurb} items={c.faq.items} ctaHref="#book" />
+    </Sheet>
+  );
+}
+
+/* Sheet 6, the closing call: a cheque made out to the merchant's checkout, laid last on the stack.
+   Guilloché ground, serial, a pay line, a memo, and the one CTA on the signature line (its signature
+   writes itself in as the cheque lands). */
+export function FinalCTA() {
+  const { cheque } = c.cta;
+  return (
+    <Sheet id="cheque" anchor="book" bare>
+      <div className="pp-cheque">
+        <div className="pp-cheque-top">
+          <span className="pp-cheque-issuer">
+            <Diamond size={11} />
+            {cheque.issuer}
+          </span>
+          <span className="pp-cheque-no">
+            Nº {cheque.no}
+            <span>{cheque.date}</span>
+          </span>
+        </div>
+        <div className="pp-cheque-body">
+          <h2 className="lp-h2">{rich(c.cta.title)}</h2>
+          <p className="lp-blurb">{c.cta.blurb}</p>
+        </div>
+        <div className="pp-cheque-pay">
+          <span className="pp-cheque-k">{cheque.payLabel}</span>
+          <span className="pp-cheque-line">{cheque.payee}</span>
+          <span className="pp-cheque-amount">{cheque.amount}</span>
+        </div>
+        <div className="pp-cheque-foot">
+          <p className="pp-cheque-memo">
+            <span className="pp-cheque-k">Memo</span>
+            {c.cta.points.join(" · ")}
+          </p>
+          <div className="pp-cheque-sign">
+            <Button size="lg" href="#book">
+              Book a call
+            </Button>
+            {/* the signature sits on its own line, under the button, where a cheque is signed */}
+            <span className="pp-cheque-sigline" aria-hidden="true">
+              <svg className="pp-signature" viewBox="0 0 260 64">
+                <path d="M8 44c10-2 16-16 22-26 4-7 8-6 6 2-3 12-9 26-6 28 4 2 10-14 15-20 3-4 5-2 4 2-1 6-3 12 1 12 5 0 9-10 13-12 3-1 3 3 2 6-2 6 1 8 6 4 6-5 9-16 14-18 3-1 2 4 0 8-3 7-4 13 1 12 6-2 10-12 16-14 4-1 2 6 1 9-1 5 3 6 7 2 5-5 7-12 12-13 4 0 1 7 4 8 6 1 14-8 22-10 10-2 30 0 44-4" />
+              </svg>
+            </span>
+            <span className="pp-cheque-k">{cheque.signLabel}</span>
+          </div>
+        </div>
+        <p className="pp-cheque-micr" aria-hidden="true">
+          {cheque.micr}
+        </p>
+      </div>
+    </Sheet>
   );
 }
 
 export function SiteFooter() {
   return (
     <div className="lp-wrap lp-footer" id="company">
-      <Footer tagline={c.footer.tagline} columns={c.footer.columns} />
+      <Footer tagline={c.footer.tagline} columns={c.footer.columns} legal={[]} />
     </div>
   );
 }
