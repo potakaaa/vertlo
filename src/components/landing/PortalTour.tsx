@@ -125,8 +125,8 @@ export function PortalTour({ data, clipH = 640, clipHMobile = PORTAL_H }: Props)
         const tl = gsap.timeline({
           defaults: { ease: "sine.inOut" },
           scrollTrigger: phone
-            ? { trigger: root, start: "center center+=24", end: "+=1100", pin: root.parentElement, scrub: 1, invalidateOnRefresh: true, refreshPriority: 1 }
-            : { trigger: section, start: "top top", end: "+=2800", pin: true, scrub: 1, invalidateOnRefresh: true, refreshPriority: 1 },
+            ? { trigger: root, start: "center center+=24", end: "+=1500", pin: root.parentElement, scrub: 1, invalidateOnRefresh: true, refreshPriority: 1 }
+            : { trigger: section, start: "top top", end: "+=3600", pin: true, scrub: 1, invalidateOnRefresh: true, refreshPriority: 1 },
         });
         if (pops) tl.to(pops, { autoAlpha: 0, duration: 0.3 }, 0.1);
         /* the zoom-in takes the first 1.6 of the timeline on desktop; the camera tour follows */

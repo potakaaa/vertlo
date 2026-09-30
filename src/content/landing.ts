@@ -122,9 +122,10 @@ export const portal: PortalData = {
     { tone: "amber", title: "MID US-04 nearing monthly cap", meta: "72% utilised · projected cap Jul 26", action: "Review", on: true },
     { tone: "amber", title: "Compliance document expiring", meta: "Insurance certificate · Jul 20", action: "Upload" },
   ],
-  // Two stops, kept short so the problem arrives soon after the hero.
+  // Three stops, kept short so the problem arrives soon after the hero.
   tour: [
     { region: "kpis", caption: "Every account's numbers on one screen" },
+    { region: "volume", caption: "Jul 10: US-01 paused, approvals held" },
     { region: "attention", caption: "What needs you, sorted by what it costs" },
   ],
   pops: [
