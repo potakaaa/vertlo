@@ -1,0 +1,41 @@
+/*
+ * Tailwind v4, theme + utilities only (no preflight): the Vertlo component CSS was designed and
+ * tested without a reset, so we keep the browser defaults it expects. Use Tailwind utilities for
+ * new page-level layout; use the vt-* classes / <Components /> for everything in the design system.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@import "../styles/tokens.css";
+@import "../styles/vertlo.css";
+@import "./landing.css";
+
+/* Tokens exposed to Tailwind (bg-ink, text-green-deep, rounded-panel, md:… = phones vs. up) */
+@theme inline {
+  --breakpoint-md: 45.0625rem; /* 721px: the design system's phone breakpoint is max-width 720px */
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-surface: var(--surface);
+  --color-line: var(--border);
+  --color-stealth: var(--stealth);
+  --color-stealth-2: var(--stealth-2);
+  --color-on-stealth: var(--on-stealth);
+  --color-green: var(--green);
+  --color-green-deep: var(--green-deep);
+  --color-green-soft: var(--green-soft);
+  --color-mint: var(--mint);
+  --radius-panel: var(--radius-panel);
+  --radius-card: var(--radius-card);
+}
+
+/* Fonts come from next/font (see layout.tsx); tokens.css names them by family, so point the tokens at the loaded fonts. */
+:root {
+  --font-display: var(--font-inter-tight), "Inter Tight", "Archivo", system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
+}
+
+html { scroll-behavior: auto; }
+a { color: var(--green-deep); }
+a:hover { color: var(--ink); }
