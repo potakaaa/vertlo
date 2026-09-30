@@ -4,7 +4,7 @@ import { HowFlow } from "@/components/landing/HowFlow";
 import { MerchantStories } from "@/components/landing/MerchantStories";
 import { PortalTour } from "@/components/landing/PortalTour";
 import { rich } from "@/components/landing/Rich";
-import { InkWords, Letter, Microprint, Sheet, Stamp } from "@/components/landing/Paper";
+import { Letter, Microprint, Sheet } from "@/components/landing/Paper";
 
 /* Concept A, security paper. The page is a desk (the misty green ground) with papers laid on it:
    a banknote with the headline, the laptop running the portal, then a stack of documents, one per
@@ -85,9 +85,7 @@ export function Notice() {
       <div className="pp-pair">
         <Letter letter={n} tilt={-1.1} />
         <div className="pp-pair-copy">
-          <h2 className="lp-h2 pp-ink-words">
-            <InkWords text={n.title} />
-          </h2>
+          <h2 className="lp-h2">{n.title}</h2>
           <p className="lp-lede">{n.blurb}</p>
           <Button variant="text" href="#book">
             Book a call
@@ -98,14 +96,13 @@ export function Notice() {
   );
 }
 
-/* Sheet 2, how it works: the one document printed on dark paper. The scroll-scrubbed flow (HowFlow),
-   then the day it matters written up as a statement's line items, each stamped with its status as it
-   lands. */
+/* Sheet 2, how it works: the scroll-scrubbed flow (HowFlow), then the day it matters written up as a
+   statement's line items. */
 export function Statement() {
   const p = c.portal;
   const s = c.statement;
   return (
-    <Sheet id="statement" anchor="how" tone="dark">
+    <Sheet id="statement" anchor="how">
       <div className="pp-sheet-head">
         <h2 className="lp-h2">{c.how.title}</h2>
         <dl className="pp-ledger-meta">
@@ -127,7 +124,7 @@ export function Statement() {
           </div>
         </dl>
       </div>
-      <HowFlow steps={c.how.steps} tone="dark" />
+      <HowFlow steps={c.how.steps} />
       <table className="pp-ledger">
         <caption>
           <span className="pp-ledger-t">{s.title}</span>
@@ -137,9 +134,6 @@ export function Statement() {
           <tr>
             <th scope="col">Time</th>
             <th scope="col">Entry</th>
-            <th scope="col" className="pp-ledger-status">
-              Status
-            </th>
             <th scope="col" className="pp-ledger-amt">
               Result
             </th>
@@ -152,11 +146,6 @@ export function Statement() {
               <td>
                 <b>{e.entry}</b>
                 <span>{e.detail}</span>
-              </td>
-              <td className="pp-ledger-status">
-                <Stamp tone="mint" className="pp-ledger-stamp">
-                  {e.status}
-                </Stamp>
               </td>
               <td className="pp-ledger-amt">{e.amount}</td>
             </tr>
@@ -174,9 +163,7 @@ export function Approval() {
     <Sheet id="approval" anchor="underwriting">
       <div className="pp-pair pp-pair--flip">
         <div className="pp-pair-copy">
-          <h2 className="lp-h2 pp-ink-words">
-            <InkWords text={a.title} />
-          </h2>
+          <h2 className="lp-h2">{a.title}</h2>
           <p className="lp-lede">{a.blurb}</p>
           <Button variant="text" href="#book">
             Book a call

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, IBM_Plex_Mono } from "next/font/google";
+import "lenis/dist/lenis.css";
 import "./globals.css";
 
 /* One family for all text: Archivo's width axis runs from the expanded capitals of the headlines

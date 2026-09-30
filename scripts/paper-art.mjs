@@ -1,7 +1,7 @@
 /*
  * Generates the security-paper artwork in public/images/paper: guilloché patterns like the ones printed
  * on banknotes and cheques, plus the ink grain for rubber stamps. Deterministic, so re-running it gives
- * the same files. Colour is baked in (banknote green, or mint for dark paper) because CSS can't recolour an SVG used as a
+ * the same files. Colour is baked in (banknote green) because CSS can't recolour an SVG used as a
  * background.
  *
  *   node scripts/paper-art.mjs
@@ -18,8 +18,6 @@ mkdirSync(OUT, { recursive: true });
 
 /* banknote green: the brand's forest lifted toward the misty green, so the engraving reads as green ink */
 const INK = "#2f7a52";
-/* mint, for the one document printed on dark paper (the statement) */
-const MINT = "#a8e6bf";
 const TAU = Math.PI * 2;
 const f = (n) => +n.toFixed(1);
 
@@ -64,7 +62,7 @@ function rosette(color, name) {
  * A horizontal border strip that tiles along x: interlaced sine waves slid across one period.
  * The base curve spans three periods so every slid copy still covers the tile.
  */
-function band(color, name, vertical = true) {
+function band(color, name) {
   const W = 96, H = 28, mid = H / 2;
   const wave = (fn) => {
     let d = "";
@@ -81,7 +79,6 @@ function band(color, name, vertical = true) {
     `<path d="M0 .5H${W}M0 ${H - 0.5}H${W}" stroke-width=".8"/></g>`;
   writeFileSync(join(OUT, name), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${art}</svg>`);
   // the same strip standing up, for the left and right edges of a frame
-  if (!vertical) return;
   const vname = name.replace(".svg", "-v.svg");
   writeFileSync(join(OUT, vname), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${H} ${W}" width="${H}" height="${W}"><g transform="translate(${H} 0) rotate(90)">${art}</g></svg>`);
 }
@@ -138,7 +135,6 @@ function grain(name) {
 
 rosette(INK, "rosette.svg");
 band(INK, "band.svg");
-band(MINT, "band-mint.svg", false);
 field(INK, "field.svg");
 grain("grain.svg");
 fibre("fibre.svg");

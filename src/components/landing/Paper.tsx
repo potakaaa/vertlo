@@ -25,27 +25,15 @@ const pad = (n: number) => String(n).padStart(2, "0");
  * measures the sheet so a tall one sticks by its bottom edge); the tilt and paper layers inside take
  * the scroll motion. Printed along the top: the document's title, the date it belongs to in the story,
  * and its place in the stack. `bare` drops the paper and header for a sheet that is its own document
- * (the cheque). `tone="dark"` prints it on dark paper (vt-bleed also gives the header its dark tone).
+ * (the cheque).
  */
-export function Sheet({
-  id,
-  anchor,
-  bare,
-  tone,
-  children,
-}: {
-  id: SheetId;
-  anchor?: string;
-  bare?: boolean;
-  tone?: "dark";
-  children: ReactNode;
-}) {
+export function Sheet({ id, anchor, bare, children }: { id: SheetId; anchor?: string; bare?: boolean; children: ReactNode }) {
   const i = sheets.findIndex((s) => s.id === id);
   const s = sheets[i];
   return (
     <section
       id={anchor}
-      className={`pp-sheet pp-sheet--${id}${bare ? " pp-sheet--bare" : ""}${tone === "dark" ? " pp-sheet--dark vt-bleed" : ""}`}
+      className={`pp-sheet pp-sheet--${id}${bare ? " pp-sheet--bare" : ""}`}
       data-sheet={id}
       data-title={s.doc}
       data-n={i + 1}
@@ -69,40 +57,6 @@ export function Sheet({
         </div>
       </div>
     </section>
-  );
-}
-
-/**
- * A heading that inks in word by word as it scrolls into view (PaperMotion drives the colour). The
- * words are plain text in the DOM, so it reads normally to screen readers and without scripts.
- */
-export function InkWords({ text }: { text: string }) {
-  const words = text.split(" ");
-  return (
-    <>
-      {words.map((w, i) => (
-        <span key={i} className="pp-word">
-          {w}
-          {i < words.length - 1 ? " " : ""}
-        </span>
-      ))}
-    </>
-  );
-}
-
-/**
- * The ledger thread: a dashed rule down the desk's left margin, through every document in the stack.
- * It fills in green as you read, and each document's diamond lights as it lands (PaperMotion places
- * the nodes and moves the fill). Decorative; wide screens only.
- */
-export function Thread() {
-  return (
-    <div className="pp-thread" aria-hidden="true">
-      <i className="pp-thread-fill" />
-      {sheets.map((s) => (
-        <span key={s.id} className="pp-thread-node" data-sheet={s.id} />
-      ))}
-    </div>
   );
 }
 

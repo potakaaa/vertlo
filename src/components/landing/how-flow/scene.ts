@@ -191,12 +191,8 @@ function lit(x: number, y: number, [x0, y0, x1, y1]: Rect) {
 }
 
 const INK = "11,20,16", GREEN = "22,196,90", RED = "229,72,77";
-/* on dark paper the "ink" is the paper's light tone, and the text greens and reds lift to stay readable */
-const INK_DARK = "242,246,243";
-const PALETTE = {
-  light: { ink: INK, cell: { w: INK, g: GREEN, r: RED } as Record<Col, string>, text: { w: INK, g: "10,122,59", r: "196,48,54" } as Record<Col, string> },
-  dark: { ink: INK_DARK, cell: { w: INK_DARK, g: GREEN, r: RED } as Record<Col, string>, text: { w: INK_DARK, g: "124,240,168", r: "240,144,127" } as Record<Col, string> },
-};
+const CELL: Record<Col, string> = { w: INK, g: GREEN, r: RED };
+const TEXT: Record<Col, string> = { w: INK, g: "10,122,59", r: "196,48,54" };
 
 /** Focus position for scroll progress p: 0 → step 1 … 2 → step 3. Reduced motion parks p at each
     step's end, so the step reads straight off it; otherwise the focus moves around step boundaries. */
@@ -208,8 +204,7 @@ export function monoFont() {
 }
 
 /** Paint the scene. ctx must already map scene units to canvas pixels; sc is that scale (for label size). */
-export function paintScene(ctx: CanvasRenderingContext2D, o: { p: number; f: number; tk: number; live: boolean; sc: number; font: string; tone?: "light" | "dark" }) {
-  const { ink, cell: CELL, text: TEXT } = PALETTE[o.tone ?? "light"];
+export function paintScene(ctx: CanvasRenderingContext2D, o: { p: number; f: number; tk: number; live: boolean; sc: number; font: string }) {
   const cv = ctx.canvas;
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); ctx.restore();
   const spot = focusAt(o.f);
@@ -217,7 +212,7 @@ export function paintScene(ctx: CanvasRenderingContext2D, o: { p: number; f: num
     const ex = (x - C / 2) / (C / 2), ey = (y - R / 2) / (R / 2);
     const v = Math.max(0, 1 - Math.hypot(ex * 0.8, ey) * 0.85);
     if (v <= 0) continue;
-    ctx.fillStyle = `rgba(${ink},${(0.09 * v * lit(x, y, spot)).toFixed(3)})`;
+    ctx.fillStyle = `rgba(${INK},${(0.09 * v * lit(x, y, spot)).toFixed(3)})`;
     ctx.fillRect(x * S + 3, y * S + 3, 2, 2);
   }
   const { P, T } = scene(o.p, o.tk, o.live);
