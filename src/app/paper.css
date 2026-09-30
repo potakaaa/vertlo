@@ -255,8 +255,8 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .pp-figures > div + div { border-left: 1px solid var(--rule-soft); }
 /* the figure, ruled off with a total's double line */
 .pp-figures dd {
-  margin: 0; padding-bottom: 10px; border-bottom: 3px double var(--accent-ink);
-  font: 500 clamp(40px, 4.4vw, 64px)/1 var(--font-display); font-variation-settings: "wdth" 125; letter-spacing: -.01em;
+  margin: 0; padding-bottom: 8px; border-bottom: 3px double var(--accent-ink);
+  font: 500 clamp(28px, 2.6vw, 38px)/1 var(--font-display); font-variation-settings: "wdth" 125; letter-spacing: -.01em;
   font-variant-numeric: tabular-nums; color: var(--ink);
 }
 .pp-figures dt { max-width: 26ch; font-size: clamp(14px, 1.1vw, 16px); line-height: 1.45; color: var(--ink-muted); text-wrap: balance; }
