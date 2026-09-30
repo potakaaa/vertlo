@@ -1302,6 +1302,7 @@ function Footer(p) {
       h("div", null, h(Logo, null), h("p", null, p.tagline)),
       cols.map(function (c, i) { return h("div", { key: i }, /* site: h3, so the page's heading levels don't skip */ h("h3", null, c.title), h("ul", null, c.links.map(function (l) { var it = typeof l === "string" ? { label: l, href: "#" } : l; return h("li", { key: it.label }, h("a", { href: it.href }, it.label)); }))); })),
     p.wordmark === false ? null : h("div", { className: "vt-footer-mark", "aria-hidden": true }, "VERTLO"),
+    /* site: the issuer's small print, above the legal line */ p.fine || null,
     h("div", { className: "vt-footer-legal" }, h("span", null, "© " + (p.year || new Date().getFullYear()) + " Vertlo"), h("span", null, (p.legal || ["Privacy", "Terms"]).map(function (l) { return h("a", { key: l, href: "#" }, l); }))));
 }
 

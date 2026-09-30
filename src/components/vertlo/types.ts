@@ -33,7 +33,7 @@ export interface LogoStripProps { heading?: string; logos: (string | { src: stri
 export interface TestimonialProps { quote: string; name: string; business: string; metric?: string }
 export interface FAQProps { /* site: rich headings */ title?: Node; blurb?: string; cta?: string; ctaHref?: string; items: { q: string; a: string }[]; defaultOpen?: number }
 export interface CTABandProps { /* site: rich headings */ title: Node; cta?: string; ctaHref?: string; points?: string[]; core?: boolean }
-export interface FooterProps { tagline: string; columns: { title: string; links: (string | LinkItem)[] }[]; legal?: string[]; year?: number; wordmark?: boolean }
+export interface FooterProps { tagline: string; columns: { title: string; links: (string | LinkItem)[] }[]; legal?: string[]; year?: number; wordmark?: boolean; /* site: */ fine?: React.ReactNode }
 export interface PortalProps { merchant?: string; clipH?: number; fit?: boolean }
 export interface PortalStageProps { clipH?: number; clipHMobile?: number; alerts?: boolean; label?: boolean; merchant?: string; className?: string }
 export type CrmSliceKind = 'mids'|'routing'|'dispute'|'underwriting'|'providers'|'kpis'|'health'|'attention'|'volume'|'subscriptions'|'stores';

@@ -269,7 +269,21 @@ export function FinalCTA() {
 export function SiteFooter() {
   return (
     <div className="lp-wrap lp-footer" id="company">
-      <Footer tagline={c.footer.tagline} columns={c.footer.columns} legal={[]} />
+      <Footer
+        tagline={c.footer.tagline}
+        columns={c.footer.columns}
+        legal={["Privacy", "Terms"]}
+        fine={
+          <dl className="pp-issuer">
+            {c.footer.issuer.map((it) => (
+              <div key={it.k}>
+                <dt>{it.k}</dt>
+                <dd>{it.v}</dd>
+              </div>
+            ))}
+          </dl>
+        }
+      />
     </div>
   );
 }

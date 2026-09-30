@@ -275,6 +275,16 @@ export const cta = {
 
 export const footer = {
   tagline: "The payment CRM for high-risk ecommerce.",
+  /** The issuer's small print over the legal line.
+   *  PLACEHOLDER: invented for the preview. Replace every line with the client's real details before launch. */
+  issuer: [
+    { k: "Company", v: "Vertlo Technologies Ltd., registered in England and Wales." },
+    {
+      k: "Accounts",
+      v: "Vertlo is software, not a bank or a processor. Merchant accounts are held with partner acquirers, each regulated in its own market.",
+    },
+    { k: "Card data", v: "PCI DSS Level 1. Card numbers are tokenised by your providers and never stored by Vertlo." },
+  ],
   columns: [
     {
       title: "Product",
