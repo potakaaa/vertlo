@@ -16,7 +16,7 @@
   --rule: rgba(31,59,43,.28);
   --rule-soft: rgba(31,59,43,.14);
   --stamp-red: #9a3a31;                /* a muted, printed red: serials and the struck verdict */
-  --accent-ink: #2d6446;               /* accent words: the brand green, quietened */
+  --accent-ink: #2f7a52;               /* the page's green ink: accent words, stamps, labels, the engravings (4.8:1 on paper) */
   --ink-faint: #66736b;                /* readable small print: 4.6:1 on paper (the old #8a968f was 2.9:1) */
   --border: var(--rule-soft);
   --radius-panel: 8px;
@@ -55,7 +55,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 
 /* ── rubber stamps ─────────────────────────────────── */
 .pp-stamp {
-  --ink-c: var(--forest);
+  --ink-c: var(--accent-ink);
   display: inline-block; vertical-align: middle; transform: rotate(-7deg);
   -webkit-mask: url("/images/paper/grain.svg") 0 0 / 160px 160px; mask: url("/images/paper/grain.svg") 0 0 / 160px 160px;
   -webkit-user-select: none; user-select: none; pointer-events: none;
@@ -137,7 +137,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .pp-hero-bg { position: absolute; inset: calc(var(--hdr) * -1) 0 0; z-index: -1; pointer-events: none; overflow: hidden; }
 .pp-hero-bg::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 62%;
-  background: url("/images/paper/field.svg") center top / 480px auto; opacity: .08;
+  background: url("/images/paper/field.svg") center top / 480px auto; opacity: .14;
   -webkit-mask-image: linear-gradient(transparent, #000 55%); mask-image: linear-gradient(transparent, #000 55%);
 }
 .lp-hero { padding-block: clamp(24px, 2.6vw, 40px) 0; }
@@ -155,7 +155,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 }
 /* the frame: a guilloché strip on all four edges, the engraved field across the ground */
 .pp-note::before {
-  content: ""; position: absolute; inset: 14px; z-index: -1; pointer-events: none; opacity: .13;
+  content: ""; position: absolute; inset: 14px; z-index: -1; pointer-events: none; opacity: .3;
   background:
     url("/images/paper/band.svg") 0 0 / 69px 20px repeat-x,
     url("/images/paper/band.svg") 0 100% / 69px 20px repeat-x,
@@ -163,7 +163,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
     url("/images/paper/band-v.svg") 100% 0 / 20px 69px repeat-y;
 }
 .pp-note::after {
-  content: ""; position: absolute; inset: 36px; z-index: -2; pointer-events: none; opacity: .05;
+  content: ""; position: absolute; inset: 36px; z-index: -2; pointer-events: none; opacity: .1;
   background: url("/images/paper/field.svg") center / 480px auto;
 }
 .pp-note-serial {
@@ -179,7 +179,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
   mask-image: linear-gradient(100deg, #000 var(--ink), transparent calc(var(--ink) + 18%));
 }
 .pp-note-medallion::before, .pp-note-medallion::after { content: ""; position: absolute; border-radius: 50%; }
-.pp-note-medallion::after { inset: 0; background: url("/images/paper/rosette.svg") center / contain no-repeat; opacity: .5; }
+.pp-note-medallion::after { inset: 0; background: url("/images/paper/rosette.svg") center / contain no-repeat; opacity: .8; }
 .pp-note-medallion::before { z-index: 1; inset: 31%; background: var(--paper); box-shadow: 0 0 0 1px var(--rule-soft), 0 0 0 5px var(--paper), 0 0 0 6px var(--rule-soft); }
 .pp-note-medallion svg { position: relative; z-index: 2; }
 .pp-note-copy { min-width: 0; justify-self: stretch; }
@@ -189,7 +189,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .pp-note-copy .lp-hero-sub { margin: clamp(16px, 1.4vw, 22px) 0 0; max-width: 52ch; font-size: clamp(16px, 1.2vw, 18px); text-wrap: pretty; }
 /* the microprint over the headline: the issuer's name, set large enough to read as words */
 .pp-note-micro { margin: 0 0 clamp(16px, 1.6vw, 24px); max-width: 520px; }
-.pp-note-micro .pp-micro { padding-block: 5px; border-block: 1px solid var(--rule-soft); font-size: 9px; letter-spacing: .22em; opacity: .55; }
+.pp-note-micro .pp-micro { padding-block: 5px; border-block: 1px solid var(--rule-soft); font-size: 9px; letter-spacing: .22em; color: var(--accent-ink); opacity: .75; }
 .lp-hero-cta { margin-top: clamp(24px, 2.4vw, 34px); }
 /* the note is laid down by PaperMotion once scripts run (the `js` class, layout.tsx); a short fallback
    shows it anyway, and without scripts it is never hidden */
@@ -225,7 +225,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 
 /* ── works with: the providers, stated plainly between hairlines ── */
 .pp-works { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 12px 32px; padding-block: clamp(56px, 6vw, 96px) clamp(8px, 1.5vw, 24px); }
-.pp-works-k { margin: 0; font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+.pp-works-k { margin: 0; font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); }
 .pp-works-list { display: flex; flex-wrap: wrap; justify-content: center; margin: 0; padding: 0; list-style: none; font: 500 clamp(16px, 1.3vw, 19px)/1.2 var(--font-display); font-variation-settings: "wdth" 112; color: var(--ink); }
 .pp-works-list li { padding: 4px 22px; }
 @media (min-width: 721px) { .pp-works-list li + li { border-left: 1px solid var(--rule-soft); } }
@@ -254,11 +254,11 @@ html[data-measure-flow] .pp-sheet { position: relative; top: auto; }
 
 /* the printed header every document carries: its title, the date it belongs to, its place in the stack */
 .pp-doc {
-  display: flex; justify-content: space-between; align-items: center; gap: 18px;
-  padding-bottom: 14px; margin-bottom: clamp(36px, 4vw, 64px);
-  border-bottom: 1px solid var(--rule-soft);
+  position: relative; display: flex; justify-content: space-between; align-items: center; gap: 18px;
+  padding-bottom: 30px; margin-bottom: clamp(28px, 3.4vw, 56px);
 }
-.pp-doc-title { font: 600 12px/1 var(--font-display); font-variation-settings: "wdth" 125; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; }
+.pp-doc::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 14px; background: url("/images/paper/band.svg") left center / 48px 14px repeat-x; opacity: .55; pointer-events: none; }
+.pp-doc-title { font: 600 12px/1 var(--font-display); font-variation-settings: "wdth" 125; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-ink); white-space: nowrap; }
 .pp-doc-meta { display: flex; gap: 16px; font: 500 11px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; }
 .pp-doc-meta b { font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
 .pp-sheet-head { display: flex; flex-direction: column; gap: 24px; margin-bottom: clamp(32px, 3.6vw, 56px); }
@@ -340,7 +340,7 @@ html[data-measure-flow] .pp-sheet { position: relative; top: auto; }
 .pp-index[data-on] { opacity: 1; transform: translate(0, -50%); }
 .pp-index-stack { display: flex; flex-direction: column; gap: 4px; }
 .pp-index-stack i { width: 10px; height: 14px; border: 1px solid var(--rule); border-radius: 1px; transition: background-color .3s, border-color .3s; }
-.pp-index-stack i[data-on] { background: var(--ink-muted); border-color: var(--ink-muted); }
+.pp-index-stack i[data-on] { background: var(--accent-ink); border-color: var(--accent-ink); }
 
 /* ── sections on paper ─────────────────────────────── */
 .lp-flow { border-top: 0; }
@@ -374,15 +374,15 @@ html[data-measure-flow] .pp-sheet { position: relative; top: auto; }
 /* ground: engraved waves across the sheet, a rosette watermark on the right */
 .pp-cheque::before {
   content: ""; position: absolute; inset: 8px; z-index: -1; pointer-events: none;
-  background: url("/images/paper/field.svg") center / 480px auto; opacity: .05;
+  background: url("/images/paper/field.svg") center / 480px auto; opacity: .09;
 }
 .pp-cheque::after {
   content: ""; position: absolute; z-index: -1; right: -140px; top: 50%; width: 620px; aspect-ratio: 1; translate: 0 -50%; pointer-events: none;
-  background: url("/images/paper/rosette.svg") center / contain no-repeat; opacity: .09;
+  background: url("/images/paper/rosette.svg") center / contain no-repeat; opacity: .16;
 }
 .pp-cheque-top { position: relative; display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; padding-bottom: 36px; border-bottom: 1px solid var(--rule); }
 /* a guilloché border strip printed along the top rule */
-.pp-cheque-top::after { content: ""; position: absolute; left: 0; right: 0; bottom: 5px; height: 20px; background: url("/images/paper/band.svg") 0 0 / 69px 20px repeat-x; opacity: .2; }
+.pp-cheque-top::after { content: ""; position: absolute; left: 0; right: 0; bottom: 5px; height: 20px; background: url("/images/paper/band.svg") 0 0 / 69px 20px repeat-x; opacity: .4; }
 .pp-cheque-issuer { display: inline-flex; align-items: center; gap: 10px; font: 700 14px/1 var(--font-display); font-variation-settings: "wdth" 125; letter-spacing: .06em; text-transform: uppercase; color: var(--forest); }
 .pp-cheque-issuer svg { color: var(--green); }
 .pp-cheque-no { display: grid; gap: 6px; justify-items: end; font: 500 13px/1 var(--font-mono); letter-spacing: .08em; color: var(--stamp-red); font-variant-numeric: tabular-nums; }

@@ -1,7 +1,7 @@
 /*
  * Generates the security-paper artwork in public/images/paper: guilloché patterns like the ones printed
  * on banknotes and cheques, plus the ink grain for rubber stamps. Deterministic, so re-running it gives
- * the same files. Colour is baked in (forest ink) because CSS can't recolour an SVG used as a
+ * the same files. Colour is baked in (banknote green) because CSS can't recolour an SVG used as a
  * background.
  *
  *   node scripts/paper-art.mjs
@@ -16,7 +16,8 @@ import { fileURLToPath } from "node:url";
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "images", "paper");
 mkdirSync(OUT, { recursive: true });
 
-const INK = "#1f3b2b";
+/* banknote green: the brand's forest lifted toward the misty green, so the engraving reads as green ink */
+const INK = "#2f7a52";
 const TAU = Math.PI * 2;
 const f = (n) => +n.toFixed(1);
 
