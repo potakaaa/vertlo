@@ -37,7 +37,9 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .lp-h2, .vt-h2 { font-size: var(--lp-h2); font-weight: 500; line-height: 1.08; letter-spacing: -.015em; text-transform: none; text-wrap: balance; }
 .lp-flow-step h3 { font-size: clamp(22px, 2vw, 28px); font-weight: 500; letter-spacing: -.01em; }
 .vt-ic-title { font-size: clamp(20px, 1.7vw, 24px); font-weight: 500; letter-spacing: -.01em; text-wrap: balance; }
-.vt-faq-q { font-weight: 500; }
+.vt-faq-q { font-weight: 500; transition: color .15s ease-out; }
+.vt-faq-q:hover { color: var(--accent-ink); }
+.vt-faq-q > span { text-wrap: balance; }
 .lp-hero-sub, .lp-blurb, .lp-lede { color: var(--ink-muted); }
 .lp-lede, .lp-blurb, .lp-flow-step p, .vt-ic-body, .vt-faq-a p, .pp-letter-line { text-wrap: pretty; }
 .lp-lede { max-width: 42ch; font-size: clamp(16px, 1.2vw, 18px); }
@@ -76,17 +78,24 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 
 /* ── buttons: forest ink, square-cut ───────────────── */
 .vt-btn { border-radius: 4px; text-transform: none; letter-spacing: 0; font-size: 15px; font-weight: 600; }
-.vt-btn:active { transform: translate(var(--tx), var(--ty)) scale(.96); }
+/* buttons stay put under the cursor (the design system's magnetic pull is off) and press in at .96 */
+.vt-btn { transform: none; }
+.vt-btn:active { transform: scale(.96); }
+/* hover is a quick colour change, not a show: no rolling label, a short arrow swap */
+.vt-btn:hover .vt-roll { transform: none; }
+.vt-btn-ico > span { transition-duration: .25s; }
 .vt-btn--sm { font-size: 14px; }
 .vt-nav-links a, .lp-mmenu a { text-transform: none; letter-spacing: 0; font-size: 15px; }
 .vt-btn--primary { color: #fff; background: var(--forest); border-color: transparent; box-shadow: none; }
 /* buttons are links: keep the label colour past the global a:hover (globals.css) */
 .vt-btn--primary:hover { color: #fff; background: var(--forest-hover); box-shadow: none; }
 .vt-btn--primary .vt-btn-fill { background: radial-gradient(120px circle at var(--mx) var(--my), rgba(255,255,255,.12), transparent 70%); }
-.vt-btn--primary .vt-btn-chip { border-radius: 3px; background: rgba(255,255,255,.12); color: #fff; }
-.vt-btn--ghost { background: transparent; border-color: var(--rule); }
-.vt-btn--ghost .vt-btn-fill { background: var(--forest); }
-.vt-btn--ghost:hover { color: #fff; border-color: var(--forest); box-shadow: none; }
+/* the chip sits 8px inside a 4px-radius button, so a concentric corner is nearly square */
+.vt-btn--primary .vt-btn-chip { border-radius: 1px; background: rgba(255,255,255,.12); color: #fff; }
+.vt-btn--ghost { background: transparent; border-color: var(--rule); transition-property: transform, background-color, border-color, color; transition-duration: .15s; transition-timing-function: ease-out; transition-delay: 0s; }
+.vt-btn--ghost .vt-btn-fill { display: none; }
+.vt-btn--ghost:hover { color: #fff; background: var(--forest); border-color: var(--forest); box-shadow: none; }
+.vt-btn--ghost .vt-btn-ico { transition: color .15s ease-out; }
 .vt-btn--ghost:hover .vt-btn-ico { color: var(--mint); }
 /* every link on this page stays on the page, so its arrow points along the line, not out of it */
 .vt-btn-ico svg { rotate: 45deg; }
@@ -94,6 +103,8 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .vt-btn:hover .vt-btn-ico-a { transform: translateX(120%); }
 .vt-btn--chip .vt-btn-ico-b { transform: translateX(-150%); }
 .vt-btn--chip:hover .vt-btn-ico-a { transform: translateX(150%); }
+/* inline text links ("Book a call" after the letters): a 44px hit area without moving the layout */
+.vt-btn--text { padding-block: 12px; margin-block: -8px; }
 /* the FAQ questions are `all: unset` buttons, which drops the global focus ring: put it back */
 .vt-faq-q:focus-visible { outline: 2px solid var(--green-deep); outline-offset: 4px; border-radius: 2px; }
 
@@ -112,6 +123,8 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
   --glass-hover: var(--green-deep);
 }
 .lp-header[data-scrolled] { --glass-bg: rgba(238,241,238,.96); --glass-drop: 0 10px 24px -18px rgba(11,20,16,.3); }
+.lp-header { --compact: 1; }
+.lp-header .vt-nav-links a { display: inline-block; padding-block: 13px; margin-block: -13px; }
 .lp-header .vt-nav, .lp-mnav, .lp-mmenu { border-radius: 6px; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 .lp-header .vt-nav-links { box-shadow: none; }
 .lp-header .vt-nav-links::before { border-radius: 3px; box-shadow: none; }
@@ -262,8 +275,8 @@ html[data-measure-flow] .pp-sheet { position: relative; top: auto; }
 /* the typed letter */
 .pp-letter {
   position: relative; margin: 0 0 24px; padding: clamp(22px, 2.4vw, 34px) clamp(20px, 2.6vw, 36px);
-  background: #fcfdfb; border: 1px solid var(--rule-soft); transform: rotate(var(--tilt, -1deg));
-  box-shadow: 0 1px 1px rgba(20,40,28,.05), 0 22px 36px -26px rgba(20,40,28,.4);
+  background: #fcfdfb; transform: rotate(var(--tilt, -1deg));
+  box-shadow: 0 0 0 1px rgba(31,59,43,.12), 0 1px 1px rgba(20,40,28,.05), 0 22px 36px -26px rgba(20,40,28,.4);
   font: 400 clamp(13px, 1vw, 14.5px)/1.7 var(--font-mono); color: var(--ink);
 }
 .pp-letter-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--rule-soft); font-size: 11px; line-height: 1.5; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
