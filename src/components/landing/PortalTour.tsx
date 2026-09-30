@@ -79,7 +79,7 @@ export function PortalTour({ data, clipH = 640, clipHMobile = PORTAL_H }: Props)
         root.setAttribute("data-tour", "");
         const caps = [...root.querySelectorAll<HTMLElement>(".vt-stage-cap")];
         const pops = root.querySelector(".vt-stage-pops");
-        const copy = section.querySelector<HTMLElement>(".lp-hero, [data-tour-copy]");
+        const copy = section.querySelector<HTMLElement>("[data-tour-copy]");
         const base = root.querySelector<HTMLElement>(".lp-laptop-base");
 
         /* desktop zoom-in: scale and move the whole laptop (origin top-left) so the screen sits

@@ -5,7 +5,7 @@
  * sections, status in signal green and red (amber only for "watch"), a boarding pass for the call.
  * Type is transport signage: Barlow Semi Condensed for headlines, signs and flaps, Barlow for body,
  * JetBrains Mono for codes and column labels. Square-cut corners and hairlines, no glass, no glow.
- * Pieces are in components/landing/Board.tsx.
+ * Pieces are in components/landing/board/ (the flap engine, signage, the hero board, the pass) and Day.tsx.
  */
 :root {
   --mist: #eef1ee;
@@ -30,7 +30,7 @@
   --lp-h1: clamp(44px, 6vw, 88px);
   --lp-h2: clamp(32px, 3.4vw, 50px);
 }
-body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(--font-sans); }
+body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 /* ── type: signage cut for headlines, same family for body ── */
 .lp-h1 { font: 600 var(--lp-h1)/.94 var(--font-display); letter-spacing: -.012em; text-transform: none; text-wrap: balance; }
@@ -38,7 +38,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .vt-fg-title, .vt-ic-title, .vt-pc-title, .vt-fp-label, .lp-flow-step h3, .lpo-panel-h { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
 .vt-ic-title { font-size: 28px; }
 .vt-faq-q { font: 500 21px/1.25 var(--font-display); }
-.lp-hero-sub, .lp-blurb, .lp-lede { color: var(--ink-muted); }
+.lp-hero-sub, .lp-blurb, .lp-lede { color: var(--ink-muted); text-wrap: pretty; }
 .vt-bleed .lp-lede { color: var(--on-stealth-muted); }
 /* accent words: the same face in the brand green, not a second font */
 .bd-accent { font-style: normal; color: var(--green-deep); }
@@ -48,6 +48,8 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 
 /* ── buttons: forest, square-cut ───────────────────── */
 .vt-btn { border-radius: 3px; font-family: var(--font-display); font-size: 17px; font-weight: 600; letter-spacing: .01em; text-transform: none; }
+/* press: the design system's 0.97 is too faint to feel; 0.96 */
+.vt-btn:active { transform: translate(var(--tx), var(--ty)) scale(.96); }
 .vt-btn--sm { font-size: 15px; }
 .vt-nav-links a, .lp-mmenu a { font: 600 15px/1 var(--font-display); letter-spacing: .08em; text-transform: uppercase; }
 .vt-btn--primary { color: #fff; background: var(--forest); border-color: transparent; box-shadow: none; }
@@ -97,7 +99,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 
 /* ── hero: the headline over the board ─────────────── */
 .bd-hero { position: relative; }
-.bd-hero-in { display: grid; gap: clamp(28px, 3vw, 44px); padding-block: clamp(36px, 4vw, 60px) clamp(24px, 3vw, 40px); }
+.bd-hero-in { --hang: clamp(40px, 4.2vw, 60px); display: grid; gap: var(--hang); padding-block: clamp(36px, 4vw, 60px) clamp(24px, 3vw, 40px); }
 .bd-hero-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); align-items: end; gap: clamp(24px, 4vw, 64px); }
 .bd-hero .lp-h1 { margin: 0; }
 .bd-hero .lp-h1 > span, .bd-hero .lp-h1 > em { display: block; }
@@ -107,10 +109,29 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 
 /* ── the board ─────────────────────────────────────── */
 .bd-board {
+  min-width: 0;
   margin: 0; padding: clamp(14px, 1.5vw, 20px) clamp(14px, 1.8vw, 26px) 0;
   border-radius: 6px; background: var(--board); color: var(--flap-ink);
   box-shadow: inset 0 0 0 1px rgba(238,241,232,.06);
 }
+/* the hero board hangs: a steel bezel round the panel, two rods up to the ceiling */
+.bd-board--hero { position: relative; padding-bottom: 0; box-shadow: inset 0 0 0 1px rgba(238,241,232,.06), 0 0 0 3px #1c2b22, 0 0 0 4px #33443a, 0 28px 40px -28px rgba(15,27,20,.55); }
+.bd-board--hero::before, .bd-board--hero::after {
+  content: ""; position: absolute; bottom: calc(100% + 4px); width: 4px; height: calc(var(--hang, 40px) - 18px); border-radius: 1px;
+  background: linear-gradient(90deg, #7d8581, #e3e7e4 45%, #8d9591);
+}
+.bd-board--hero::before { left: 12%; }
+.bd-board--hero::after { right: 12%; }
+/* the crawl along the board's foot */
+/* contain: the crawl is max-content wide and must not size the board (or the hero grid) */
+.bd-ticker { contain: inline-size; margin: 0 calc(clamp(14px, 1.8vw, 26px) * -1); overflow: hidden; border-top: 1px solid var(--board-rule); border-radius: 0 0 6px 6px; background: #0a130e; }
+.bd-ticker-run { display: flex; width: max-content; animation: bd-crawl 56s linear infinite; animation-play-state: paused; }
+.bd-board[data-live] .bd-ticker-run { animation-play-state: running; }
+.bd-ticker-set { display: flex; }
+.bd-ticker-item { display: inline-flex; align-items: center; gap: 10px; padding: 11px 26px; font: 500 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; color: rgba(238,241,232,.62); }
+.bd-ticker-item b { font-weight: 500; color: var(--flap-ink); font-variant-numeric: tabular-nums; }
+.bd-ticker-item .bd-lamp { width: 7px; height: 7px; }
+@keyframes bd-crawl { to { transform: translateX(-50%); } }
 .bd-board-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--board-rule); }
 .bd-board-title { display: inline-flex; align-items: center; gap: 12px; min-width: 0; font: 600 clamp(18px, 1.6vw, 24px)/1 var(--font-display); letter-spacing: .1em; text-transform: uppercase; }
 .bd-board-title small { font: 400 12px/1 var(--font-mono); letter-spacing: .02em; text-transform: none; color: rgba(238,241,232,.5); }
@@ -136,7 +157,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .bd-row--head .bd-f--share, .bd-row--head .bd-f--approval { justify-self: end; margin-right: 2px; }
 .bd-f { display: flex; gap: 2px; }
 
-/* a split-flap unit: two static halves and two leaves on a hinge across the middle (Board.tsx turns them) */
+/* a split-flap unit: two static halves and two leaves on a hinge across the middle (board/flaps.ts turns them) */
 .bd-u {
   position: relative; flex: none; width: var(--u); height: var(--uh); perspective: calc(var(--uh) * 5);
   font: 600 calc(var(--u) * 1.04)/var(--uh) var(--font-display); text-align: center; color: var(--flap-ink);
@@ -150,9 +171,9 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .bd-leaf { z-index: 1; }
 .bd-leaf--fall { transform: rotateX(-90deg); }
 .bd-leaf--land { transform: rotateX(90deg); }
-.bd-u[data-tone="ok"] { color: var(--sig-ok); }
-.bd-u[data-tone="bad"] { color: var(--sig-bad); }
-.bd-u[data-tone="warn"] { color: var(--sig-warn); }
+.bd-u[data-tone="ok"], [data-tone="ok"] > .bd-u { color: var(--sig-ok); }
+.bd-u[data-tone="bad"], [data-tone="bad"] > .bd-u { color: var(--sig-bad); }
+.bd-u[data-tone="warn"], [data-tone="warn"] > .bd-u { color: var(--sig-warn); }
 
 /* the lamp: the account's own state */
 .bd-row > .bd-lamp { grid-area: lamp; }
@@ -196,7 +217,9 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
   font: 600 16px/1 var(--font-display); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
 }
 .bd-sign-gate { display: inline-flex; align-items: center; gap: 7px; align-self: stretch; padding: 0 14px; border-right: 1px solid rgba(238,241,232,.16); font-size: 20px; letter-spacing: .02em; color: var(--sig-ok); font-variant-numeric: tabular-nums; }
-.bd-sign-arrow { flex: none; width: 20px; height: 20px; margin: 0 10px 0 14px; }
+.bd-sign-picto { flex: none; width: 20px; height: 20px; margin: 0 10px 0 14px; }
+.bd-sign-arrow { flex: none; width: 18px; height: 18px; margin-left: 12px; }
+.bd-sign-plate > .bd-sign-gate + .bd-sign-label { margin-left: 14px; }
 .vt-bleed .bd-sign-plate { background: var(--flap-ink); color: var(--board); }
 .vt-bleed .bd-sign-gate { border-right-color: rgba(15,27,20,.16); color: var(--green-deep); }
 .vt-bleed .bd-sign-rule { background: rgba(238,241,232,.2); }
@@ -310,9 +333,20 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .bd-pass-arrow { flex: none; width: clamp(24px, 2.4vw, 34px); height: clamp(24px, 2.4vw, 34px); margin-bottom: .1em; color: var(--forest); }
 .bd-pass-fields { margin: 0; display: grid; grid-template-columns: repeat(6, auto); justify-content: space-between; gap: 20px 28px; padding-block: clamp(18px, 2vw, 24px); border-block: 1px solid var(--rule-soft); }
 .bd-pass-foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px 32px; }
-.bd-pass-incl { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 16px; color: var(--ink-muted); }
-.bd-pass-incl span { margin-right: 4px; font: 500 10.5px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
-.bd-pass-incl i { width: 5px; height: 5px; background: var(--sig-ok); transform: rotate(45deg); }
+.bd-pass-incl { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 18px; }
+.bd-pass-incl > span { font: 500 10.5px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+.bd-pass-incl ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.bd-pass-incl li { display: inline-flex; align-items: center; gap: 8px; font-size: 16px; color: var(--ink-muted); }
+.bd-pass-incl li::before { content: ""; width: 5px; height: 5px; background: var(--sig-ok); transform: rotate(45deg); }
+/* the kiosk the pass is printed from: a slot with a lamp; the pass feeds out below it (BoardingPass.tsx) */
+.bd-kiosk-slot {
+  position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; height: 32px; margin: 0 -14px; padding: 0 16px 6px;
+  border-radius: 5px; background: var(--board); box-shadow: inset 0 1px 0 rgba(238,241,232,.08);
+  font: 500 10.5px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: rgba(238,241,232,.55);
+}
+.bd-kiosk-slot::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: 5px; height: 3px; border-radius: 2px; background: #030604; }
+.bd-kiosk-slot .bd-lamp { width: 7px; height: 7px; }
+.bd-kiosk-out { margin-top: -3px; clip-path: inset(0 -48px -96px -48px); }
 .bd-pass-stub-fields { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 20px 16px; padding: 28px 28px 0; }
 .bd-pf--wide { grid-column: 1 / -1; }
 .bd-pf--big dd { font-size: 44px; line-height: .9; }
@@ -371,7 +405,7 @@ main { overflow-x: clip; }
 .bd-rail-list li::before { content: ""; position: absolute; z-index: 1; left: -16px; top: 50%; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 1px; background: var(--board); box-shadow: inset 0 0 0 1px rgba(238,241,232,.3); transition: background-color .2s steps(2), box-shadow .2s steps(2); }
 .bd-rail-list li[data-state="past"]::before { background: var(--sig-ok); box-shadow: none; }
 .bd-rail-list li[data-state="now"]::before { background: var(--flap-ink); box-shadow: 0 0 0 3px var(--board), 0 0 0 4px var(--flap-ink); }
-.bd-rail-list a { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 6px; align-items: baseline; padding: 5px 0; text-decoration: none; color: rgba(238,241,232,.42); transition: color .2s; }
+.bd-rail-list a { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 6px; align-items: baseline; padding: 6px 0; text-decoration: none; color: rgba(238,241,232,.42); transition: color .2s; }
 .bd-rail-list time { font: 500 12px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
 .bd-rail-list span { overflow: hidden; font: 500 14.5px/1.2 var(--font-display); letter-spacing: .02em; white-space: nowrap; text-overflow: ellipsis; }
 .bd-rail-list li[data-state="past"] a { color: rgba(238,241,232,.66); }
@@ -394,7 +428,7 @@ main { overflow-x: clip; }
 .bd-lanes-cps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .bd-cp { display: grid; justify-items: center; gap: 6px; text-align: center; color: rgba(238,241,232,.42); transition: color .25s; }
 .bd-cp-icon { position: relative; z-index: 1; display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 8px; border-radius: 4px; background: var(--board); box-shadow: inset 0 0 0 1px rgba(238,241,232,.2); transition: background-color .25s, box-shadow .25s, color .25s; }
-.bd-cp-icon svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.bd-cp-icon svg { width: 28px; height: 28px; }
 .bd-cp b { font: 600 18px/1.1 var(--font-display); letter-spacing: .01em; }
 .bd-cp time { font: 500 11px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
 .bd-cp[data-on] { color: var(--flap-ink); }
@@ -448,7 +482,8 @@ main { overflow-x: clip; }
 .bd-dsp-alert b { display: block; font: 600 17px/1.2 var(--font-display); }
 .bd-dsp-alert div > span { display: block; margin-top: 3px; font-size: 13.5px; color: rgba(238,241,232,.6); }
 .bd-dsp-alert time { align-self: center; font: 500 12px/1 var(--font-mono); color: var(--sig-warn); }
-.bd-dsp-line { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.bd-dsp-line { position: relative; }
+.bd-dsp-line ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .bd-dsp-line::before, .bd-dsp-fill { content: ""; position: absolute; left: 6px; right: 0; top: 6px; height: 2px; background: var(--rule-soft); }
 .bd-dsp-fill { background: var(--forest); transform-origin: 0 50%; transform: scaleX(var(--t)); }
 .bd-dsp-line li { position: relative; display: grid; gap: 6px; justify-items: start; padding: 26px 12px 0 0; color: var(--ink-faint); transition: color .25s; }
@@ -502,13 +537,15 @@ main { overflow-x: clip; }
   .bd-hero .lp-hero-cta { width: 100%; }
   /* the board runs edge to edge so its flaps stay legible */
   .bd-hero .bd-board { margin-inline: calc(var(--lp-x) * -1); border-radius: 0; padding-inline: 14px; }
+  .bd-hero .bd-ticker { margin-inline: -14px; border-radius: 0; }
   .bd-board-title { gap: 10px; }
   .bd-board-title small, .bd-board-meta > span { display: none; }
   .bd-note { flex-direction: column; gap: 6px; }
   .bd-sign { gap: 12px; }
   .bd-sign-plate { height: 36px; padding-right: 12px; font-size: 14px; }
   .bd-sign-gate { gap: 5px; padding: 0 10px; font-size: 17px; }
-  .bd-sign-arrow { width: 16px; height: 16px; margin: 0 8px 0 10px; }
+  .bd-sign-picto { width: 17px; height: 17px; margin: 0 8px 0 10px; }
+  .bd-sign-arrow { width: 15px; height: 15px; margin-left: 8px; }
   .lp-tour .vt-stage { padding: 0 0 56px; }
   /* the caption sits on the mist under the device here, so ink instead of the on-screen white */
   .lp-tour[data-tour] .vt-stage-cap { color: var(--ink); }
@@ -567,7 +604,7 @@ main { overflow-x: clip; }
   .bd-perks { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .bd-perks li { padding-block: 14px; }
   .bd-dsp { padding: 20px 16px; }
-  .bd-dsp-line { grid-template-columns: minmax(0, 1fr); gap: 18px; padding-left: 26px; }
+  .bd-dsp-line ol { grid-template-columns: minmax(0, 1fr); gap: 18px; padding-left: 26px; }
   .bd-dsp-line::before, .bd-dsp-fill { left: 6px; right: auto; top: 6px; bottom: 6px; width: 2px; height: auto; }
   .bd-dsp-fill { transform-origin: 50% 0; transform: scaleY(var(--t)); }
   .bd-dsp-line li { padding: 0; }
@@ -580,7 +617,16 @@ main { overflow-x: clip; }
   .vt-footer { padding-inline: var(--lp-x); }
 }
 
+/* the time painted on the wall behind a stop */
+.bd-stop-wall {
+  position: absolute; z-index: -1; top: clamp(20px, 3vw, 48px); right: -.03em; pointer-events: none; user-select: none;
+  font: 700 clamp(120px, 17vw, 280px)/.8 var(--font-display); letter-spacing: -.02em; white-space: nowrap; font-variant-numeric: tabular-nums;
+  color: rgba(31,59,43,.05);
+}
+.bd-stop--dark .bd-stop-wall { color: rgba(238,241,232,.04); }
+
 @media (prefers-reduced-motion: reduce) {
+  .bd-ticker-run { animation: none; }
   .bd-board[data-live] .bd-lamp[data-blink], .bd-rail[data-live] .bd-lamp[data-blink], .bd-sign-status::before, .bd-lanes-out .bd-lamp { animation: none !important; }
   .bd-lanes-row, .bd-lanes-word > span, .bd-rail .bd-lamp, .bd-rail-list li::before { transition: none; }
 }

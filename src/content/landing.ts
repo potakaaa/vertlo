@@ -1,8 +1,10 @@
 import type { FAQProps, IconName, IndustryCardsProps, LinkItem } from "@/components/vertlo";
 import type { PortalData } from "@/components/landing/portal/types";
 import type { FlowStep } from "@/components/landing/HowFlow";
-import type { BoardData, BoardSeg, KeyRow, PassData } from "@/components/landing/Board";
-import type { Checkpoint, DayData } from "@/components/landing/Day";
+import type { BoardData } from "@/components/landing/board/DepartureBoard";
+import type { PassData } from "@/components/landing/board/BoardingPass";
+import type { BoardSeg, KeyRow } from "@/components/landing/board/Signage";
+import type { Checkpoint, DayData, DayStop } from "@/components/landing/Day";
 
 /**
  * Headings: `*words*` render in the accent green (see components/landing/Rich.tsx).
@@ -11,7 +13,7 @@ import type { Checkpoint, DayData } from "@/components/landing/Day";
  */
 
 export const navLinks: LinkItem[] = [
-  { label: "Product", href: "#how" },
+  { label: "Product", href: "#checkin" },
   { label: "Industries", href: "#industries" },
   { label: "Reviews", href: "#reviews" },
   { label: "Company", href: "#company" },
@@ -38,6 +40,15 @@ export const board: BoardData = {
   illustrative: "Illustrative data",
   summary:
     "Illustrative board for one merchant. US-01 was paused by its processor and its orders were rerouted to UK-02 and US-03. The other three accounts stayed on time.",
+  /* the rest of the day, crawling along the board's foot; the same events as the stops below */
+  ticker: [
+    { time: "09:41", text: "US-01 paused by its processor", tone: "bad" },
+    { time: "09:41", text: "Orders rerouted to UK-02 and US-03", tone: "ok" },
+    { time: "09:52", text: "US-04 approved, joining routing", tone: "new" },
+    { time: "10:07", text: "Dispute DSP-0221 refunded before chargeback", tone: "ok" },
+    { time: "14:00", text: "Next payout Jul 14 · $148,220 available", tone: "ok" },
+    { time: "17:45", text: "Chargeback ratio 0.62% · limit 1.0%", tone: "ok" },
+  ],
   frames: [
     {
       note: "All four accounts taking orders.",
@@ -154,52 +165,58 @@ export const problem: {
   ],
 };
 
+/* The page after the hero is one trading day for one merchant, a stop at a time (keyed by the stop's
+   anchor id, in the day's order). The rail's clock turns to each stop's time as it is read; `lamps` are
+   the four accounts' states at that stop (US-03, UK-02, US-01, US-04), so US-01 goes red at 09:41 and
+   US-04 boards at 09:52. Times match the portal's notifications. */
+export const stops = {
+  open: { time: "08:58", label: "Before opening", lamps: ["ok", "ok", "ok", "off"] },
+  checkin: { time: "09:05", label: "Check-in", lamps: ["ok", "ok", "ok", "off"] },
+  routing: { time: "09:20", label: "Routing set", lamps: ["ok", "ok", "ok", "off"] },
+  paused: { time: "09:41", label: "US-01 paused", lamps: ["ok", "ok", "bad", "off"] },
+  boarding: { time: "09:52", label: "US-04 boarding", lamps: ["ok", "ok", "bad", "new"] },
+  dispute: { time: "10:07", label: "Dispute caught", lamps: ["ok", "ok", "bad", "ok"] },
+  portal: { time: "14:00", label: "The portal", lamps: ["ok", "ok", "bad", "ok"] },
+  industries: { time: "17:00", label: "Regulars", lamps: ["ok", "ok", "bad", "ok"] },
+  reviews: { time: "17:30", label: "Logbook", lamps: ["ok", "ok", "bad", "ok"] },
+  desk: { time: "17:45", label: "Information desk", lamps: ["ok", "ok", "bad", "ok"] },
+  book: { time: "18:00", label: "Last call", lamps: ["ok", "ok", "bad", "ok"] },
+} satisfies Record<string, Omit<DayStop, "id">>;
+export type StopId = keyof typeof stops;
+
+export const day: DayData = {
+  date: "Thu 10 Jul",
+  merchant: "Nordvia Group",
+  accounts: ["US-03", "UK-02", "US-01", "US-04"],
+  stops: Object.entries(stops).map(([id, stop]) => ({ id, ...stop })),
+};
+
+/** A flow step that is also a stop on the day: its kicker reads as the stop's time on the board. */
+const kicker = (id: StopId) => `${stops[id].time} · ${stops[id].label}`;
+
 export const how: { eyebrow: string; title: string; steps: FlowStep[] } = {
   eyebrow: "How it works",
   title: "Set it up once. *It routes from there.*",
-  // Rendered by HowFlow: one scroll-driven scene (connect → route → keep), steps alongside.
+  // Rendered by HowFlow: one scroll-driven scene (connect → route → keep), steps alongside. The first
+  // step opens the check-in stop the flow sits in; the other two are stops of their own.
   steps: [
-    // Each step is a stop on the day's timeline (see `day`): its kicker reads as the time on the board.
     {
-      kicker: "09:05 · Check-in",
+      kicker: kicker("checkin"),
       title: "Connect your providers",
       body: "Bring every processor and merchant account into one CRM.",
-      stop: "checkin",
     },
     {
-      kicker: "09:20 · Routing set",
+      kicker: kicker("routing"),
       title: "Route across accounts",
       body: "Split volume by the rules you set, for steadier approval rates.",
       stop: "routing",
     },
     {
-      kicker: "09:41 · US-01 paused",
+      kicker: kicker("paused"),
       title: "Keep selling",
       body: "One account pauses, the rest take its orders in seconds.",
       stop: "paused",
     },
-  ],
-};
-
-/* The page after the hero is one trading day for one merchant. The rail's clock turns to each stop's
-   time as it is read; `lamps` are the four accounts' states at that stop (US-03, UK-02, US-01, US-04),
-   so US-01 goes red at 09:41 and US-04 boards at 09:52. Times match the portal's notifications. */
-export const day: DayData = {
-  date: "Thu 10 Jul",
-  merchant: "Nordvia Group",
-  accounts: ["US-03", "UK-02", "US-01", "US-04"],
-  stops: [
-    { id: "open", time: "08:58", label: "Before opening", lamps: ["ok", "ok", "ok", "off"] },
-    { id: "checkin", time: "09:05", label: "Check-in", lamps: ["ok", "ok", "ok", "off"] },
-    { id: "routing", time: "09:20", label: "Routing set", lamps: ["ok", "ok", "ok", "off"] },
-    { id: "paused", time: "09:41", label: "US-01 paused", lamps: ["ok", "ok", "bad", "off"] },
-    { id: "boarding", time: "09:52", label: "US-04 boarding", lamps: ["ok", "ok", "bad", "new"] },
-    { id: "dispute", time: "10:07", label: "Dispute caught", lamps: ["ok", "ok", "bad", "ok"] },
-    { id: "portal", time: "14:00", label: "The portal", lamps: ["ok", "ok", "bad", "ok"] },
-    { id: "industries", time: "17:00", label: "Regulars", lamps: ["ok", "ok", "bad", "ok"] },
-    { id: "reviews", time: "17:30", label: "Logbook", lamps: ["ok", "ok", "bad", "ok"] },
-    { id: "desk", time: "17:45", label: "Information desk", lamps: ["ok", "ok", "bad", "ok"] },
-    { id: "book", time: "18:00", label: "Last call", lamps: ["ok", "ok", "bad", "ok"] },
   ],
 };
 
@@ -338,6 +355,7 @@ export const cta = {
     gate: "09",
     seat: "1A",
     code: "VT0126-030-09-1A",
+    printer: "Vertlo · pass printer",
   } satisfies PassData,
 };
 
