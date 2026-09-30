@@ -24,8 +24,8 @@
   --radius-inner: 4px;
   --shadow-card: none;
   /* the hero headline, sized to the note's copy column (a container): the longer line, "The rest keep
-     selling.", is ~16.3em wide in the wide cut, so 5.9cqi keeps it on one line at any width */
-  --lp-h1: min(72px, 5.9cqi);
+     selling.", is ~16.3em wide in the wide cut, so anything under 6cqi keeps it on one line */
+  --lp-h1: min(54px, 4.6cqi);
   --lp-h2: clamp(28px, 3vw, 42px);
 }
 html { scrollbar-color: rgba(31,59,43,.35) var(--mist); }
