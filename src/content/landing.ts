@@ -34,6 +34,38 @@ export const hero = {
     "Every payment provider and merchant account in one CRM, routing orders around the one that stops.",
 };
 
+/* The page is a stack of documents laid on the desk: after the banknote (hero) and the laptop, each
+   section arrives as its own sheet and settles on the one before. `doc` is the sheet's printed title,
+   `form` its form code; the sheet number comes from its place in this list. */
+export const sheets = [
+  { id: "notice", doc: "Notice of termination", form: "Form RK-7" },
+  { id: "statement", doc: "Statement of account", form: "Form VT-20" },
+  { id: "schedule", doc: "Schedule of services", form: "Form VT-31" },
+  { id: "approval", doc: "Letter of approval", form: "Form VT-44" },
+  { id: "register", doc: "Register of merchants", form: "Form VT-52" },
+  { id: "terms", doc: "Terms, in plain English", form: "Form VT-60" },
+  { id: "cheque", doc: "Cheque", form: "Nº 000126" },
+] as const;
+export type SheetId = (typeof sheets)[number]["id"];
+
+/* Sheet 1: the letter every high-risk merchant dreads, then Vertlo's answer over it. Illustrative:
+   the processor is unnamed on purpose, and the story matches the portal's Jul 10 reroute. */
+export const notice = {
+  from: "Risk & Compliance",
+  fromSub: "Your acquiring bank",
+  ref: "Re: Merchant account US-01",
+  date: "Jul 10 · 09:41",
+  lines: [
+    "Dear merchant,",
+    "Following a routine review, merchant account US-01 is terminated with immediate effect.",
+    "Card processing on this account stops today. Reserves will be held for 180 days.",
+  ],
+  sign: "Risk Department",
+  reply: "09:41 — US-01 paused. Orders rerouted to UK-02 and US-03. Checkout never went dark.",
+  stamp: "Rerouted",
+  label: "Illustrative letter",
+};
+
 /* The product shot: the portal's Overview, all illustrative. Numbers reconcile: the 30 daily
    volumes sum to the $1.84M gross, and approvals average 92.6% weighted by volume. The dip on
    Jul 6 is the UK-02 debit decline (in Attention required); on Jul 10 US-01 paused and traffic
@@ -155,8 +187,7 @@ export const whatYouGet: { eyebrow: string; title: string; blurb: string; items:
   ],
 };
 
-export const forBrands: Omit<FeaturePanelProps, "title"> & { title: string; eyebrow: string } = {
-  eyebrow: "Underwriting",
+export const forBrands: Omit<FeaturePanelProps, "title"> & { title: string } = {
   title: "We’ll issue the *accounts you need.*",
   description: "We underwrite in-house, so getting a new account doesn’t stall your checkout.",
   items: [
@@ -223,8 +254,7 @@ export const testimonials: { eyebrow: string; title: string; items: MerchantQuot
   ],
 };
 
-export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string; eyebrow: string } = {
-  eyebrow: "Questions",
+export const faq: Pick<FAQProps, "blurb" | "items"> & { title: string } = {
   title: "What merchants ask *before the call.*",
   blurb: "Ask us anything else on a call.",
   items: [

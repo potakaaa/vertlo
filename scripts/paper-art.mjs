@@ -1,7 +1,7 @@
 /*
  * Generates the security-paper artwork in public/images/paper: guilloché patterns like the ones printed
  * on banknotes and cheques, plus the ink grain for rubber stamps. Deterministic, so re-running it gives
- * the same files. Colour is baked in (forest ink, or mint for the dark bands) because CSS can't recolour
+ * the same files (scripts/ink-vignette.py inks the engraved vignettes separately). Colour is baked in (forest ink, or mint for the dark bands) because CSS can't recolour
  * an SVG used as a background.
  *
  *   node scripts/paper-art.mjs
@@ -73,11 +73,23 @@ function band(color, name) {
   const b = wave((x) => 6 * Math.sin((TAU * 2 * x) / W + 1.2));
   const copies = 8;
   const uses = (id) => Array.from({ length: copies }, (_, k) => `<use href="#${id}" x="${f((k * W) / copies)}"/>`).join("");
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">` +
+  const art =
     `<defs><path id="a" d="${a}"/><path id="b" d="${b}"/></defs>` +
     `<g fill="none" stroke="${color}" stroke-width=".5">${uses("a")}<g stroke-width=".4">${uses("b")}</g>` +
-    `<path d="M0 .5H${W}M0 ${H - 0.5}H${W}" stroke-width=".8"/></g></svg>`;
+    `<path d="M0 .5H${W}M0 ${H - 0.5}H${W}" stroke-width=".8"/></g>`;
+  writeFileSync(join(OUT, name), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${art}</svg>`);
+  // the same strip standing up, for the left and right edges of a frame
+  const vname = name.replace(".svg", "-v.svg");
+  writeFileSync(join(OUT, vname), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${H} ${W}" width="${H}" height="${W}"><g transform="translate(${H} 0) rotate(90)">${art}</g></svg>`);
+}
+
+/** Paper fibre: a faint fractal noise tile in forest ink, so sheets read as paper, not flat fills. */
+function fibre(name) {
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240">` +
+    `<filter id="f"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" seed="7" stitchTiles="stitch"/>` +
+    `<feColorMatrix values="0 0 0 0 .12 0 0 0 0 .23 0 0 0 0 .17 0 0 0 .09 0"/></filter>` +
+    `<rect width="240" height="240" filter="url(#f)"/></svg>`;
   writeFileSync(join(OUT, name), svg);
 }
 
@@ -128,4 +140,5 @@ band(MINT, "band-mint.svg");
 field(INK, "field.svg");
 field(MINT, "field-mint.svg");
 grain("grain.svg");
+fibre("fibre.svg");
 console.log("paper art written to", OUT);
