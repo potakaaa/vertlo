@@ -35,8 +35,54 @@ const R = 14;
 /* how far ahead of a provider's merge the order is when that feeder starts to draw */
 const FEED_LEAD = 180;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+/* the layout with lanes (route.css); below it everything runs down one lane and drawings have no leaders */
+const WIDE = "(min-width: 1101px)";
+/* how far a leader stops short of the drawing's ink, in px */
+const LEADER_GAP = 10;
 
-export function RouteLine({ order, feeders }: { order: Order; feeders: number }) {
+/* Each drawing's alpha, read once: for every row, the leftmost and rightmost inked column as a fraction of
+   the width (-1 where the row is empty). Lets a leader end at the drawing, not at its square box. */
+type Ink = { rows: number; l: Float32Array; r: Float32Array };
+const inks = new Map<string, Ink | "loading">();
+function readInk(img: HTMLImageElement): Ink | null {
+  const w = 220, h = 220, cv = document.createElement("canvas");
+  cv.width = w; cv.height = h;
+  const ctx = cv.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return null;
+  ctx.drawImage(img, 0, 0, w, h);
+  const px = ctx.getImageData(0, 0, w, h).data, l = new Float32Array(h).fill(-1), r = new Float32Array(h).fill(-1);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (px[(y * w + x) * 4 + 3] < 60) continue;
+    if (l[y] < 0) l[y] = x / w;
+    r[y] = (x + 1) / w;
+  }
+  return { rows: h, l, r };
+}
+/** The near side of the ink around height `fy` (0–1 of the image), as a fraction of its width; null until read. */
+function inkEdge(img: HTMLImageElement, fy: number, fromRight: boolean, onReady: () => void): number | null {
+  const key = img.currentSrc || img.src;
+  const got = inks.get(key);
+  if (!got) {
+    inks.set(key, "loading");
+    img.decode().then(() => { const ink = readInk(img); if (ink) { inks.set(key, ink); onReady(); } }).catch(() => inks.delete(key));
+    return null;
+  }
+  if (got === "loading") return null;
+  /* look a little above and below the leader's height, widening until some ink turns up */
+  const at = Math.round(Math.min(1, Math.max(0, fy)) * (got.rows - 1));
+  for (const span of [4, 12, 30]) {
+    let best = -1;
+    for (let y = Math.max(0, at - span); y <= Math.min(got.rows - 1, at + span); y++) {
+      const v = fromRight ? got.r[y] : got.l[y];
+      if (v < 0) continue;
+      if (best < 0 || (fromRight ? v > best : v < best)) best = v;
+    }
+    if (best >= 0) return best;
+  }
+  return null;
+}
+
+export function RouteLine({ order, feeders, leaders }: { order: Order; feeders: number; leaders: string[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const [stage, setStage] = useState(0);
   const [mode, setMode] = useState<Mode>("card");
@@ -55,6 +101,7 @@ export function RouteLine({ order, feeders }: { order: Order; feeders: number })
     let at: Record<string, number> = {};
     let branches: Branch[] = [];
     let reactive: { el: Element; on: boolean; thr: number; b?: Branch }[] = [];
+    let figs: { el: HTMLElement; top: number; h: number; d: number }[] = [];
     let top = 0, maxScroll = 1, zone: [number, number] | null = null;
     let cur = 0, built = false, lastStage = -1, lastMode = "";
     let intro: gsap.core.Tween | null = null;
@@ -114,6 +161,33 @@ export function RouteLine({ order, feeders }: { order: Order; feeders: number })
         if (p && feed) add(`prov${i}`, "feed", [p, { x: feed.x, y: p.y + R * 2, via: "hv" }], p.y + R * 2 - FEED_LEAD, p.y + R * 2, (b) => ({ [`prov${i}`]: b.len }));
       }
 
+      /* leaders: on the wide layout each drawing hangs off its node by a hairline, the way a patent sheet
+         points at its figure; it runs straight across from the node into the drawing's near edge */
+      const wide = window.matchMedia(WIDE).matches;
+      for (const n of leaders) {
+        const node = pos[n], img = root.querySelector<HTMLElement>(`[data-leader="${n}"] img`);
+        if (!wide || !node || !img) {
+          path(`lead-${n}`, "track")?.removeAttribute("d");
+          path(`lead-${n}`, "drawn")?.removeAttribute("d");
+          continue;
+        }
+        const r = img.getBoundingClientRect(), left = r.left - rr.left, right = r.right - rr.left;
+        const fromRight = node.x > (left + right) / 2;
+        /* end a gap short of the drawing's own ink at this height (read from the image's alpha); until
+           the image has been read, fall back to its box, and rebuild once it has */
+        const edge = inkEdge(img as HTMLImageElement, (node.y - (r.top - rr.top)) / r.height, fromRight, rebuild);
+        const x = edge == null
+          ? (fromRight ? right - r.width * 0.12 : left + r.width * 0.12)
+          : left + edge * r.width + (fromRight ? LEADER_GAP : -LEADER_GAP);
+        add(`lead-${n}`, "fork", [node, { x, y: node.y }], node.y - 24, node.y + 48, () => ({}));
+      }
+
+      /* the drawings are drawn by the line: each reveals top to bottom as the head passes down beside it */
+      figs = [...root.querySelectorAll<HTMLElement>(".rt-fig")].map((el) => {
+        const r = (el.querySelector("img") ?? el).getBoundingClientRect();
+        return { el, top: r.top - rr.top, h: Math.max(1, r.height), d: -1 };
+      });
+
       reactive = [...root.querySelectorAll("[data-at]")].map((el) => {
         const name = el.getAttribute("data-at") ?? "";
         const b = name in at ? undefined : branches.find((x) => name in x.at);
@@ -148,6 +222,13 @@ export function RouteLine({ order, feeders }: { order: Order; feeders: number })
         if (b.mode === "dead") continue;
         b.cur = b.path.len * clamp((hp.y - b.y0) / Math.max(1, b.y1 - b.y0), 0, 1);
         if (b.drawn) b.drawn.style.strokeDashoffset = String(b.path.len - b.cur);
+      }
+      for (const f of figs) {
+        const d = clamp((hp.y - f.top + 80) / (f.h * 0.8), 0, 1);
+        if (Math.abs(d - f.d) > 0.002 || (d !== f.d && (d === 0 || d === 1))) {
+          f.d = d;
+          f.el.style.setProperty("--draw", d.toFixed(3));
+        }
       }
       for (const r of reactive) {
         const on = (r.b ? r.b.cur : cur) >= r.thr - 1;
@@ -210,10 +291,10 @@ export function RouteLine({ order, feeders }: { order: Order; feeders: number })
       gsap.ticker.remove(tick);
       intro?.kill();
     };
-  }, [stages, feeders]);
+  }, [stages, feeders, leaders]);
 
   const st = stages[stage] ?? stages[0];
-  const sides = [...FORKS, ...Array.from({ length: feeders }, (_, i) => `prov${i}`)];
+  const sides = [...FORKS, ...Array.from({ length: feeders }, (_, i) => `prov${i}`), ...leaders.map((n) => `lead-${n}`)];
 
   return (
     <div ref={ref} className="rt-line" aria-hidden="true">

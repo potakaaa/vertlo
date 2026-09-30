@@ -95,51 +95,41 @@ export const portal: PortalData = {
   ],
 };
 
-/** A line the system printed: a time, then what happened. `at` is the point on the route that prints it. */
-export type LogLine = { at: string; time: string; text: string };
+/** A patent-style drawing on the route (public/images/route): `n` is its figure number, `caption` the one line under it. */
+export type Fig = { src: string; n: number; alt: string; caption: string };
+const fig = (name: string, n: number, alt: string, caption: string): Fig => ({ src: `/images/route/${name}.webp`, n, alt, caption });
 
 /* Stop 2, Paused: the order is sent to US-01 and the account closes under it. */
 export const paused = {
   title: "Keep selling when your account closes.",
-  blurb:
-    "High-risk brands can lose an account with one email. Most also run payments across separate tools and chat groups.",
+  blurb: "High-risk brands can lose an account with one email. Checkout doesn’t have to go with it.",
   node: { time: "09:41:02", label: "Routed to US-01" },
-  log: [
-    { at: "router", time: "09:41:02", text: "#4821 sent to US-01" },
-    { at: "pause", time: "09:41:02", text: "US-01 closed by its acquirer" },
-    { at: "pause", time: "09:41:02", text: "US-01 paused, 40% to 0%" },
-    { at: "junction", time: "09:41:03", text: "#4821 retried on US-03" },
-  ] satisfies LogLine[],
+  fig: fig("terminal", 1, "Drawing of a card terminal locked shut with a padlock and chain.", "US-01, closed by its acquirer at 09:41:02"),
   /* the three accounts the router splits across: share before the pause, then after it */
   accounts: [
     { id: "US-01", name: "us01", before: "Live · 40%", after: "Paused · 0%" },
     { id: "US-03", name: "us03", before: "Live · 30%", after: "Live · 54%" },
     { id: "UK-02", name: "uk02", before: "Live · 30%", after: "Live · 46%" },
   ],
-  alt: "Illustration: the order is sent to account US-01, which pauses. The route bends to account US-03, and UK-02 takes the rest of the traffic.",
+  alt: "Diagram: the order is sent to account US-01, which pauses. The route bends to account US-03, and UK-02 takes the rest of the traffic.",
 };
 
 /* Stop 3, Rerouted: how it works, in three lines. */
 export const how = {
   title: "Set it up once. It routes from there.",
   node: { time: "09:41:03", label: "Rerouted" },
-  steps: [
-    { title: "Connect your providers", body: "Bring every processor and merchant account into one CRM." },
-    { title: "Route across accounts", body: "Split volume by the rules you set, for steadier approval rates." },
-    { title: "Keep selling", body: "If one account pauses, the rest take the traffic in seconds." },
-  ],
+  fig: fig("switch", 2, "Drawing of a railway track switch set to the branch line.", "#4821 switched to US-03 at 09:41:03"),
+  steps: ["Connect your providers", "Route across accounts", "Keep selling"],
 };
 
-/* Stop 4, Approved: the four checks the order passes on its way, each with the record it leaves. */
+/* Stop 4, Approved: the four checks the order passes on its way. */
 export type Check = {
-  art: "routing" | "failover" | "disputes" | "stores";
-  /** the label on the line where the order passes this check */
-  node: { time: string; label: string };
+  key: string;
   title: string;
   body: string;
-  /** what the panel is a record of */
-  head: string;
-  rows: { k: string; v: string; bar?: number; tone?: "stop" }[];
+  /** the label on the line where the order passes this check */
+  node: { time: string; label: string };
+  fig: Fig;
   /** printed when the order passes the check */
   result: string;
 };
@@ -147,57 +137,38 @@ export const whatYouGet: { title: string; blurb: string; node: { time: string; l
   title: "One bad email won’t stop your checkout.",
   blurb: "Routing, failover, dispute alerts and every store in one CRM.",
   node: { time: "09:41:03", label: "Approved" },
-  note: "Illustrative data",
+  note: "Amounts and times are illustrative",
   items: [
     {
-      art: "routing",
-      node: { time: "09:41:03", label: "Split" },
+      key: "routing",
       title: "Route across accounts",
       body: "Split volume by rules you set, for steadier approval rates.",
-      head: "Routing rule: split by approval rate",
-      rows: [
-        { k: "US-03", v: "54%", bar: 54 },
-        { k: "UK-02", v: "46%", bar: 46 },
-        { k: "US-01", v: "Paused", bar: 0, tone: "stop" },
-      ],
+      node: { time: "09:41:03", label: "Split" },
+      fig: fig("manifold", 3, "Drawing of a pipe manifold splitting one inlet into three valved outlets, one shut.", "Split by approval rate: US-03 54%, UK-02 46%"),
       result: "#4821 sent to US-03",
     },
     {
-      art: "failover",
-      node: { time: "09:41:03", label: "Held" },
+      key: "failover",
       title: "Failover in seconds",
       body: "One MID pauses, the rest take the traffic.",
-      head: "Merchant accounts: 2 of 3 live",
-      rows: [
-        { k: "09:41:02", v: "US-01 paused", tone: "stop" },
-        { k: "09:41:02", v: "Traffic to UK-02, US-03" },
-        { k: "09:41:03", v: "#4821 approved on US-03" },
-      ],
+      node: { time: "09:41:03", label: "Held" },
+      fig: fig("knife", 4, "Drawing of a double-throw knife switch thrown to its second contacts.", "US-01 out, traffic moved across in a second"),
       result: "Checkout stayed up",
     },
     {
-      art: "disputes",
-      node: { time: "09:41:04", label: "Monitored" },
+      key: "disputes",
       title: "Catch disputes early",
       body: "Refund before it becomes a chargeback.",
-      head: "Early dispute alert: DSP-0221",
-      rows: [
-        { k: "10:07", v: "Alert on a $89.00 order" },
-        { k: "10:07", v: "Refunded to the customer" },
-      ],
+      node: { time: "09:41:04", label: "Monitored" },
+      fig: fig("magnifier", 5, "Drawing of a magnifying glass resting on a long paper receipt.", "DSP-0221 caught at 10:07, refunded in time"),
       result: "No chargeback",
     },
     {
-      art: "stores",
-      node: { time: "09:41:04", label: "Logged" },
+      key: "stores",
       title: "Every store, one CRM",
       body: "All your brands and their payouts in one place.",
-      head: "All brands: payouts, last 30 days",
-      rows: [
-        { k: "Nordvia Supplements", v: "$48,220" },
-        { k: "Nordvia Digital", v: "$31,905" },
-        { k: "Nordvia Subscriptions", v: "$52,610" },
-      ],
+      node: { time: "09:41:04", label: "Logged" },
+      fig: fig("drawer", 6, "Drawing of an open cash register drawer.", "Three stores, $132,735 paid out in 30 days"),
       result: "Total $132,735",
     },
   ],
@@ -216,27 +187,16 @@ export const forBrands = {
   node: { time: "09:52", label: "Underwritten" },
   split: { time: "09:52", label: "US-04 issued" },
   account: { id: "US-04", before: "Pending", after: "Live · 20%" },
-  items: [
-    { label: "Multiple live accounts", meta: "Run several MIDs side by side" },
-    { label: "Underwriting in-house", meta: "No outside approvals to wait on" },
-    { label: "Dispute alerts", meta: "Refund before it’s a chargeback" },
-    { label: "One CRM", meta: "Every provider on one screen" },
-  ],
-  log: [
-    { at: "us04", time: "09:52", text: "Approved in-house" },
-    { at: "join", time: "09:52", text: "Joins routing at 20%" },
-  ] satisfies LogLine[],
-  alt: "Illustration: a new account, US-04, branches off the route, goes live and joins it again.",
+  fig: fig("key", 7, "Drawing of a new key on a ring with a blank paper tag.", "US-04, underwritten in-house, live at 09:52 (illustrative)"),
+  alt: "Diagram: a new account, US-04, branches off the route, goes live and joins it again.",
 };
 
 /* Stop 6, Settled: the payout the order lands in. */
 export const settled = {
   title: "The payout lands.",
   blurb: "Four days after US-01 closed, order #4821 is paid out with the rest.",
-  rows: [
-    { date: "Jul 14", what: "Payout P-0714", to: "Nordvia Group LLC", amount: "$148,220.00", before: "Pending", after: "Paid" },
-    { date: "", what: "Includes #4821", to: "Visa debit ·· 4242", amount: "$129.00", before: "", after: "" },
-  ],
+  payout: { id: "P-0714", date: "Jul 14", amount: "$148,220.00", before: "Pending", after: "Paid", includes: "Includes #4821 · $129.00" },
+  fig: fig("letterbox", 8, "Drawing of a wall-mounted post box with an envelope in its slot.", "Payout P-0714, Jul 14, with #4821 inside"),
   note: "Illustrative data",
 };
 
@@ -244,9 +204,9 @@ export const industries = {
   title: "Made for brands banks call risky.",
   // Industry list is a working assumption: confirm with Vertlo before launch.
   items: [
-    { title: "Supplements", body: "Monthly reorders keep flowing when one account tightens up." },
-    { title: "Subscriptions", body: "A failed renewal is retried on another account." },
-    { title: "Digital goods", body: "Payments go through on whichever account is live." },
+    { title: "Supplements", body: "Monthly reorders keep flowing when one account tightens up.", fig: fig("bottle", 9, "Drawing of a supplement bottle with its cap off.", "") },
+    { title: "Subscriptions", body: "A failed renewal is retried on another account.", fig: fig("parcels", 10, "Drawing of three parcels tied with string.", "") },
+    { title: "Digital goods", body: "Payments go through on whichever account is live.", fig: fig("phone", 11, "Drawing of a smartphone with its charging cable.", "") },
   ],
 };
 

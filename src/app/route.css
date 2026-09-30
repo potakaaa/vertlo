@@ -81,13 +81,13 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
   --gap: 24px;
   --rail: 0px;                                                     /* phones: room left of the copy for the line */
   --lane-c: calc((100% + var(--gap)) * 6 / 12 - var(--gap) / 2);   /* centre: the hero, down to the pause */
-  --lane-r: calc((100% + var(--gap)) * 8 / 12 - var(--gap) / 2);   /* right: copy in columns 1–6 beside it */
-  --lane-x: calc((100% + var(--gap)) * 10 / 12 - var(--gap) / 2);  /* far right: UK-02 */
+  --lane-r: calc((100% + var(--gap)) * 9 / 12 - var(--gap) / 2);   /* right: drawings and copy in columns 1–8 beside it */
+  --lane-x: calc(100% - 96px);                                       /* far right: UK-02 */
   --lane-l: 5px;                                                   /* left edge: the arrival */
   --lane-d: var(--lane-r);                                         /* the detour round the paused account */
-  --lane-b: calc(var(--lane-r) + 220px);                           /* the branch that issues US-04 */
+  --lane-b: calc(var(--lane-r) - 240px);                           /* the branch that issues US-04, out to the left */
   --h1: clamp(38px, 3.9vw, 58px);
-  --h2: clamp(28px, 2.7vw, 40px);
+  --h2: clamp(30px, 3.2vw, 48px);
   --node-h2: calc(var(--h2) * .54);                                /* a node level with a heading's first line */
   --card-x: 16px;
   --card-w: 300px;
@@ -114,6 +114,9 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .rt-track[data-path="dead"][data-on] { stroke: #94a199; stroke-width: 1.5; stroke-dasharray: .01 6; stroke-linecap: round; }
 .rt-drawn { fill: none; stroke: var(--forest); stroke-width: 1.5; }
 .rt-drawn--side { stroke-width: 1.25; }
+/* leaders from a node to its drawing: the finest line on the page, and nothing shown before it is drawn */
+.rt-drawn[data-path^="lead-"] { stroke-width: 1; }
+.rt-track[data-path^="lead-"] { stroke: none; }
 
 /* points on the line */
 .rt-anchor, .rt-node { position: absolute; left: var(--lane); top: var(--y, 0px); width: 0; height: 0; }
@@ -135,6 +138,7 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .rt-node-time { color: var(--ink-faint); }
 .rt-node[data-side="right"] .rt-node-label { right: auto; left: 18px; justify-items: start; text-align: left; }
 .rt-node[data-to="stop"][data-on] .rt-node-label { color: var(--stop); }
+.rt-node[data-lead] .rt-node-label { top: -46px; }
 .rt-swap > :last-child, .rt-swap[data-on] > :first-child { display: none; }
 .rt-swap[data-on] > :last-child { display: inline; }
 
@@ -174,84 +178,87 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 .rt-portal-in { position: relative; width: min(1280px, calc(100% - 2 * var(--gut))); margin-inline: auto; display: flex; flex-direction: column; }
 
 /* ── stops ──────────────────────────────────────────── */
-.rt-stop { padding-top: clamp(104px, 15vh, 184px); }
-.rt-stop--tight { padding-top: clamp(32px, 5vh, 56px); }
+.rt-stop { padding-top: clamp(112px, 16vh, 200px); }
+.rt-stop--tight { padding-top: clamp(48px, 7vh, 88px); }
 .rt-copy { grid-column: 1 / span 6; display: grid; gap: 20px; align-content: start; justify-items: start; }
 .rt-copy--c { grid-column: 1 / span 5; }
 .rt-copy--l { grid-column: 2 / span 7; }
+.rt-copy--wide { grid-column: 1 / span 8; }
 
-/* what the system printed: each line appears as the order gets there */
-.rt-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font: 500 12px/18px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink); }
-.rt-log li { display: grid; grid-template-columns: 8ch minmax(0, 1fr); gap: 14px; transition: opacity .2s ease-out, translate .3s var(--ease); }
-.rt-log time { color: var(--ink-faint); }
-.rt-line[data-ready] ~ * .rt-log li:not([data-on]) { opacity: 0; translate: 0 4px; }
-.rt-log--side { grid-column: 9 / span 4; grid-row: 1; align-self: start; margin-top: 8px; }
+/* the drawings: patent-sheet figures, forest ink on transparency, so they sit on the mist like the line.
+   Each is drawn in, left to right like a plotter pen, once the line reaches its point. */
+.rt-fig { --draw: 1; margin: 0; display: grid; gap: 14px; align-content: start; }
+.rt-fig img {
+  display: block; width: 100%; height: auto;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--draw) * 118% - 18%), transparent calc(var(--draw) * 118%));
+  mask-image: linear-gradient(to bottom, #000 calc(var(--draw) * 118% - 18%), transparent calc(var(--draw) * 118%));
+}
+.rt-fig figcaption { display: flex; gap: 10px; font: 500 12px/18px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-faint); text-wrap: pretty; opacity: clamp(0, calc((var(--draw) - .7) * 4), 1); }
+.rt-fig figcaption span { flex: none; color: var(--ink); }
 
-/* stop 2: the three accounts, and the bend */
-.rt-fan { height: 236px; margin-top: 48px; }
+/* stop 2: the locked terminal beside the fan of accounts, and the bend */
+.rt-fan { --f0: 0px; min-height: 300px; margin-top: 40px; }
+.rt-fig--fan { grid-column: 1 / span 4; grid-row: 1; }
+.rt-fan-map { grid-column: 1 / -1; grid-row: 1; height: 0; }
 
-/* stop 3: how it works */
-.rt-steps { margin: 12px 0 0; width: 100%; }
-.rt-steps > div { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: 24px; row-gap: 4px; align-items: baseline; padding: 18px 0; border-top: 1px solid var(--rule-soft); }
-.rt-steps dt { font: 600 18px/1.3 var(--font-sans); letter-spacing: -.01em; color: var(--ink); }
-.rt-steps dd { margin: 0; font-size: 16px; line-height: 1.5; color: var(--ink-muted); }
+/* stop 3: the switch, and how it works in three lines */
+.rt-pair { align-items: start; }
+.rt-pair, .rt-check, .rt-kind { --lead-y: 150px; }
+.rt-fig--lead { grid-column: 5 / span 4; grid-row: 1; }
+.rt-copy--beside { grid-column: 1 / span 4; grid-row: 1; padding-top: 8px; }
+.rt-steps { list-style: none; margin: 8px 0 0; padding: 0; width: 100%; }
+.rt-steps li { display: flex; align-items: baseline; gap: 14px; padding: 14px 0; border-top: 1px solid var(--rule-soft); font: 600 19px/1.3 var(--font-sans); letter-spacing: -.01em; color: var(--ink); }
+.rt-steps li::before { content: ""; flex: none; width: 7px; height: 7px; rotate: 45deg; translate: 0 -3px; background: var(--forest); }
 
-/* stop 4: four checks, each with the record it leaves */
-.rt-checks { list-style: none; margin: 64px 0 0; padding: 0; display: grid; gap: 52px; }
-.rt-check-copy { grid-column: 1 / span 3; display: grid; gap: 8px; align-content: start; }
-.rt-check-copy p { margin: 0; font-size: 16px; line-height: 1.5; color: var(--ink-muted); text-wrap: pretty; }
-.rt-panel { grid-column: 4 / span 3; align-self: start; display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--rule); font: 500 12px/18px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink); }
-.rt-panel-head { margin: 0; color: var(--ink-faint); }
-.rt-panel ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
-.rt-panel li { display: grid; grid-template-columns: 8ch minmax(0, 1fr); gap: 14px; }
-.rt-panel li[data-bar] { grid-template-columns: 5ch minmax(0, 1fr) 6ch; align-items: center; }
-.rt-panel li[data-bar] > :last-child { text-align: right; }
-.rt-panel[data-art="stores"] li { grid-template-columns: minmax(0, 1fr) auto; }
-.rt-panel li[data-tone="stop"] { color: var(--stop); }
-.rt-bar { display: block; height: 4px; background: var(--rule-soft); }
-.rt-bar i { display: block; height: 100%; background: var(--forest); }
-.rt-panel-result { margin: 2px 0 0; padding-top: 9px; border-top: 1px solid var(--rule-soft); display: flex; align-items: center; gap: 8px; color: var(--forest); transition: color .2s ease-out; }
+/* stop 4: four checks, each a drawing, a title and the line it printed */
+.rt-checks { list-style: none; margin: 56px 0 0; padding: 0; display: grid; gap: 24px; }
+.rt-check { align-items: start; }
+.rt-fig--check { grid-column: 5 / span 4; grid-row: 1; }
+.rt-check-copy { grid-column: 1 / span 4; grid-row: 1; display: grid; gap: 10px; align-content: start; padding-top: 118px; }
+.rt-note--checks { grid-column: 1 / span 8; margin-top: 32px; }
+.rt-check-copy .rt-h3 { font-size: 22px; }
+.rt-check-copy p { margin: 0; font-size: 17px; line-height: 1.5; color: var(--ink-muted); text-wrap: pretty; }
+.rt-check-copy p.rt-result { margin-top: 6px; display: flex; align-items: center; gap: 8px; font: 500 13px/18px var(--font-mono); color: var(--forest); transition: color .2s ease-out; }
 .rt-tick { flex: none; }
 .rt-tick path { stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; transition: stroke-dashoffset .3s var(--ease); }
-.rt-line[data-ready] ~ * .rt-panel-result:not([data-on]) { color: var(--ink-faint); }
-.rt-line[data-ready] ~ * .rt-panel-result:not([data-on]) .rt-tick path { stroke-dashoffset: 1; }
-.rt-note--checks { grid-column: 4 / span 3; margin-top: 18px; }
+.rt-line[data-ready] ~ * .rt-result:not([data-on]) { color: var(--ink-faint); }
+.rt-line[data-ready] ~ * .rt-result:not([data-on]) .rt-tick path { stroke-dashoffset: 1; }
 
-/* the providers, feeding into the line */
-.rt-feed { margin-top: clamp(80px, 11vh, 128px); min-height: 196px; --in-x: -12px; }
-.rt-feed-title { grid-column: 1 / span 6; grid-row: 1; align-self: start; padding-top: 10px; font-size: clamp(24px, 2vw, 30px); }
-.rt-providers { grid-column: 10 / span 3; grid-row: 1; list-style: none; margin: 0; padding: 0; }
-.rt-providers li { position: relative; height: 44px; display: flex; align-items: center; font: 500 15px/1 var(--font-sans); white-space: nowrap; color: var(--ink); transition: color .2s ease-out; }
-.rt-line[data-ready] ~ * .rt-providers li:not([data-on]) { color: var(--ink-faint); }
+/* the providers, feeding into the line from the left */
+.rt-feed { margin-top: clamp(96px, 13vh, 144px); min-height: 176px; --in-x: calc(100% + 14px); }
+.rt-feed-title { grid-column: 1 / span 5; grid-row: 1; align-self: start; padding-top: 6px; }
+.rt-providers { grid-column: 6 / span 3; grid-row: 1; list-style: none; margin: 0; padding: 0; justify-self: end; }
+.rt-providers li { position: relative; height: 52px; display: flex; align-items: center; justify-content: flex-end; font: 600 19px/1 var(--font-sans); letter-spacing: -.01em; white-space: nowrap; color: var(--ink); transition: color .2s ease-out; }
+.rt-line[data-ready] ~ * .rt-providers li:not([data-on]) { color: var(--ink-dim); }
 
-/* stop 5: underwriting, and the branch that issues US-04 */
-.rt-facts { list-style: none; margin: 12px 0 0; padding: 0; width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gap); }
-.rt-facts li { display: grid; gap: 2px; padding: 14px 0; border-top: 1px solid var(--rule-soft); }
-.rt-facts b { font: 600 16px/1.35 var(--font-sans); letter-spacing: -.005em; }
-.rt-facts span { font-size: 15px; line-height: 1.45; color: var(--ink-muted); }
-.rt-branch { margin-top: 28px; min-height: 236px; --split-y: 20px; --us04-y: 110px; --join-y: 200px; }
-/* the log sits beside the branch it describes, in the gutter left of the line like the stop labels */
-.rt-branch .rt-log { grid-column: 3 / span 5; grid-row: 1; justify-self: end; align-self: start; margin-top: 101px; }
+/* stop 5: the key beside the branch that issues US-04 */
+.rt-branch { margin-top: 40px; min-height: 340px; --split-y: 20px; --us04-y: 170px; --join-y: 320px; }
+.rt-fig--branch { grid-column: 1 / span 4; grid-row: 1; }
 .rt-art { grid-column: 1 / -1; grid-row: 1; height: 0; }
 
-/* stop 6: the sweep to the left edge, the order docked beside its payout */
-.rt-sweep { min-height: 252px; }
-.rt-slot--dock { grid-column: 1 / span 4; grid-row: 1; --slot-x: var(--lane-l); --slot-y: 100px; }
-.rt-copy--statement { grid-column: 5 / span 8; grid-row: 1; padding-top: 72px; }
-.rt-statement { width: 100%; margin-top: 12px; border-top: 1px solid var(--rule); font: 500 13px/1.4 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-muted); }
-.rt-statement > div { display: grid; grid-template-columns: 7ch minmax(0, 1fr) minmax(0, 1fr) 11ch 8ch; column-gap: 16px; align-items: baseline; padding: 13px 0; border-bottom: 1px solid var(--rule-soft); }
-.rt-statement > div > :nth-child(2) { color: var(--ink); }
-.rt-statement > div > :nth-child(4) { text-align: right; }
-.rt-statement > div > :nth-child(5) { text-align: right; }
-.rt-statement > div[data-at] > :nth-child(4) { font: 600 17px/1.2 var(--font-sans); letter-spacing: -.01em; }
-.rt-statement > div[data-at] > :nth-child(n + 4) { color: var(--ink); transition: color .2s ease-out; }
-.rt-line[data-ready] ~ * .rt-statement > div[data-at]:not([data-on]) > :nth-child(n + 4) { color: var(--ink-faint); }
+/* stop 6: the sweep to the left edge, the order docked beside the payout, the letterbox */
+.rt-sweep { min-height: 360px; align-items: start; }
+.rt-slot--dock { grid-column: 1 / span 3; grid-row: 1; --slot-x: var(--lane-l); --slot-y: 100px; }
+.rt-copy--payout { grid-column: 5 / span 5; grid-row: 1; padding-top: 72px; }
+.rt-fig--payout { grid-column: 10 / span 3; grid-row: 1; padding-top: 40px; }
+.rt-payout { margin-top: 12px; display: grid; gap: 8px; }
+.rt-payout-amount { font: 600 clamp(44px, 4.8vw, 72px)/1 var(--font-sans); letter-spacing: -.035em; color: var(--ink); transition: color .3s ease-out; }
+.rt-payout-meta { display: grid; gap: 2px; font: 500 13px/1.5 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-muted); }
+.rt-payout-meta > :first-child { color: var(--ink); }
+.rt-line[data-ready] ~ * .rt-payout:not([data-on]) .rt-payout-amount { color: var(--ink-dim); }
 
-/* the arrival: industries as stations on the line */
-.rt-stations { list-style: none; margin: 36px 0 0; padding: 0; }
-.rt-station { align-items: baseline; padding: 22px 0; background: linear-gradient(var(--rule-soft), var(--rule-soft)) 100% 0 / calc(100% - (100% + var(--gap)) / 12) 1px no-repeat; }
-.rt-station .rt-h3 { grid-column: 2 / span 3; font-size: 20px; }
-.rt-station p { grid-column: 5 / span 6; margin: 0; font-size: 17px; line-height: 1.5; color: var(--ink-muted); }
+/* the arrival: who it's for, three drawings in a row */
+.rt-kinds { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 8px; }
+.rt-kind { align-items: start; }
+.rt-fig--kind { grid-column: 2 / span 3; grid-row: 1; }
+.rt-kind-copy { grid-column: 5 / span 3; grid-row: 1; display: grid; gap: 8px; align-content: start; padding-top: 128px; }
+/* each one steps further along, so the three read as stations down the route, not a row of cards */
+.rt-kind:nth-child(2) .rt-fig--kind { grid-column: 4 / span 3; }
+.rt-kind:nth-child(2) .rt-kind-copy { grid-column: 7 / span 3; }
+.rt-kind:nth-child(3) .rt-fig--kind { grid-column: 6 / span 3; }
+.rt-kind:nth-child(3) .rt-kind-copy { grid-column: 9 / span 3; }
+.rt-kind .rt-h3 { font-size: 22px; }
+.rt-kind p { margin: 0; font-size: 17px; line-height: 1.5; color: var(--ink-muted); text-wrap: pretty; }
 
 /* merchant stories: the component's own layout (landing.css), in this page's flat panels */
 .rt-wide { grid-column: 2 / -1; }
@@ -328,8 +335,8 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
     --card-w: min(320px, calc(100vw - 2 * var(--gut) - var(--rail)));
   }
   .rt-row { grid-template-columns: minmax(0, 1fr); padding-left: var(--rail); }
-  .rt-hero-copy, .rt-slot--start, .rt-copy, .rt-copy--c, .rt-copy--l, .rt-log--side, .rt-check-copy, .rt-panel, .rt-note--checks, .rt-feed-title, .rt-providers,
-  .rt-branch .rt-log, .rt-art, .rt-slot--dock, .rt-copy--statement, .rt-station .rt-h3, .rt-station p, .rt-wide, .rt-faq-side, .rt-questions, .rt-copy--book { grid-column: 1 / -1; grid-row: auto; }
+  .rt-hero-copy, .rt-slot--start, .rt-copy, .rt-copy--c, .rt-copy--l, .rt-copy--wide, .rt-copy--beside, .rt-copy--payout, .rt-fig, .rt-fan-map, .rt-check-copy,
+  .rt-feed-title, .rt-providers, .rt-art, .rt-slot--dock, .rt-wide, .rt-faq-side, .rt-questions, .rt-copy--book, .rt-kind-copy, .rt-note--checks { grid-column: 1 / -1 !important; grid-row: auto; }
 
   /* the tag would cover the copy here: the order travels as its pip alone */
   .rt-tag { display: none; }
@@ -343,24 +350,28 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
   .rt-slot--start { margin-top: 44px; }
   .rt-portal-in { max-width: 760px; }
 
-  .rt-log--side { margin-top: 24px; }
-  .rt-panel { max-width: 440px; margin-top: 16px; }
-  .rt-check-copy { max-width: 52ch; }
-  .rt-note--checks { margin-top: 20px; }
-  .rt-feed { min-height: 0; }
+  .rt-fig { width: min(100%, 380px); }
+  .rt-fig--check, .rt-fig--kind { width: min(100%, 300px); }
+  .rt-fan { --f0: calc(100% - 244px); min-height: 0; padding-bottom: 244px; margin-top: 32px; }
+  .rt-pair .rt-copy--beside { order: -1; padding-top: 40px; margin-bottom: 32px; }
+  .rt-pair, .rt-check, .rt-kind { --lead-y: 12px; }
+  .rt-node[data-lead] .rt-node-label { top: -9px; }
+  .rt-check, .rt-kind { padding-top: 34px; row-gap: 20px; }
+  .rt-check-copy, .rt-kind-copy { padding-top: 0; }
+  .rt-checks { gap: 48px; }
+  .rt-feed { min-height: 0; --in-x: -14px; }
   .rt-feed-title { padding-top: 0; }
-  .rt-providers { margin: 24px 0 0 84px; }
-  .rt-branch { padding-bottom: 236px; --split-y: calc(100% - 214px); --us04-y: calc(100% - 124px); --join-y: calc(100% - 34px); }
-  .rt-branch .rt-log { margin-top: 0; justify-self: start; }
-  /* the log above the branch already says it; the split's own label would sit on it */
+  .rt-providers { justify-self: start; margin: 20px 0 0 56px; }
+  .rt-providers li { justify-content: flex-start; font-size: 17px; height: 46px; }
+  .rt-branch { padding-bottom: 236px; row-gap: 20px; --split-y: calc(100% - 214px); --us04-y: calc(100% - 124px); --join-y: calc(100% - 34px); }
   .rt-branch .rt-node[data-rt="split"] .rt-node-label { display: none; }
-  .rt-check-copy { padding-top: 32px; }
+  .rt-check-copy { max-width: 52ch; }
   /* reduced motion: the order waits at the payout, so the hero needs no room for it */
   @media (prefers-reduced-motion: reduce) { .rt-slot--start { height: 0; margin-top: 0; } }
   .rt-sweep { min-height: 0; }
-  .rt-copy--statement { padding-top: 44px; }
-  .rt-station { row-gap: 6px; background-size: calc(100% - var(--rail)) 1px; }
-  .rt-station .rt-node { top: 35px; }
+  .rt-copy--payout { padding-top: 40px; }
+  .rt-fig--payout { padding-top: 32px; }
+  .rt-kinds { margin-top: 16px; gap: 40px; }
   .rt-faq-side { margin-bottom: 28px; }
 }
 @media (max-width: 860px) {
@@ -378,16 +389,6 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
   .rt-portal-in { width: calc(100% - 24px); }
   .rt-stop { padding-top: 96px; }
   .rt-stop--tight { padding-top: 36px; }
-  .rt-steps > div { grid-template-columns: minmax(0, 1fr); }
-  .rt-facts { grid-template-columns: minmax(0, 1fr); }
-  .rt-providers { margin-left: 72px; }
-  .rt-statement > div { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "what amount" "to state" "date date"; row-gap: 2px; }
-  .rt-statement > div > :nth-child(1) { grid-area: date; }
-  .rt-statement > div > :nth-child(2) { grid-area: what; }
-  .rt-statement > div > :nth-child(3) { grid-area: to; }
-  .rt-statement > div > :nth-child(4) { grid-area: amount; }
-  .rt-statement > div > :nth-child(5) { grid-area: state; }
-  .rt-statement > div > :empty { display: none; }
   .rt-q button { font-size: 17px; padding: 20px 0; }
   .rt-footer .vt-footer { padding-top: 44px; }
 }
@@ -395,5 +396,5 @@ body { margin: 0; background: var(--mist); color: var(--ink); font-family: var(-
 @media (prefers-reduced-motion: reduce) {
   .rt-header, .rt-menu { transition: none; }
   .rt-line { transition: none; }
-  .rt-log li, .rt-tick path, .rt-q-a, .rt-q-bar { transition: none; }
+  .rt-tick path, .rt-q-a, .rt-q-bar { transition: none; }
 }

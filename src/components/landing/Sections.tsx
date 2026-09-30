@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
+import Image from "next/image";
 import { Footer } from "@/components/vertlo";
 import * as c from "@/content/landing";
 import { MerchantStories } from "@/components/landing/MerchantStories";
@@ -10,7 +11,8 @@ import { Questions } from "@/components/landing/Questions";
    the line, with its copy beside it. The sections here only lay out copy and place points for the line:
    `data-rt` names a point, `data-lane` says which lane it sits in (route.css turns lanes into
    positions: centre, right and left on desktop, the left edge on phones), and `data-at` marks
-   anything that changes once the line has passed a point. Route.tsx measures the points, draws the line
+   anything that changes once the line has passed a point. Each stop leads with one drawing (Figure),
+   patent-sheet style, so the page is looked at more than read. Route.tsx measures the points, draws the line
    through them and moves the order. Every section is a server component. Layout and look are in
    app/route.css (rt-*). */
 
@@ -26,10 +28,21 @@ function Anchor({ name, lane, via, y }: PointProps) {
 /** A point drawn on the line: a small diamond that fills when the line reaches it, and a label beside it.
     `off`/`to` colour it as an account (live, stopped) before and after. */
 function Node({
-  name, lane, via, y, on, off, to, side, time, label, children,
-}: PointProps & { on?: string; off?: "live"; to?: "live" | "stop"; side?: "right"; time?: string; label?: string; children?: ReactNode }) {
+  name, lane, via, y, on, off, to, side, lead, time, label, children,
+}: PointProps & { on?: string; off?: "live"; to?: "live" | "stop"; side?: "right"; lead?: boolean; time?: string; label?: string; children?: ReactNode }) {
   return (
-    <span className="rt-node" data-rt={name} data-at={on ?? name} data-lane={lane} data-via={via} data-off={off} data-to={to} data-side={side} style={at(y)}>
+    <span
+      className="rt-node"
+      data-rt={name}
+      data-at={on ?? name}
+      data-lane={lane}
+      data-via={via}
+      data-off={off}
+      data-to={to}
+      data-side={side}
+      data-lead={lead || undefined}
+      style={at(y)}
+    >
       <i className="rt-node-dot" />
       {(time || label || children) && (
         <span className="rt-node-label">
@@ -52,17 +65,20 @@ function Swap({ point, off, on }: { point: string; off: ReactNode; on: ReactNode
   );
 }
 
-/** What the system printed: each line appears when the line reaches its point. */
-function Log({ lines, className }: { lines: c.LogLine[]; className?: string }) {
+/** A drawing on the route, patent-sheet style: forest ink on transparency with its figure number and one
+    line underneath. The line draws it (RouteLine sets --draw as the head passes), and on wide screens a
+    leader runs to it from the node named by `leader`. Loaded eagerly so a jump link never lands on a blank. */
+function Figure({ fig, leader, className }: { fig: c.Fig; leader?: string; className?: string }) {
   return (
-    <ol className={`rt-log${className ? ` ${className}` : ""}`}>
-      {lines.map((l, i) => (
-        <li key={i} data-at={l.at}>
-          <time>{l.time}</time>
-          <span>{l.text}</span>
-        </li>
-      ))}
-    </ol>
+    <figure className={`rt-fig${className ? ` ${className}` : ""}`} data-leader={leader}>
+      <Image src={fig.src} alt={fig.alt} width={880} height={880} unoptimized loading="eager" />
+      {fig.caption && (
+        <figcaption>
+          <span>Fig. {fig.n}</span>
+          {fig.caption}
+        </figcaption>
+      )}
+    </figure>
   );
 }
 
@@ -135,7 +151,7 @@ export function Portal() {
 }
 
 /* Stop 2, Paused: the order is sent to US-01, and US-01 closes. Its node turns red and the line to it
-   goes dotted; the log prints what happened. The fan below is the three accounts the router splits across. */
+   goes dotted. The drawing of the locked terminal sits left of the fan of accounts the router splits across. */
 export function Paused() {
   const p = c.paused;
   const lanes: Record<string, Lane> = { us01: "c", us03: "d", uk02: "x" };
@@ -147,102 +163,81 @@ export function Paused() {
           <h2 className="rt-h2">{p.title}</h2>
           <p className="rt-lede">{p.blurb}</p>
         </div>
-        <Log lines={p.log} className="rt-log--side" />
       </div>
-      <div className="rt-row rt-fan" role="img" aria-label={p.alt}>
-        <Anchor name="pause" lane="c" y="8px" />
-        <Anchor name="junction" lane="c" y="64px" />
-        {p.accounts.map((a) => (
-          <Node
-            key={a.id}
-            name={a.name}
-            on={a.name === "us01" ? "pause" : undefined}
-            lane={lanes[a.name]}
-            y="170px"
-            off="live"
-            to={a.name === "us01" ? "stop" : "live"}
-            side={a.name === "uk02" ? "right" : undefined}
-          >
-            <b>{a.id}</b>
-            <Swap point={a.name === "us01" ? "pause" : "junction"} off={a.before} on={a.after} />
-          </Node>
-        ))}
-        <Anchor name="rejoin" lane="r" via="vh" y="236px" />
-      </div>
-    </section>
-  );
-}
-
-/* Stop 3, Rerouted: the line has bent round the paused account. How it works, in three lines. */
-export function Rerouted() {
-  const h = c.how;
-  return (
-    <section className="rt-stop rt-stop--tight" id="how">
-      <div className="rt-row">
-        <Node name="rerouted" lane="r" y="var(--node-h2)" time={h.node.time} label={h.node.label} />
-        <div className="rt-copy">
-          <h2 className="rt-h2">{h.title}</h2>
-          <dl className="rt-steps">
-            {h.steps.map((s) => (
-              <div key={s.title}>
-                <dt>{s.title}</dt>
-                <dd>{s.body}</dd>
-              </div>
-            ))}
-          </dl>
+      <div className="rt-row rt-fan">
+        <Figure fig={p.fig} className="rt-fig--fan" />
+        <div className="rt-fan-map" role="img" aria-label={p.alt}>
+          <Anchor name="pause" lane="c" y="calc(var(--f0) + 8px)" />
+          <Anchor name="junction" lane="c" y="calc(var(--f0) + 64px)" />
+          {p.accounts.map((a) => (
+            <Node
+              key={a.id}
+              name={a.name}
+              on={a.name === "us01" ? "pause" : undefined}
+              lane={lanes[a.name]}
+              y="calc(var(--f0) + 170px)"
+              off="live"
+              to={a.name === "us01" ? "stop" : "live"}
+              side={a.name === "uk02" ? "right" : undefined}
+            >
+              <b>{a.id}</b>
+              <Swap point={a.name === "us01" ? "pause" : "junction"} off={a.before} on={a.after} />
+            </Node>
+          ))}
+          <Anchor name="rejoin" lane="r" via="vh" y="calc(var(--f0) + 236px)" />
         </div>
       </div>
     </section>
   );
 }
 
-/** The record a check leaves; its last line is printed when the order passes the check. */
-function Panel({ item, point }: { item: c.Check; point: string }) {
+/* Stop 3, Rerouted: the line has bent round the paused account. The switch, and how it works in three lines. */
+export function Rerouted() {
+  const h = c.how;
   return (
-    <div className="rt-panel" data-art={item.art}>
-      <p className="rt-panel-head">{item.head}</p>
-      <ul>
-        {item.rows.map((r) => (
-          <li key={r.k + r.v} data-tone={r.tone} data-bar={r.bar !== undefined ? "" : undefined}>
-            <span>{r.k}</span>
-            {r.bar !== undefined && (
-              <i className="rt-bar">
-                <i style={{ width: `${r.bar}%` }} />
-              </i>
-            )}
-            <span>{r.v}</span>
-          </li>
-        ))}
-      </ul>
-      <p className="rt-panel-result" data-at={point}>
-        <Tick />
-        <span>{item.result}</span>
-      </p>
-    </div>
+    <section className="rt-stop rt-stop--tight" id="how">
+      <div className="rt-row rt-pair">
+        <Node name="rerouted" lane="r" y="var(--lead-y)" lead time={h.node.time} label={h.node.label} />
+        <Figure fig={h.fig} leader="rerouted" className="rt-fig--lead" />
+        <div className="rt-copy rt-copy--beside">
+          <h2 className="rt-h2">{h.title}</h2>
+          <ol className="rt-steps">
+            {h.steps.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </section>
   );
 }
 
-/* Stop 4, Approved: the order passes four checks on the line, then the providers feed in from the side. */
+/* Stop 4, Approved: the order passes four checks on the line, each a drawing, a title and what it printed.
+   Then the providers feed in from the side. */
 export function Approved() {
   const w = c.whatYouGet;
   return (
     <section className="rt-stop" id="approved">
       <div className="rt-row">
         <Node name="approved" lane="r" y="var(--node-h2)" time={w.node.time} label={w.node.label} />
-        <div className="rt-copy">
+        <div className="rt-copy rt-copy--wide">
           <h2 className="rt-h2">{w.title}</h2>
           <p className="rt-lede">{w.blurb}</p>
         </div>
       </div>
       <ol className="rt-checks">
         {w.items.map((it, i) => (
-          <li key={it.art} className="rt-row rt-check">
-            <Node name={`cp${i}`} lane="r" y="12px" time={it.node.time} label={it.node.label} />
+          <li key={it.key} className="rt-row rt-check">
+            <Node name={`cp${i}`} lane="r" y="var(--lead-y)" lead time={it.node.time} label={it.node.label} />
+            <Figure fig={it.fig} leader={`cp${i}`} className="rt-fig--check" />
             <div className="rt-check-copy">
               <h3 className="rt-h3">{it.title}</h3>
               <p>{it.body}</p>
+              <p className="rt-result" data-at={`cp${i}`}>
+                <Tick />
+                <span>{it.result}</span>
+              </p>
             </div>
-            <Panel item={it} point={`cp${i}`} />
           </li>
         ))}
       </ol>
@@ -255,8 +250,8 @@ export function Approved() {
         <ul className="rt-providers">
           {c.providers.items.map((name, i) => (
             <li key={name} data-at={`prov${i}`}>
-              <i className="rt-anchor rt-anchor--in" data-rt={`prov${i}`} />
               {name}
+              <i className="rt-anchor rt-anchor--in" data-rt={`prov${i}`} />
             </li>
           ))}
         </ul>
@@ -272,23 +267,15 @@ export function Underwritten() {
     <section className="rt-stop" id="underwriting">
       <div className="rt-row">
         <Node name="uw" lane="r" y="var(--node-h2)" time={f.node.time} label={f.node.label} />
-        <div className="rt-copy">
+        <div className="rt-copy rt-copy--wide">
           <h2 className="rt-h2">{f.title}</h2>
           <p className="rt-lede">{f.description}</p>
-          <ul className="rt-facts">
-            {f.items.map((it) => (
-              <li key={it.label}>
-                <b>{it.label}</b>
-                <span>{it.meta}</span>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
       <div className="rt-row rt-branch">
-        <Log lines={f.log} />
+        <Figure fig={f.fig} leader="us04" className="rt-fig--branch" />
         <div className="rt-art" role="img" aria-label={f.alt}>
-          <Node name="split" lane="r" y="var(--split-y)" time={f.split.time} label={f.split.label} />
+          <Node name="split" lane="r" y="var(--split-y)" side="right" time={f.split.time} label={f.split.label} />
           <Node name="us04" lane="b" y="var(--us04-y)" to="live" side="right">
             <b>{f.account.id}</b>
             <Swap point="us04" off={f.account.before} on={f.account.after} />
@@ -300,9 +287,10 @@ export function Underwritten() {
   );
 }
 
-/* Stop 6, Settled: the line sweeps across to the left edge and the order docks beside the payout it is in. */
+/* Stop 6, Settled: the line sweeps across to the left edge, the order docks, and the payout amount is the stop. */
 export function Settled() {
   const s = c.settled;
+  const p = s.payout;
   return (
     <section className="rt-stop" id="settled">
       <div className="rt-row rt-sweep">
@@ -310,43 +298,46 @@ export function Settled() {
         <div className="rt-slot rt-slot--dock" aria-hidden="true">
           <i className="rt-anchor rt-anchor--slot" data-rt="payout" />
         </div>
-        <div className="rt-copy rt-copy--statement">
+        <div className="rt-copy rt-copy--payout">
           <h2 className="rt-h2">{s.title}</h2>
           <p className="rt-lede">{s.blurb}</p>
-          <div className="rt-statement" role="table" aria-label="Payout statement">
-            {s.rows.map((r) => (
-              <div key={r.what} role="row" data-at={r.after ? "payout" : undefined}>
-                <span role="cell">{r.date}</span>
-                <span role="cell">{r.what}</span>
-                <span role="cell">{r.to}</span>
-                <span role="cell">{r.amount}</span>
-                <span role="cell">{r.after && <Swap point="payout" off={r.before} on={r.after} />}</span>
-              </div>
-            ))}
+          <div className="rt-payout" data-at="payout">
+            <span className="rt-payout-amount">{p.amount}</span>
+            <span className="rt-payout-meta">
+              <span>
+                Payout {p.id} · {p.date} · <Swap point="payout" off={p.before} on={p.after} />
+              </span>
+              <span>{p.includes}</span>
+            </span>
           </div>
           <p className="rt-note">{s.note}</p>
         </div>
+        <Figure fig={s.fig} className="rt-fig--payout" />
       </div>
     </section>
   );
 }
 
-/* At the arrival: who it's for, as three stations on the line. */
+/* At the arrival: who it's for. Each industry is its own stop on the line, its drawing hung off the node. */
 export function Industries() {
   const n = c.industries;
   return (
     <section className="rt-stop" id="industries">
       <div className="rt-row">
+        <Node name="ind0" lane="l" y="var(--node-h2)" />
         <div className="rt-copy rt-copy--l">
           <h2 className="rt-h2">{n.title}</h2>
         </div>
       </div>
-      <ul className="rt-stations">
+      <ul className="rt-kinds">
         {n.items.map((it, i) => (
-          <li key={it.title} className="rt-row rt-station">
-            <Node name={`ind${i}`} lane="l" y="50%" />
-            <h3 className="rt-h3">{it.title}</h3>
-            <p>{it.body}</p>
+          <li key={it.title} className="rt-row rt-kind">
+            <Node name={`ind${i + 1}`} lane="l" y="var(--lead-y)" lead />
+            <Figure fig={it.fig} leader={`ind${i + 1}`} className="rt-fig--kind" />
+            <div className="rt-kind-copy">
+              <h3 className="rt-h3">{it.title}</h3>
+              <p>{it.body}</p>
+            </div>
           </li>
         ))}
       </ul>
