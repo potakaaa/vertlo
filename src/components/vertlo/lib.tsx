@@ -1136,8 +1136,8 @@ function DotArt(p) {
       ctx.clearRect(0, 0, DOT_W, DOT_H);
       for (var i = 0; i < pts.length; i++) {
         var q = pts[i], v = q[2], a, r;
-        if (v > .02) { var w = 1 + .18 * Math.sin(t * 1.4 - (q[0] + q[1]) * .025); a = (dark ? (.08 + .6 * v) : (.06 + .34 * v)) * w * (.35 + .65 * q[3]); r = .85 + .75 * v; }
-        else { a = (dark ? .1 : .075) * q[3]; r = .8; }
+        if (v > .02) { var w = 1 + .18 * Math.sin(t * 1.4 - (q[0] + q[1]) * .025); a = (dark ? (.08 + .6 * v) : (.12 + .66 * v)) * w * (.35 + .65 * q[3]); r = .85 + .8 * v; } /* site: light ink darker, the drawings read on paper */
+        else { a = (dark ? .1 : .09) * q[3]; r = .8; }
         if (a < .01) continue;
         ctx.fillStyle = "rgba(" + INK + a.toFixed(3) + ")";
         ctx.beginPath(); ctx.arc(q[0], q[1], r, 0, 6.2832); ctx.fill();
