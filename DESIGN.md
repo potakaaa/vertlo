@@ -161,7 +161,7 @@ The page is one line. A single 1.5px forest line drops from under the header, ru
 
 The world is quiet and exact. Trust comes from precision rather than decoration: order ids, MIDs, timestamps and statuses are set in JetBrains Mono with tabular figures, laid flat on the mist or on a barely lighter paper panel with a hairline edge. Colour is almost entirely forest and ink on mist; bright green appears only on what is live, one muted red only on what has stopped. The one dark object on the page is the reused portal product shot, which sits in a laptop the line runs behind; it is the product, not a surface style.
 
-Each stop after the product shot leads with one **figure**: a patent-sheet drawing of a single object in forest ink on transparency (a padlocked card terminal, a railway switch, a key), numbered like a patent sheet and hung off its node by a hairline leader. The drawings give the page something to look at while the copy stays at a headline and one line; they are drawn by the line as it passes.
+Each stop after the product shot leads with one **figure**: a patent-sheet drawing of a single object in forest ink on transparency (always the order's parcel: padlocked, relabelled, keyed, delivered), numbered like a patent sheet and hung off its node by a hairline leader. The drawings give the page something to look at while the copy stays at a headline and one line; they are drawn by the line as it passes.
 
 State is shown by the line passing a point. Everything that changes (a node filling, a log line appearing, a tick drawing, a statement row darkening) flips when the line reaches it and flips back when the reader scrolls up. With reduced motion the whole route is drawn, every state is on, and the order waits settled at its payout.
 
@@ -172,7 +172,7 @@ State is shown by the line passing a point. Everything that changes (a node fill
 - Two faces: Schibsted Grotesk for words, JetBrains Mono for what the system prints.
 - Flat hairlines, 6px corners, no shadows, no gradients, no glass.
 - Mostly empty space: tall stop padding, a headline and one line of copy per stop.
-- One patent-sheet figure per stop, forest ink, tied to the line by a leader and drawn by the scroll.
+- One patent-sheet figure per stop: the same parcel (the order) in its state at that stop, forest ink, tied to the line by a leader and drawn by the scroll.
 
 ## Colors
 
@@ -287,7 +287,8 @@ The order is a card where it starts and where it settles, a tag while it travels
 
 ### Figures (signature)
 One drawing per stop, never decoration between stops.
-- **Drawing:** a single object in the style of a patent drawing: technical-pen line, three-quarter axonometric view, sparse parallel hatching only on faces turned away, no tonal mass, no text or numerals in the image. Shipped as forest ink (`#1f3b2b`) on transparency, trimmed to its ink and padded square, 880px WebP. The switch figure is the style reference every other drawing is generated against.
+- **Subject:** every figure is the same object, the order's parcel (#4821): the same box, string, bow and blank label, from the same three-quarter angle at the same size. Each stop changes one thing about it (padlocked when US-01 closes, relabelled when rerouted, a new key when US-04 is issued, untied beside an envelope at payout, opened on the industry it carries). No metaphors from other worlds (trains, pipes, switches): the reader follows one object down the route.
+- **Drawing:** in the style of a patent drawing: technical-pen line, sparse parallel hatching only on faces turned away, no tonal mass, no text or numerals in the image. Shipped as forest ink (`#1f3b2b`) on transparency, trimmed to its ink and padded square, 880px WebP. The base parcel (no change applied) is the reference every stop's drawing is generated against.
 - **Size:** at most four columns (about 410px at 1440); 300 to 380px on one lane.
 - **Caption:** "Fig. N" in ink and one mono line in faint; numbers in captions reconcile with the order's story, and a caption that states a time or amount is marked illustrative nearby.
 - **Leader:** on the wide layout a 1px forest hairline runs straight across from the stop's node into the figure's near edge. The node's label sits above the leader (never struck through).
