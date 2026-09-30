@@ -354,8 +354,7 @@ main { overflow-x: clip; }
 .bd-stop + .bd-stop:not(.bd-stop--dark)::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--rule-soft); }
 .bd-stop--dark + .bd-stop::after { display: none; }
 .bd-stop-head .lp-h2 { max-width: 16ch; }
-/* the portal zooms out over the rail while it tours, so it stacks above it */
-.bd-stop--portal { z-index: 6; gap: clamp(24px, 3vw, 40px); }
+.bd-stop--portal { gap: clamp(24px, 3vw, 40px); }
 
 /* the rail: a small departures board that keeps the time */
 .bd-rail { position: sticky; top: 96px; z-index: 5; margin-top: clamp(72px, 8vw, 120px); }
@@ -447,8 +446,8 @@ main { overflow-x: clip; }
 }
 .bd-dsp-ico { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 3px; background: rgba(245,181,68,.14); color: var(--sig-warn); }
 .bd-dsp-alert b { display: block; font: 600 17px/1.2 var(--font-display); }
-.bd-dsp-alert span { display: block; margin-top: 3px; font-size: 13.5px; color: rgba(238,241,232,.6); }
-.bd-dsp-alert time { align-self: start; font: 500 12px/1 var(--font-mono); color: var(--sig-warn); }
+.bd-dsp-alert div > span { display: block; margin-top: 3px; font-size: 13.5px; color: rgba(238,241,232,.6); }
+.bd-dsp-alert time { align-self: center; font: 500 12px/1 var(--font-mono); color: var(--sig-warn); }
 .bd-dsp-line { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .bd-dsp-line::before, .bd-dsp-fill { content: ""; position: absolute; left: 6px; right: 0; top: 6px; height: 2px; background: var(--rule-soft); }
 .bd-dsp-fill { background: var(--forest); transform-origin: 0 50%; transform: scaleX(var(--t)); }

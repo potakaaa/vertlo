@@ -83,17 +83,17 @@ export function PortalTour({ data, clipH = 640, clipHMobile = PORTAL_H }: Props)
         const base = root.querySelector<HTMLElement>(".lp-laptop-base");
 
         /* desktop zoom-in: scale and move the whole laptop (origin top-left) so the screen sits
-           centred in the viewport, as large as fits; measured flat, which is where the zoom ends */
+           centred in its section, as large as fits; measured flat, which is where the zoom ends.
+           site: the section is the day's column beside the rail, so the zoom fills the column and
+           leaves the rail in view (a full-width section fills the viewport as before) */
         const zoom = () => {
           const s0 = offsetIn(screen, root), r0 = offsetIn(root, section);
           const sw = screen.offsetWidth, sh = screen.offsetHeight;
-          const vw = document.documentElement.clientWidth, vh = window.innerHeight;
-          const scale = Math.min((vw * 0.94) / sw, (vh * 0.86) / sh);
-          /* site: the section may sit in a column (the day's stops sit beside the rail), not at the page's left edge */
-          const left = section.getBoundingClientRect().left;
+          const cw = section.clientWidth, vh = window.innerHeight;
+          const scale = Math.min(cw / sw, (vh * 0.86) / sh);
           return {
             scale,
-            x: vw / 2 - left - r0.x - (s0.x + sw / 2) * scale,
+            x: cw / 2 - r0.x - (s0.x + sw / 2) * scale,
             y: vh * 0.52 - r0.y - (s0.y + sh / 2) * scale,
           };
         };
