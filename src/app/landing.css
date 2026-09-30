@@ -385,6 +385,10 @@ section[id], div[id] { scroll-margin-top: 96px; }
 .lp-wyg { padding-bottom: var(--lp-y); }
 
 /* ── testimonials band, footer ──────────────────────── */
+/* footer wordmark: 220px on desktop, scaled down to the footer's width below that ("VERTLO" is ~3.6em wide),
+   with its margins in em so the overlap with the legal row scales too */
+.vt-footer { container-type: inline-size; }
+.vt-footer-mark { font-size: min(220px, 100cqw / 3.65); margin: .11em 0 -.27em; }
 .lp-band { background: var(--surface); }
 
 /* ── merchants: dot-grid band, result-led quote cards ── */
@@ -543,6 +547,9 @@ section[id], div[id] { scroll-margin-top: 96px; }
   .lp-pf-d { display: none; }
   .lp-pf-m { display: block; }
   .lp-footer { padding-inline: 0; }
+  /* FAQ: stacked on phones, so the title/CTA column scrolls with the page instead of sticking over the questions */
+  .vt-faq { gap: 32px; }
+  .vt-faq-side { position: static; }
   /* HowFlow: the scene sticks under the header, steps scroll beneath it */
   .lp-flow { --flow-h: min(50svh, calc(75vw + 40px)); --step-h: 58svh; grid-template-columns: minmax(0, 1fr); padding: 0; border-top: 0; }
   .lp-flow-stage { grid-column: 1; grid-row: 1; top: 84px; z-index: 2; margin-inline: calc(var(--lp-x) * -1); padding-inline: 12px; background: var(--bg); border-block: 1px dashed rgba(11,20,16,.18); box-sizing: border-box; transition: box-shadow .2s; }
@@ -554,6 +561,19 @@ section[id], div[id] { scroll-margin-top: 96px; }
   .lp-flow-num { left: -52px; }
   .lp-flow-step h3 { font-size: 28px; }
 }
+
+/* ── small phones (≤380px): the header pill can't fit logo + CTA-with-arrow + menu; drop the arrow ── */
+@media (max-width: 380px) {
+  .lp-mnav { padding-left: 14px; gap: 6px; }
+  .lp-mnav-end { gap: 6px; }
+  .lp-mnav .vt-btn-ico { display: none; }
+}
+@media (max-width: 340px) {
+  .lp-mnav { padding-left: 10px; gap: 4px; }
+  .lp-mnav-end { gap: 4px; }
+  .lp-mnav .vt-btn { padding-inline: 12px; }
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   .lp-header-in, .lp-mmenu { transform: none !important; }
