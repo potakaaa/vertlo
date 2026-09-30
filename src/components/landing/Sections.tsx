@@ -38,14 +38,8 @@ export function Hero() {
           <span className="pp-note-corner pp-note-corner--tl" aria-hidden="true">
             {c.hero.serial}
           </span>
-          <span className="pp-note-corner pp-note-corner--tr" aria-hidden="true">
-            {c.hero.series}
-          </span>
-          <span className="pp-note-corner pp-note-corner--bl" aria-hidden="true">
-            {c.hero.series}
-          </span>
           <span className="pp-note-corner pp-note-corner--br" aria-hidden="true">
-            {c.hero.serial}
+            {c.hero.series}
           </span>
           <figure className="pp-note-vignette" aria-hidden="true" />
           <div className="pp-note-copy">

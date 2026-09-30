@@ -21,8 +21,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
 /**
  * One document in the stack. The section is the sticky layer (its offset comes from PaperMotion, which
  * measures the sheet so a tall one sticks by its bottom edge); the tilt and paper layers inside take
- * the scroll motion. Printed along the top: the document's title, microprint, its form code and its
- * place in the stack. `bare` drops the paper and header for a sheet that is its own document (the cheque).
+ * the scroll motion. Printed along the top: the document's title, its form code and its place in
+ * the stack. `bare` drops the paper and header for a sheet that is its own document (the cheque).
  */
 export function Sheet({
   id,
@@ -53,7 +53,6 @@ export function Sheet({
           {bare ? null : (
             <header className="pp-doc">
               <span className="pp-doc-title">{s.doc}</span>
-              <Microprint />
               <span className="pp-doc-meta">
                 {s.form}
                 <b>

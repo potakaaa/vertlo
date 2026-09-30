@@ -57,7 +57,7 @@ export function PaperMotion() {
         const q = gsap.utils.selector(note);
         const intro = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.1 });
         intro
-          .fromTo(note, { y: 70, rotate: -2.2, scale: 0.97, autoAlpha: 0 }, { y: 0, rotate: 0, scale: 1, autoAlpha: 1, duration: 1.1, ease: "expo.out" })
+          .fromTo(note, { y: 40, rotate: -1, scale: 0.985, autoAlpha: 0 }, { y: 0, rotate: 0, scale: 1, autoAlpha: 1, duration: 1.2, ease: "expo.out" })
           .fromTo(q(".pp-note-vignette"), { "--ink": "-20%" }, { "--ink": "115%", duration: 1.6, ease: "power2.inOut" }, 0.35)
           .from(q(".pp-note-seal"), { rotate: -120, autoAlpha: 0, duration: 1.6, ease: "expo.out" }, 0.4)
           .from(q(".pp-note-corner"), { autoAlpha: 0, y: 8, stagger: 0.07, duration: 0.5 }, 0.55)
@@ -73,10 +73,10 @@ export function PaperMotion() {
         const paper = sheet.querySelector<HTMLElement>(".pp-sheet-paper");
         const shade = sheet.querySelector<HTMLElement>(".pp-sheet-shade");
         if (!tilt || !paper) return;
-        const turn = (i % 2 ? -1 : 1) * (phone ? 1.2 : 2);
+        const turn = (i % 2 ? -1 : 1) * (phone ? 0.6 : 1);
         gsap.fromTo(
           tilt,
-          { rotate: turn, y: phone ? 30 : 80, transformOrigin: i % 2 ? "0% 0%" : "100% 0%" },
+          { rotate: turn, y: phone ? 24 : 48, transformOrigin: i % 2 ? "0% 0%" : "100% 0%" },
           { rotate: 0, y: 0, ease: "none", scrollTrigger: { trigger: sheet, start: "top bottom", end: "top 45%", scrub: 0.6 } },
         );
         const next = sheets[i + 1];
@@ -84,7 +84,7 @@ export function PaperMotion() {
         const cover = gsap.timeline({
           scrollTrigger: { trigger: next, start: "top bottom", end: "top top", scrub: 0.6 },
         });
-        cover.to(paper, { scale: phone ? 0.95 : 0.92, rotate: -turn * 0.35, transformOrigin: "50% 100%", ease: "none" }, 0);
+        cover.to(paper, { scale: phone ? 0.97 : 0.95, rotate: -turn * 0.3, transformOrigin: "50% 100%", ease: "none" }, 0);
         if (shade) cover.fromTo(shade, { autoAlpha: 0 }, { autoAlpha: 1, ease: "none" }, 0);
       });
 
