@@ -79,7 +79,7 @@ export function PortalTour({ data, clipH = 640, clipHMobile = PORTAL_H }: Props)
         root.setAttribute("data-tour", "");
         const caps = [...root.querySelectorAll<HTMLElement>(".vt-stage-cap")];
         const pops = root.querySelector(".vt-stage-pops");
-        const copy = section.querySelector<HTMLElement>(".lp-hero");
+        const copy = section.querySelector<HTMLElement>(".lp-hero, [data-tour-copy]");
         const base = root.querySelector<HTMLElement>(".lp-laptop-base");
 
         /* desktop zoom-in: scale and move the whole laptop (origin top-left) so the screen sits
@@ -89,9 +89,11 @@ export function PortalTour({ data, clipH = 640, clipHMobile = PORTAL_H }: Props)
           const sw = screen.offsetWidth, sh = screen.offsetHeight;
           const vw = document.documentElement.clientWidth, vh = window.innerHeight;
           const scale = Math.min((vw * 0.94) / sw, (vh * 0.86) / sh);
+          /* site: the section may sit in a column (the day's stops sit beside the rail), not at the page's left edge */
+          const left = section.getBoundingClientRect().left;
           return {
             scale,
-            x: vw / 2 - r0.x - (s0.x + sw / 2) * scale,
+            x: vw / 2 - left - r0.x - (s0.x + sw / 2) * scale,
             y: vh * 0.52 - r0.y - (s0.y + sh / 2) * scale,
           };
         };

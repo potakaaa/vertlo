@@ -5,14 +5,15 @@ import { Button, Diamond } from "@/components/vertlo";
 import { prefersReducedMotion } from "@/lib/motion";
 
 /* Departure-board pieces: the site reads like the control room of a station, where payments get
-   rerouted the way flights do. A split-flap board in the hero, wayfinding signs over the sections,
-   a boarding pass for the call and a small status key over the footer. Styles in app/board.css (bd-*).
+   rerouted the way flights do. A split-flap board in the hero, time signs over the day's stops,
+   a boarding pass for the call and a small status key over the footer. The day's rail and scenes are
+   in Day.tsx. Styles in app/board.css (bd-*).
 
    Split-flap units are real mechanics, not a text effect: each unit is a drum of characters, and every
    change turns one flap at a time (the top leaf falls, the next bottom leaf lands) until the new
    character shows. Timing is a fixed tick with a little per-unit play, no easing blur. Only the hero
-   board and the status key use them; both stop offscreen and in background tabs, and reduced motion
-   shows the final board without turning. */
+   board and the day clock turn (the status key's units are printed); both stop offscreen and in
+   background tabs, and reduced motion shows the final state without turning. */
 
 export type Tone = "ok" | "warn" | "bad" | "new";
 /** A run of text on the board and the colour it lands in. */
@@ -58,7 +59,7 @@ export type PassData = {
 /* ── split-flap engine ─────────────────────────────── */
 
 /** The characters on every unit's drum, in the order the flaps turn. */
-const DRUM = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-%→";
+const DRUM = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:-%→";
 /** Flaps a unit turns before it lands. A real unit runs the whole drum; this keeps a change under a second. */
 const MAX_TURNS = 8;
 /** The board fonts' latin subset has no →, so arrows are drawn as a pictogram. */
@@ -104,7 +105,7 @@ function unitOf(el: HTMLElement): Unit {
     land: l.firstElementChild!,
     fallLeaf: f,
     landLeaf: l,
-    ch: " ",
+    ch: t.textContent || " ",
     path: [],
     due: 0,
     ms: 80,
@@ -117,7 +118,7 @@ type FlipOpts = { delay?: number; stagger?: number; ms?: number; jitter?: number
 
 /** Drives every unit inside `root` that sits in a `[data-flap]` field, on its own clock. The clock only
     runs while the board is on (visible), so a paused board resumes exactly where it stopped. */
-class Flaps {
+export class Flaps {
   private fields = new Map<string, Unit[]>();
   private busy = new Set<Unit>();
   private events: { at: number; fn: () => void }[] = [];
@@ -274,7 +275,7 @@ class Flaps {
 }
 
 /** Runs a board's Flaps only while it is on screen and the tab is visible. Returns the cleanup. */
-function whileVisible(root: HTMLElement, flaps: Flaps, threshold = 0.15) {
+export function whileVisible(root: HTMLElement, flaps: Flaps, threshold = 0.15) {
   let seen = false;
   const sync = () => flaps.run(seen && document.visibilityState === "visible");
   const io = new IntersectionObserver(
@@ -294,18 +295,21 @@ function whileVisible(root: HTMLElement, flaps: Flaps, threshold = 0.15) {
   };
 }
 
-/** A field of `n` blank split-flap units. */
-function Units({ n }: { n: number }) {
+/** A field of `n` split-flap units, blank or already showing `text` (for units that never turn). */
+export function Units({ n, text = "" }: { n: number; text?: string }) {
   return (
     <>
-      {Array.from({ length: n }, (_, i) => (
-        <span key={i} className="bd-u">
-          <span className="bd-face bd-face--t"><b /></span>
-          <span className="bd-face bd-face--b"><b /></span>
-          <span className="bd-face bd-face--t bd-leaf bd-leaf--fall"><b /></span>
-          <span className="bd-face bd-face--b bd-leaf bd-leaf--land"><b /></span>
-        </span>
-      ))}
+      {Array.from({ length: n }, (_, i) => {
+        const ch = text[i] ?? "";
+        return (
+          <span key={i} className="bd-u">
+            <span className="bd-face bd-face--t"><b>{ch}</b></span>
+            <span className="bd-face bd-face--b"><b>{ch}</b></span>
+            <span className="bd-face bd-face--t bd-leaf bd-leaf--fall"><b>{ch}</b></span>
+            <span className="bd-face bd-face--b bd-leaf bd-leaf--land"><b>{ch}</b></span>
+          </span>
+        );
+      })}
     </>
   );
 }
@@ -454,25 +458,11 @@ export function DepartureBoard({ data }: { data: BoardData }) {
 
 const KEY_W = 8;
 
-/** The board's words and what they mean in Vertlo. The words flip in once, the first time the key is seen. */
+/** The board's words and what they mean in Vertlo. Printed units that never turn: the hero board and
+    the day clock are the only ones that move. */
 export function StatusKey({ title, caption, rows }: { title: string; caption: string; rows: KeyRow[] }) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const root = ref.current;
-    if (!root) return;
-    const flaps = new Flaps(root);
-    const words = rows.map((row) => row.word.toUpperCase().padEnd(KEY_W).slice(0, KEY_W));
-    if (prefersReducedMotion()) {
-      words.forEach((w, i) => flaps.snap(`k${i}`, w, Array.from(w, () => rows[i].tone)));
-      return () => flaps.destroy();
-    }
-    words.forEach((w, i) => flaps.later(200 + i * 220, () => flaps.flip(`k${i}`, w, Array.from(w, () => rows[i].tone), { stagger: 34, ms: 76 })));
-    return whileVisible(root, flaps, 0.5);
-  }, [rows]);
-
   return (
-    <div ref={ref} className="bd-board bd-board--key">
+    <div className="bd-board bd-board--key">
       <div className="bd-board-top">
         <span className="bd-board-title">
           {title}
@@ -480,11 +470,11 @@ export function StatusKey({ title, caption, rows }: { title: string; caption: st
         </span>
       </div>
       <ul className="bd-key">
-        {rows.map((row, i) => (
+        {rows.map((row) => (
           <li key={row.word} className="bd-key-row">
-            <i className="bd-lamp" data-tone={row.tone} data-blink={row.tone === "new" || undefined} />
-            <span className="bd-f" data-flap={`k${i}`} aria-hidden="true">
-              <Units n={KEY_W} />
+            <i className="bd-lamp" data-tone={row.tone} />
+            <span className="bd-f" data-tone={row.tone} aria-hidden="true">
+              <Units n={KEY_W} text={row.word.toUpperCase()} />
             </span>
             <span className="sr-only">{row.word}: </span>
             <b className="bd-key-state">{row.state}</b>
@@ -508,17 +498,22 @@ export function ArrowPicto({ dir = "e", className }: { dir?: "e" | "ne" | "s"; c
   );
 }
 
-/** A section's sign: its gate number, an arrow and where it leads, hung on a rule that runs to the edge. */
-export function Sign({ gate, children }: { gate: string; children: ReactNode }) {
+/** A stop's sign: its time on the board, an arrow and what it's about, hung on a rule that runs to the
+    edge, with the board's status word at the end of the rule. */
+export function Sign({ time, status, children }: { time: string; status?: BoardSeg; children: ReactNode }) {
   return (
     <p className="bd-sign">
       <span className="bd-sign-plate">
-        <span className="bd-sign-gate">
-          <small>Gate</small> {gate}
-        </span>
+        <span className="bd-sign-gate">{time}</span>
         <ArrowPicto className="bd-sign-arrow" />
         <span className="bd-sign-label">{children}</span>
       </span>
+      <span className="bd-sign-rule" aria-hidden="true" />
+      {status && (
+        <span className="bd-sign-status" data-tone={status[1]}>
+          {status[0]}
+        </span>
+      )}
     </p>
   );
 }

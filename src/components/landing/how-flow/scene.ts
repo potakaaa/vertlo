@@ -11,6 +11,8 @@ const W = SCENE_W;
 const ROWS = [8, 23, 38];
 const HUB = [25, 23] as const;
 const SOURCES = ["VISA", "MC", "PAYPAL"];
+/* site: the accounts are the day's accounts (content: day); the middle one, US-01, is the one that pauses */
+const MID_IDS = ["US-03", "US-01", "UK-02"];
 const SHARE_ROUTE = [42, 38, 20];
 const SHARE_REROUTE = [61, 0, 39];
 const BAR = 18; // bar cells = 100%
@@ -130,7 +132,7 @@ function scene(p: number, tk: number, live: boolean) {
     if (mt <= 0) return;
     put(partial(MID_BOXES[i], mt), paused ? "r" : "w", paused ? (blink ? 0.9 : 0.4) : 0.55);
     P.push([42, my, paused ? "r" : "g", mt * (paused && !blink ? 0.4 : 1)]);
-    T.push([46 * S, (my - 1) * S + 4, "MID " + (i + 1), "w", 0.8 * mt, "left"]);
+    T.push([46 * S, (my - 1) * S + 4, MID_IDS[i], "w", 0.8 * mt, "left"]);
     T.push([46 * S + 46, (my - 1) * S + 4, paused ? "PAUSED" : "LIVE", paused ? "r" : "g", 0.95 * mt, "left"]);
     if (grow > 0) T.push([W - 2, (my - 1) * S + 4, Math.round(share) + "%", paused ? "r" : "w", 0.9 * Math.max(grow, 0.3), "right"]);
     const filled = Math.round((share / 100) * BAR);

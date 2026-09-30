@@ -9,7 +9,8 @@ import { SCENE_W, SCENE_H, focusFor, monoFont, paintScene } from "@/components/l
    Vertlo splits volume across MIDs, then MID 2 pauses and the rest take its traffic.
    Lanes that are built carry live packets. Reduced motion: static frame per step, no packets. */
 
-export type FlowStep = { kicker?: string; title: string; body: string };
+/** `stop` marks the step as a stop on the day's timeline (Day.tsx reads `data-stop`). */
+export type FlowStep = { kicker?: string; title: string; body: string; stop?: string };
 
 
 export function HowFlow({ steps }: { steps: FlowStep[] }) {
@@ -130,12 +131,14 @@ export function HowFlow({ steps }: { steps: FlowStep[] }) {
           <li
             key={i}
             className="lp-flow-step"
+            id={s.stop}
+            data-stop={s.stop}
             data-state={i < active ? "done" : i === active ? "active" : "next"}
             aria-current={i === active ? "step" : undefined}
           >
             <span className="lp-flow-num" aria-hidden="true">{i + 1}</span>
             <div className="lp-flow-copy">
-              {s.kicker ? <span className="lp-flow-kicker">{pad(i + 1)} · {s.kicker}</span> : null}
+              {s.kicker ? <span className="lp-flow-kicker">{s.kicker}</span> : null}
               <h3>{s.title}</h3>
               <p>{s.body}</p>
             </div>

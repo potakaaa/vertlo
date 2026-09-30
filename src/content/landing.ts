@@ -1,13 +1,8 @@
-import type {
-  FAQProps,
-  FeatureGridProps,
-  FeaturePanelProps,
-  IndustryCardsProps,
-  LinkItem,
-} from "@/components/vertlo";
+import type { FAQProps, IconName, IndustryCardsProps, LinkItem } from "@/components/vertlo";
 import type { PortalData } from "@/components/landing/portal/types";
 import type { FlowStep } from "@/components/landing/HowFlow";
 import type { BoardData, BoardSeg, KeyRow, PassData } from "@/components/landing/Board";
+import type { Checkpoint, DayData } from "@/components/landing/Day";
 
 /**
  * Headings: `*words*` render in the accent green (see components/landing/Rich.tsx).
@@ -73,19 +68,6 @@ export const board: BoardData = {
     },
   ],
 };
-
-/** Section signs: wayfinding gates in page order; the closing boarding pass is the last gate. */
-export const gates = {
-  problem: "01",
-  how: "02",
-  whatYouGet: "03",
-  forBrands: "04",
-  providers: "05",
-  industries: "06",
-  testimonials: "07",
-  faq: "08",
-  book: "09",
-} as const;
 
 /* The product shot: the portal's Overview, all illustrative. Numbers reconcile: the 30 daily
    volumes sum to the $1.84M gross, and approvals average 92.6% weighted by volume. The dip on
@@ -177,54 +159,93 @@ export const how: { eyebrow: string; title: string; steps: FlowStep[] } = {
   title: "Set it up once. *It routes from there.*",
   // Rendered by HowFlow: one scroll-driven scene (connect → route → keep), steps alongside.
   steps: [
+    // Each step is a stop on the day's timeline (see `day`): its kicker reads as the time on the board.
     {
-      kicker: "Setup",
+      kicker: "09:05 · Check-in",
       title: "Connect your providers",
       body: "Bring every processor and merchant account into one CRM.",
+      stop: "checkin",
     },
     {
-      kicker: "Your rules",
+      kicker: "09:20 · Routing set",
       title: "Route across accounts",
       body: "Split volume by the rules you set, for steadier approval rates.",
+      stop: "routing",
     },
     {
-      kicker: "Every day after",
+      kicker: "09:41 · US-01 paused",
       title: "Keep selling",
-      body: "If one account pauses, the rest take the traffic in seconds.",
+      body: "One account pauses, the rest take its orders in seconds.",
+      stop: "paused",
     },
   ],
 };
 
-export const whatYouGet: { eyebrow: string; title: string; blurb: string; items: FeatureGridProps["items"] } = {
-  eyebrow: "What you get",
-  title: "One bad email won’t *stop your checkout.*",
-  blurb: "Routing, failover, dispute alerts and every store in one CRM.",
-  // Ruled 2×2 grid with white shadow cards. Numbers are demo data, labelled "Illustrative data".
-  items: [
-    { title: "Route across accounts", body: "Split volume by rules you set, for steadier approval rates.", art: "routing" },
-    { title: "Failover in seconds", body: "One MID pauses, the rest take the traffic.", art: "failover" },
-    { title: "Catch disputes early", body: "Refund before it becomes a chargeback.", art: "disputes" },
-    { title: "Every store, one CRM", body: "All your brands and their payouts in one place.", art: "stores" },
+/* The page after the hero is one trading day for one merchant. The rail's clock turns to each stop's
+   time as it is read; `lamps` are the four accounts' states at that stop (US-03, UK-02, US-01, US-04),
+   so US-01 goes red at 09:41 and US-04 boards at 09:52. Times match the portal's notifications. */
+export const day: DayData = {
+  date: "Thu 10 Jul",
+  merchant: "Nordvia Group",
+  accounts: ["US-03", "UK-02", "US-01", "US-04"],
+  stops: [
+    { id: "open", time: "08:58", label: "Before opening", lamps: ["ok", "ok", "ok", "off"] },
+    { id: "checkin", time: "09:05", label: "Check-in", lamps: ["ok", "ok", "ok", "off"] },
+    { id: "routing", time: "09:20", label: "Routing set", lamps: ["ok", "ok", "ok", "off"] },
+    { id: "paused", time: "09:41", label: "US-01 paused", lamps: ["ok", "ok", "bad", "off"] },
+    { id: "boarding", time: "09:52", label: "US-04 boarding", lamps: ["ok", "ok", "bad", "new"] },
+    { id: "dispute", time: "10:07", label: "Dispute caught", lamps: ["ok", "ok", "bad", "ok"] },
+    { id: "portal", time: "14:00", label: "The portal", lamps: ["ok", "ok", "bad", "ok"] },
+    { id: "industries", time: "17:00", label: "Regulars", lamps: ["ok", "ok", "bad", "ok"] },
+    { id: "reviews", time: "17:30", label: "Logbook", lamps: ["ok", "ok", "bad", "ok"] },
+    { id: "desk", time: "17:45", label: "Information desk", lamps: ["ok", "ok", "bad", "ok"] },
+    { id: "book", time: "18:00", label: "Last call", lamps: ["ok", "ok", "bad", "ok"] },
   ],
 };
 
-export const forBrands: Omit<FeaturePanelProps, "title"> & { title: string; eyebrow: string } = {
-  eyebrow: "Underwriting",
+/** 09:52: a new account goes through underwriting like a passenger through the checkpoints (the portal's underwriting slice). */
+export const boarding = {
+  sign: "Underwriting",
   title: "We’ll issue the *accounts you need.*",
-  description: "We underwrite in-house, so getting a new account doesn’t stall your checkout.",
+  blurb: "We underwrite in-house, so a new account doesn’t stall your checkout.",
+  account: "US-04",
+  processor: "Proc A",
+  share: "20%",
+  boardingWord: "Boarding",
+  onTimeWord: "On time",
+  joinedLabel: "Added to routing",
+  checkpoints: [
+    { label: "Application", date: "Jul 02", icon: "doc" },
+    { label: "Documents", date: "Jul 03", icon: "id" },
+    { label: "Underwriting", date: "Jul 05", icon: "scan" },
+    { label: "Approved", date: "Jul 08", icon: "check" },
+  ] satisfies Checkpoint[],
   items: [
-    { label: "Multiple live accounts", meta: "Run several MIDs side by side", icon: "layers" },
-    { label: "Underwriting in-house", meta: "No outside approvals to wait on", icon: "shield" },
-    { label: "Dispute alerts", meta: "Refund before it’s a chargeback", icon: "bell" },
-    { label: "One CRM", meta: "Every provider on one screen", icon: "dashboard" },
-  ],
-  ctaHref: "#book",
-  chip: false,
+    { label: "Multiple live accounts", icon: "layers" },
+    { label: "Underwriting in-house", icon: "shield" },
+    { label: "Added to routing on approval", icon: "dashboard" },
+  ] satisfies { label: string; icon: IconName }[],
 };
 
-export const providers = {
-  eyebrow: "Providers",
-  title: "Connect the providers *you already use.*",
+/** 10:07: a dispute is caught and refunded before it becomes a chargeback (DSP-0221 in the portal). */
+export const dispute = {
+  sign: "Dispute alerts",
+  title: "Refund it before it’s *a chargeback.*",
+  blurb: "Disputes land in Vertlo the minute they’re raised, with time to act.",
+  alert: { id: "DSP-0221", amount: "$89.00", card: "Visa debit", time: "10:07" },
+  steps: [
+    { time: "10:07", label: "Alert received" },
+    { time: "10:09", label: "Refunded" },
+    { time: "Jul 14", label: "Chargeback due", struck: "Avoided" },
+  ],
+  ratio: { now: 0.62, without: 0.71, limit: 1, label: "Chargeback ratio" },
+};
+
+/** 14:00: the product, toured on the laptop. */
+export const portalStop = {
+  sign: "The portal",
+  title: "Every account and store, *on one screen.*",
+  blurb: "Volume, approvals, disputes and payouts for all your brands, live.",
 };
 
 export const industries: { eyebrow: string; title: string; items: IndustryCardsProps["items"] } = {
@@ -337,11 +358,11 @@ export const footer = {
     {
       title: "Product",
       links: [
-        { label: "Routing", href: "#how" },
-        { label: "Failover", href: "#how" },
-        { label: "Dispute alerts", href: "#how" },
-        { label: "Underwriting", href: "#book" },
-        { label: "Portal", href: "#top" },
+        { label: "Routing", href: "#routing" },
+        { label: "Failover", href: "#paused" },
+        { label: "Dispute alerts", href: "#dispute" },
+        { label: "Underwriting", href: "#boarding" },
+        { label: "Portal", href: "#portal" },
       ],
     },
     {
